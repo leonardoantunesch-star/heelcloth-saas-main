@@ -57,6 +57,9 @@ function getStatusBadge(status: string) {
   }
 }
 
+// Esta página lê o banco de dados, então é gerada a cada acesso (nunca durante o build).
+export const dynamic = "force-dynamic";
+
 export default async function PedidosPage({ searchParams }: PedidosPageProps) {
   const { q, status, clienteId } = await searchParams;
   const query = q?.trim() || "";

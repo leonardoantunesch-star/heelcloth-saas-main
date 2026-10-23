@@ -2,8 +2,19 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 import { prisma } from "./db";
 
-const JWT_SECRET = process.env.JWT_SECRET || "heelcloth-super-secret-jwt-key-2026-saas";
 const COOKIE_NAME = "heelcloth_session";
+
+// A chave de assinatura vem sempre da variável de ambiente JWT_SECRET.
+// Só em desenvolvimento local (NODE_ENV diferente de "production") usamos uma chave de teste,
+// que nunca deve valer em produção. A leitura é feita na hora do uso, para não quebrar o build.
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (secret && secret.length >= 16) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET não configurada (mínimo de 16 caracteres). Cadastre essa variável de ambiente.");
+  }
+  return "chave-apenas-para-desenvolvimento-local";
+}
 
 export interface SessionPayload {
   userId: string;
@@ -61,7 +72,7 @@ export function createToken(payload: Omit<SessionPayload, "exp">, expiresInHours
   const encodedPayload = base64UrlEncode(JSON.stringify(fullPayload));
 
   const signature = crypto
-    .createHmac("sha256", JWT_SECRET)
+    .createHmac("sha256", getJwtSecret())
     .update(`${encodedHeader}.${encodedPayload}`)
     .digest("base64")
     .replace(/=/g, "")
@@ -77,7 +88,7 @@ export function verifyToken(token: string): SessionPayload | null {
     if (!header || !payload || !signature) return null;
 
     const expectedSignature = crypto
-      .createHmac("sha256", JWT_SECRET)
+      .createHmac("sha256", getJwtSecret())
       .update(`${header}.${payload}`)
       .digest("base64")
       .replace(/=/g, "")

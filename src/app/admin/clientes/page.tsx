@@ -19,6 +19,9 @@ interface ClientesPageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
+// Esta página lê o banco de dados, então é gerada a cada acesso (nunca durante o build).
+export const dynamic = "force-dynamic";
+
 export default async function ClientesPage({ searchParams }: ClientesPageProps) {
   const { q } = await searchParams;
   const query = q?.trim() || "";
