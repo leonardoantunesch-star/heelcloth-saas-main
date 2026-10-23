@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "templatesRoot": "C:\\Heelcloth\\Templates",
+  "outputsRoot": "C:\\Heelcloth\\Outputs",
+  "logsRoot": "C:\\Heelcloth\\Logs",
+  "defaultFormats": ["cdr", "pdf"],
+  "templates": {
+    "gabarito_camisa_padrao": {
+      "templateKey": "gabarito_camisa_padrao",
+      "templatePath": "C:\\Heelcloth\\Templates\\gabarito_camisa_padrao.cdr",
+      "targetPageName": "GABARITO",
+      "targetLayerName": "PERSONALIZACAO",
+      "outputPolicy": "one_file_per_player",
+      "formats": ["cdr", "pdf"],
+      "placeholders": {
+        "name": "TXT_PLAYER_NAME",
+        "number": "TXT_PLAYER_NUMBER",
+        "size": "TXT_PLAYER_SIZE",
+        "model": "TXT_PLAYER_MODEL"
+      },
+      "constraints": {
+        "maxNameLength": 24,
+        "maxNumberLength": 3,
+        "requiredFont": "Impact",
+        "sanitizeFileName": {
+          "replaceSpacesWith": "_",
+          "upperCaseOnly": true
+        }
+      }
+    },
+    "gabarito_camisa_goleiro": {
+      "templateKey": "gabarito_camisa_goleiro",
+      "templatePath": "C:\\Heelcloth\\Templates\\gabarito_camisa_goleiro.cdr",
+      "targetPageName": "GABARITO",
+      "targetLayerName": "PERSONALIZACAO",
+      "outputPolicy": "one_file_per_player",
+      "formats": ["cdr", "pdf"],
+      "placeholders": {
+        "name": "TXT_PLAYER_NAME",
+        "number": "TXT_PLAYER_NUMBER",
+        "size": "TXT_PLAYER_SIZE",
+        "model": "TXT_PLAYER_MODEL"
+      },
+      "constraints": {
+        "maxNameLength": 24,
+        "maxNumberLength": 3,
+        "requiredFont": "Impact",
+        "sanitizeFileName": {
+          "replaceSpacesWith": "_",
+          "upperCaseOnly": true
+        }
+      }
+    }
+  }
+}

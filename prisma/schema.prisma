@@ -1,0 +1,341 @@
+// Prisma Schema para Heelcloth SaaS de Gestão de Confecção
+// Suporta SQLite (desenvolvimento local) e PostgreSQL (produção)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -------------------------------------------------------------
+// USUÁRIOS E CONTROLE DE ACESSO (RBAC) - Seção 25
+// -------------------------------------------------------------
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("VENDEDOR") // ADMIN | PRODUCAO | FINANCEIRO | VENDEDOR
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  auditLogs        AuditLog[]
+  qualityChecks    QualityCheck[]
+  stockMovements   InventoryMovement[]
+}
+
+// -------------------------------------------------------------
+// CLIENTES - Seção 9
+// -------------------------------------------------------------
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  document    String?  // CPF ou CNPJ
+  phone       String?
+  whatsapp    String
+  email       String?
+  address     String?  // Endereço completo (Rua, Nº, Bairro, Cidade, UF, CEP)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders                Order[]
+  quotes                Quote[]
+  financialTransactions FinancialTransaction[]
+  whatsappMessages      WhatsAppMessage[]
+}
+
+// -------------------------------------------------------------
+// CATÁLOGO DE PRODUTOS BÁSICOS
+// -------------------------------------------------------------
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  category    String   // CAMISA_JOGADOR | CAMISA_GOLEIRO | SHORT | MEIAO | KIT_COMPLETO | OUTRO
+  basePrice   Float    @default(0.0)
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// -------------------------------------------------------------
+// ORÇAMENTOS - Seção 8
+// -------------------------------------------------------------
+model Quote {
+  id          String    @id @default(uuid())
+  quoteNumber String    @unique // Ex: ORC-2603-0001
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  status      String    @default("PENDENTE") // PENDENTE | ENVIADO | APROVADO | RECUSADO | CONVERTIDO
+  totalAmount Float     @default(0.0)
+  discount    Float     @default(0.0)
+  validUntil  DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  items   QuoteItem[]
+  orders  Order[]
+}
+
+model QuoteItem {
+  id          String  @id @default(uuid())
+  quoteId     String
+  quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product     String  // Nome do produto ou kit
+  quantity    Int     @default(1)
+  unitPrice   Float   @default(0.0)
+  totalPrice  Float   @default(0.0)
+  details     String? // Detalhes técnicos, tecido, gola, etc.
+}
+
+// -------------------------------------------------------------
+// PEDIDOS - Seção 5, 6, 7
+// -------------------------------------------------------------
+model Order {
+  id               String    @id @default(uuid())
+  orderNumber      String    @unique // Ex: HC-2603-0001
+  customerId       String
+  customer         Customer  @relation(fields: [customerId], references: [id])
+  quoteId          String?
+  quote            Quote?    @relation(fields: [quoteId], references: [id])
+  
+  // Status de Pedido: Seção 7
+  // ORCAMENTO | AGUARDANDO_APROVACAO | APROVADO | PAGAMENTO_PENDENTE | PAGAMENTO_CONFIRMADO |
+  // EM_PRODUCAO | CONTROLE_QUALIDADE | PRONTO | ENTREGUE | CONCLUIDO | CANCELADO | EM_ATRASO | AGUARDANDO_ALTERACAO
+  status           String    @default("AGUARDANDO_APROVACAO")
+  
+  totalAmount      Float     @default(0.0)
+  paidAmount       Float     @default(0.0)
+  pendingAmount    Float     @default(0.0)
+  paymentMethod    String?   // PIX | CARTAO | BOLETO | DINHEIRO
+  deliveryDeadline DateTime?
+  notes            String?
+  attachments      String?   // JSON com lista de links de anexos/artes
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  items                 OrderItem[]
+  players               OrderPlayer[]
+  productionOrder       ProductionOrder?
+  qualityCheck          QualityCheck?
+  invoices              Invoice[]
+  whatsappMessages      WhatsAppMessage[]
+  financialTransactions FinancialTransaction[]
+}
+
+model OrderItem {
+  id             String  @id @default(uuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        String  // Camisa de jogador, short, meião, etc.
+  quantity       Int     @default(1)
+  size           String? // PP, P, M, G, GG, XG, etc.
+  model          String? // Tradicional, Raglan, Sem Manga, etc.
+  color          String?
+  playerName     String?
+  playerNumber   String?
+  personalization String?
+  notes          String?
+  unitPrice      Float   @default(0.0)
+  totalPrice     Float   @default(0.0)
+}
+
+// -------------------------------------------------------------
+// PERSONALIZAÇÃO INDIVIDUAL DE JOGADORES - Seção 6
+// Permite rastrear cada camisa individualmente para a automação CorelDRAW
+// -------------------------------------------------------------
+model OrderPlayer {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  playerIndex Int      // Número de ordem do jogador (1, 2, 3...)
+  name        String   // Nome estampado nas costas
+  number      String   // Número estampado nas costas
+  size        String   // Tamanho (ex: M, G, GG)
+  model       String   // Modelo (Jogador, Goleiro, etc.)
+  notes       String?  // Ex: manga longa, gola V, etc.
+  shortSize   String?  // Tamanho do calção (se houver)
+  options     String?  // JSON ou flags adicionais
+  createdAt   DateTime @default(now())
+
+  @@index([orderId, number])
+}
+
+// -------------------------------------------------------------
+// ETAPAS DE PRODUÇÃO - Seção 10
+// Fluxo: ARTE -> CORTE -> PERSONALIZACAO -> COSTURA -> ESTAMPA -> ACABAMENTO -> CONTROLE_QUALIDADE -> PRONTO
+// -------------------------------------------------------------
+model ProductionOrder {
+  id           String    @id @default(uuid())
+  orderId      String    @unique
+  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  currentStage String    @default("ARTE") // ARTE | CORTE | PERSONALIZACAO | COSTURA | ESTAMPA | ACABAMENTO | CONTROLE_QUALIDADE | PRONTO
+  stageStatus  String    @default("PENDENTE") // PENDENTE | EM_ANDAMENTO | CONCLUIDO | ATRASADO
+  responsible  String?
+  deadline     DateTime?
+  startedAt    DateTime  @default(now())
+  finishedAt   DateTime?
+  notes        String?
+  updatedAt    DateTime  @updatedAt
+
+  history ProductionHistory[]
+}
+
+model ProductionHistory {
+  id                String          @id @default(uuid())
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
+  stage             String
+  status            String
+  responsible       String?
+  notes             String?
+  createdAt         DateTime        @default(now())
+}
+
+// -------------------------------------------------------------
+// CONTROLE DE QUALIDADE - Seção 11
+// Checklist obrigatório antes do status "Pronto"
+// -------------------------------------------------------------
+model QualityCheck {
+  id                   String    @id @default(uuid())
+  orderId              String    @unique
+  order                Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  checkQuantity        Boolean   @default(false) // Quantidade correta
+  checkSizes           Boolean   @default(false) // Tamanhos corretos
+  checkNames           Boolean   @default(false) // Nomes corretos
+  checkNumbers         Boolean   @default(false) // Números corretos
+  checkModel           Boolean   @default(false) // Modelo correto
+  checkPersonalization Boolean   @default(false) // Personalização correta
+  checkComplete        Boolean   @default(false) // Pedido completo
+  isApproved           Boolean   @default(false) // Todos os itens conferidos
+  observations         String?
+  checkedById          String?
+  checkedBy            User?     @relation(fields: [checkedById], references: [id])
+  checkedAt            DateTime?
+}
+
+// -------------------------------------------------------------
+// ESTOQUE - Seção 12
+// Insumos: Tecidos, Materiais, Produtos, Embalagens, etc.
+// -------------------------------------------------------------
+model InventoryItem {
+  id          String   @id @default(uuid())
+  name        String
+  category    String   // TECIDO | MATERIAL | PRODUTO | EMBALAGEM | OUTRO
+  unit        String   // METRO | UNIDADE | KG | ROLO | PACOTE
+  quantity    Float    @default(0.0)
+  minQuantity Float    @default(0.0) // Alerta de estoque baixo quando quantity < minQuantity
+  cost        Float    @default(0.0)
+  supplier    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  movements InventoryMovement[]
+}
+
+model InventoryMovement {
+  id          String        @id @default(uuid())
+  itemId      String
+  item        InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  type        String        // ENTRADA | SAIDA | AJUSTE
+  quantity    Float
+  previousQty Float
+  newQty      Float
+  reason      String?
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
+  createdAt   DateTime      @default(now())
+}
+
+// -------------------------------------------------------------
+// FINANCEIRO - Seção 13
+// -------------------------------------------------------------
+model FinancialTransaction {
+  id            String    @id @default(uuid())
+  type          String    // RECEITA | DESPESA
+  category      String    // VENDA | MATERIA_PRIMA | MAQUINARIO | ENERGIA | SALARIO | OUTRO
+  description   String
+  amount        Float
+  dueDate       DateTime?
+  paymentDate   DateTime?
+  paymentMethod String?   // PIX | BOLETO | CARTAO | TRANSFERENCIA | DINHEIRO
+  status        String    @default("PENDENTE") // PENDENTE | PAGO | CANCELADO
+  
+  orderId       String?
+  order         Order?    @relation(fields: [orderId], references: [id])
+  customerId    String?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  supplier      String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// -------------------------------------------------------------
+// NOTA FISCAL ELETRÔNICA (NF-e) - Seção 14
+// -------------------------------------------------------------
+model Invoice {
+  id            String    @id @default(uuid())
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id])
+  invoiceNumber String?
+  accessKey     String?   // Chave de 44 dígitos da NF-e
+  series        String?   @default("1")
+  status        String    @default("AGUARDANDO") // AGUARDANDO | PROCESSANDO | AUTORIZADA | REJEITADA | CANCELADA | ERRO
+  xmlUrl        String?
+  danfeUrl      String?
+  errorMessage  String?
+  emittedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// -------------------------------------------------------------
+// COMUNICAÇÃO WHATSAPP - Seção 15
+// -------------------------------------------------------------
+model WhatsAppMessage {
+  id           String    @id @default(uuid())
+  orderId      String?
+  order        Order?    @relation(fields: [orderId], references: [id])
+  customerId   String?
+  customer     Customer? @relation(fields: [customerId], references: [id])
+  phone        String
+  templateType String    // PEDIDO_CONFIRMADO | PRODUCAO_INICIADA | PRODUCAO_CONCLUIDA | PEDIDO_PRONTO | PEDIDO_ENTREGUE | MENSAGEM_LIVRE
+  content      String
+  status       String    @default("PENDENTE") // PENDENTE | ENVIADO | FALHA
+  errorMessage String?
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+// -------------------------------------------------------------
+// HISTÓRICO E AUDITORIA - Seção 18
+// -------------------------------------------------------------
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String   // CRIACAO | ATUALIZACAO | STATUS_CHANGE | EXCLUSAO | LOGIN
+  entity    String   // PEDIDO | CLIENTE | ESTOQUE | FINANCEIRO | NFE | PRODUCAO | QUALIDADE
+  entityId  String
+  details   String?  // JSON com antes/depois ou detalhes da alteração
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+// -------------------------------------------------------------
+// CONFIGURAÇÕES GERAIS - Seção 22
+// -------------------------------------------------------------
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique // Ex: EMITENTE_CNPJ, WHATSAPP_API_KEY, NFE_CERT_PATH
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}

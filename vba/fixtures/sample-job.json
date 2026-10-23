@@ -1,0 +1,50 @@
+{
+  "jobId": "job_HC_2603_0001_1791458900000",
+  "attempt": 1,
+  "orderId": "order_7a8b9c-test-uuid",
+  "orderNumber": "HC-2603-0001",
+  "customerName": "Atlética Guerreiros da Engenharia",
+  "templateKey": "gabarito_camisa_padrao",
+  "templatePath": "C:\\Heelcloth\\Templates\\gabarito_camisa_padrao.cdr",
+  "dryRun": false,
+  "output": {
+    "rootPath": "C:\\Heelcloth\\Outputs",
+    "formats": ["cdr", "pdf"]
+  },
+  "players": [
+    {
+      "lineId": "player_item_001",
+      "playerIndex": 1,
+      "name": "MARCOS SILVA",
+      "number": "00",
+      "size": "G",
+      "model": "JOGADOR",
+      "notes": "Manga Curta",
+      "shortSize": "G",
+      "options": null
+    },
+    {
+      "lineId": "player_item_002",
+      "playerIndex": 2,
+      "name": "JOSÉ D'ÁVILA",
+      "number": "10",
+      "size": "M",
+      "model": "JOGADOR",
+      "notes": "Gola V",
+      "shortSize": "M",
+      "options": null
+    },
+    {
+      "lineId": "player_item_003",
+      "playerIndex": 3,
+      "name": "RODRIGO F. ALBUQUERQUE",
+      "number": "1",
+      "size": "GG",
+      "model": "GOLEIRO",
+      "notes": "Manga Longa",
+      "shortSize": "GG",
+      "options": null
+    }
+  ],
+  "createdAt": "2026-10-09T03:00:00.000Z"
+}

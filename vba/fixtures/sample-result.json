@@ -1,0 +1,45 @@
+{
+  "jobId": "job_HC_2603_0001_1791458900000",
+  "orderId": "order_7a8b9c-test-uuid",
+  "orderNumber": "HC-2603-0001",
+  "templateKey": "gabarito_camisa_padrao",
+  "status": "succeeded",
+  "attempt": 1,
+  "startedAt": "2026-10-09T03:00:05.120Z",
+  "finishedAt": "2026-10-09T03:00:18.450Z",
+  "durationMs": 13330,
+  "totalPlayers": 3,
+  "processedPlayers": 3,
+  "generatedFiles": [
+    {
+      "lineId": "player_item_001",
+      "playerName": "MARCOS SILVA",
+      "playerNumber": "00",
+      "cdrPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\01_00_MARCOS_SILVA.cdr",
+      "pdfPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\01_00_MARCOS_SILVA.pdf",
+      "fileSizeBytes": 245890,
+      "exportedAt": "2026-10-09T03:00:09.300Z"
+    },
+    {
+      "lineId": "player_item_002",
+      "playerName": "JOSÉ D'ÁVILA",
+      "playerNumber": "10",
+      "cdrPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\02_10_JOSE_DAVILA.cdr",
+      "pdfPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\02_10_JOSE_DAVILA.pdf",
+      "fileSizeBytes": 248102,
+      "exportedAt": "2026-10-09T03:00:13.800Z"
+    },
+    {
+      "lineId": "player_item_003",
+      "playerName": "RODRIGO F. ALBUQUERQUE",
+      "playerNumber": "1",
+      "cdrPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\03_01_RODRIGO_F_ALBUQUERQUE.cdr",
+      "pdfPath": "C:\\Heelcloth\\Outputs\\HC-2603-0001\\03_01_RODRIGO_F_ALBUQUERQUE.pdf",
+      "fileSizeBytes": 251340,
+      "exportedAt": "2026-10-09T03:00:18.200Z"
+    }
+  ],
+  "warnings": [],
+  "errors": [],
+  "dryRun": false
+}
