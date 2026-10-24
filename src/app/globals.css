@@ -77,3 +77,151 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* ------------------------------------------------------------------ */
+/* Seletor de tamanho em bolinhas: cinza ao passar o mouse e círculo que expande ao clicar */
+/* ------------------------------------------------------------------ */
+.ripple-host {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .ripple-host:hover:not([aria-selected="true"]):not([aria-pressed="true"]) {
+    background-color: #e6e6e6;
+    border-color: rgba(18, 18, 18, 0.28);
+  }
+}
+
+.ripple-dot {
+  position: absolute;
+  z-index: -1;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.2;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple-expandir 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes ripple-expandir {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.seletor-painel {
+  animation: seletor-entrar 0.16s ease-out;
+}
+
+@keyframes seletor-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Tela de carregamento (estilo vitrine de loja esportiva) */
+/* ------------------------------------------------------------------ */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  pointer-events: none;
+  /* Espera o conteúdo aparecer por baixo e levanta a cortina. */
+  animation: splash-sair 0.7s cubic-bezier(0.76, 0, 0.24, 1) 1.5s forwards;
+}
+
+.splash-conteudo {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  animation: splash-recuar 0.4s ease-in 1.4s forwards;
+}
+
+.splash-logo {
+  width: auto;
+  height: 82px;
+  opacity: 0;
+  transform: translateY(14px) scale(0.92);
+  animation: splash-entrar 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s forwards;
+}
+
+.splash-nome {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.34em;
+  padding-left: 0.34em;
+  color: #121212;
+  opacity: 0;
+  animation: splash-entrar 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s forwards;
+}
+
+.splash-barra {
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: rgba(18, 18, 18, 0.1);
+  overflow: hidden;
+  opacity: 0;
+  animation: splash-entrar 0.4s ease-out 0.4s forwards;
+}
+
+.splash-barra > span {
+  display: block;
+  height: 100%;
+  background: #49aab8;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: splash-encher 1s cubic-bezier(0.65, 0, 0.35, 1) 0.5s forwards;
+}
+
+@keyframes splash-entrar {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes splash-encher {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes splash-recuar {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes splash-sair {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash {
+    display: none;
+  }
+  .ripple-dot,
+  .seletor-painel {
+    animation: none;
+  }
+}
