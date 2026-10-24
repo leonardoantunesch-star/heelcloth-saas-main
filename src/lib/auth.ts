@@ -5,18 +5,6 @@ import { getJwtSecret } from "./jwt-secret";
 
 const COOKIE_NAME = "heelcloth_session";
 
-// A chave de assinatura vem sempre da variável de ambiente JWT_SECRET.
-// Só em desenvolvimento local (NODE_ENV diferente de "production") usamos uma chave de teste,
-// que nunca deve valer em produção. A leitura é feita na hora do uso, para não quebrar o build.
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (secret && secret.length >= 16) return secret;
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("JWT_SECRET não configurada (mínimo de 16 caracteres). Cadastre essa variável de ambiente.");
-  }
-  return "chave-apenas-para-desenvolvimento-local";
-}
-
 export interface SessionPayload {
   userId: string;
   email: string;
