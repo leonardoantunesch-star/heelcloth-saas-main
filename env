@@ -1,8 +1,0 @@
-# Arquivo local. Nunca envie este arquivo para o GitHub (o .gitignore do projeto já bloqueia).
-# Usado só no seu computador, para criar as tabelas (prisma:push) e os usuários (prisma:seed).
-
-# Conexão Session pooler do Supabase (porta 5432).
-DATABASE_URL="postgresql://postgres.zxwuhxyztnfjhofijdtm:DsRndseUUa6ZStG6@aws-1-sa-east-1.pooler.supabase.com:5432/postgres"
-
-# Use exatamente a mesma chave na Vercel, em Settings > Environment Variables.
-JWT_SECRET="f81f1ea177188c35f357e1d0601154d432307a4456c87dd8"
