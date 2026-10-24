@@ -1,25 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { sessaoValidaNoEdge } from "@/lib/session-edge";
 
-export function middleware(request: NextRequest) {
+const COOKIE = "heelcloth_session";
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const token = request.cookies.get(COOKIE)?.value;
+  const logado = await sessaoValidaNoEdge(token);
 
-  // Proteger rotas administrativas (/admin e sub-rotas)
+  // Proteger rotas administrativas (/admin e sub-rotas): só entra com sessão assinada e dentro da validade.
   if (pathname.startsWith("/admin")) {
-    const sessionCookie = request.cookies.get("heelcloth_session")?.value;
-
-    if (!sessionCookie) {
+    if (!logado) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      const resposta = NextResponse.redirect(loginUrl);
+      // Cookie vencido ou inválido é apagado, para não ficar preso em /admin sem acesso de verdade.
+      if (token) resposta.cookies.delete(COOKIE);
+      return resposta;
     }
   }
 
   // Se já estiver logado e tentar acessar /login, redirecionar para /admin/dashboard
   if (pathname === "/login") {
-    const sessionCookie = request.cookies.get("heelcloth_session")?.value;
-    if (sessionCookie) {
+    if (logado) {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+    }
+    if (token) {
+      const resposta = NextResponse.next();
+      resposta.cookies.delete(COOKIE);
+      return resposta;
     }
   }
 

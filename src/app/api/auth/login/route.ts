@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword, createToken, COOKIE_NAME } from "@/lib/auth";
+import { descreverFalha } from "@/lib/erro-login";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -84,9 +85,7 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error("Erro no login:", error);
-    return NextResponse.json(
-      { erro: "Erro interno no servidor ao processar autenticação" },
-      { status: 500 }
-    );
+    const { erro, codigo } = descreverFalha(error);
+    return NextResponse.json({ erro, codigo }, { status: 500 });
   }
 }

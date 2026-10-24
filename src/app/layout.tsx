@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { TelaCarregamento } from "@/components/TelaCarregamento";
 
 export const metadata: Metadata = {
   title: "Heelcloth — SaaS de Gestão de Confecção",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <TelaCarregamento />
+        {children}
+      </body>
     </html>
   );
 }

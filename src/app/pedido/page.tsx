@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { SeletorTamanho } from "@/components/SeletorTamanho";
 import {
   Shirt,
   Plus,
@@ -477,22 +478,12 @@ export default function FazerPedidoPage() {
 
                           {/* Tamanho da Camisa */}
                           <td className="px-3 py-2.5 text-center">
-                            <select
+                            <SeletorTamanho
                               value={linha.tamCamisa}
-                              onChange={(e) =>
-                                atualizarLinha(linha.id, "tamCamisa", e.target.value)
-                              }
-                              aria-label={`Tamanho da camisa do jogador ${idx + 1}`}
-                              className="w-full h-8 px-2 text-xs bg-white border border-slate-200 rounded-lg text-center font-semibold text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
-                            >
-                              <option value="">Nenhum</option>
-                              <option value="PP">PP</option>
-                              <option value="P">P</option>
-                              <option value="M">M</option>
-                              <option value="G">G</option>
-                              <option value="GG">GG</option>
-                              <option value="XG">XG</option>
-                            </select>
+                              onChange={(valor) => atualizarLinha(linha.id, "tamCamisa", valor)}
+                              ariaLabel={`Tamanho da camisa do jogador ${idx + 1}`}
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                            />
                           </td>
 
                           {/* Tamanho do Short */}
@@ -656,22 +647,12 @@ export default function FazerPedidoPage() {
                         >
                           Camisa
                         </label>
-                        <select
+                        <SeletorTamanho
                           id={`mobile-camisa-${linha.id}`}
                           value={linha.tamCamisa}
-                          onChange={(e) =>
-                            atualizarLinha(linha.id, "tamCamisa", e.target.value)
-                          }
-                          className="w-full h-10 px-2 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
-                        >
-                          <option value="">Nenhum</option>
-                          <option value="PP">PP</option>
-                          <option value="P">P</option>
-                          <option value="M">M</option>
-                          <option value="G">G</option>
-                          <option value="GG">GG</option>
-                          <option value="XG">XG</option>
-                        </select>
+                          onChange={(valor) => atualizarLinha(linha.id, "tamCamisa", valor)}
+                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                        />
                       </div>
 
                       <div>

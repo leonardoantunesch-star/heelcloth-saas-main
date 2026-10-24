@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { prisma } from "./db";
+import { getJwtSecret } from "./jwt-secret";
 
-const JWT_SECRET = process.env.JWT_SECRET || "heelcloth-super-secret-jwt-key-2026-saas";
 const COOKIE_NAME = "heelcloth_session";
 
 export interface SessionPayload {
@@ -61,7 +61,7 @@ export function createToken(payload: Omit<SessionPayload, "exp">, expiresInHours
   const encodedPayload = base64UrlEncode(JSON.stringify(fullPayload));
 
   const signature = crypto
-    .createHmac("sha256", JWT_SECRET)
+    .createHmac("sha256", getJwtSecret())
     .update(`${encodedHeader}.${encodedPayload}`)
     .digest("base64")
     .replace(/=/g, "")
@@ -77,7 +77,7 @@ export function verifyToken(token: string): SessionPayload | null {
     if (!header || !payload || !signature) return null;
 
     const expectedSignature = crypto
-      .createHmac("sha256", JWT_SECRET)
+      .createHmac("sha256", getJwtSecret())
       .update(`${header}.${payload}`)
       .digest("base64")
       .replace(/=/g, "")
