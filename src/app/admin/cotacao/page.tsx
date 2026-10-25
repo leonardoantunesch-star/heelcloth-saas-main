@@ -11,6 +11,7 @@ import {
   type EmpresaCotacao,
   type ItemCotacao,
 } from "@/lib/cotacao-pdf";
+import { PreviaPdf } from "@/components/cotacao/PreviaPdf";
 
 interface LinhaItem {
   id: string;
@@ -101,7 +102,7 @@ export default function CotacaoPage() {
   const [empresa, setEmpresa] = useState<EmpresaCotacao>(EMPRESA_PADRAO);
   const [empresaAberta, setEmpresaAberta] = useState(false);
 
-  const [previaUrl, setPreviaUrl] = useState<string | null>(null);
+  const [previaDados, setPreviaDados] = useState<ArrayBuffer | null>(null);
   const [gerando, setGerando] = useState(false);
   const [baixando, setBaixando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -184,10 +185,7 @@ export default function CotacaoPage() {
       try {
         const doc = await gerarPdfCotacao(montarDados(), await obterLogo());
         if (cancelado) return;
-        const url = URL.createObjectURL(doc.output("blob"));
-        if (urlAnterior.current) URL.revokeObjectURL(urlAnterior.current);
-        urlAnterior.current = url;
-        setPreviaUrl(url);
+        setPreviaDados(doc.output("arraybuffer"));
         setErro(null);
       } catch (e) {
         console.error("Erro ao gerar a prévia do PDF:", e);
@@ -495,18 +493,7 @@ export default function CotacaoPage() {
               </span>
               <span className="text-[11px] text-slate-500">{gerando ? "Atualizando..." : "Atualizada"}</span>
             </div>
-            {previaUrl ? (
-              <iframe
-                title="Prévia da cotação em PDF"
-                src={`${previaUrl}#toolbar=0&navpanes=0&view=FitH`}
-                className="hidden sm:block w-full h-[720px] bg-slate-100"
-              />
-            ) : (
-              <div className="h-48 flex items-center justify-center text-xs text-slate-500">Montando a prévia...</div>
-            )}
-            <p className="sm:hidden p-4 text-xs text-slate-500">
-              A prévia aparece em telas maiores. No celular, use o botão &ldquo;Baixar PDF&rdquo; para ver o resultado.
-            </p>
+            <PreviaPdf dados={previaDados} />
           </div>
         </aside>
       </div>
