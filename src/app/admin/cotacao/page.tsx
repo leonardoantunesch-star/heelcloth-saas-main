@@ -36,9 +36,11 @@ const ATALHOS: { rotulo: string; descricao: string; detalhes: string; valor: num
   { rotulo: "Camisa", descricao: "Camisa de jogo sublimada", detalhes: "Tecido padrão, nome e número nas costas", valor: PRECOS_PADRAO.camisa },
   { rotulo: "Camisa com punho", descricao: "Camisa com punhos personalizados", detalhes: "Punhos personalizados", valor: PRECOS_PADRAO.camisa_punho },
   { rotulo: "Camisa texturizada", descricao: "Camisa texturizada", detalhes: "Tecido texturizado, punhos inclusos", valor: PRECOS_PADRAO.camisa_text },
+  { rotulo: "Camisa dry-fit", descricao: "Camisa dry-fit", detalhes: "Tecido dry-fit", valor: PRECOS_PADRAO.camisa_dry },
   { rotulo: "Manga longa", descricao: "Manga longa (adicional)", detalhes: "Valor por camisa com manga longa", valor: PRECOS_PADRAO.manga_longa },
   { rotulo: "Short", descricao: "Short esportivo", detalhes: "", valor: PRECOS_PADRAO.short },
   { rotulo: "Short texturizado", descricao: "Short texturizado", detalhes: "", valor: PRECOS_PADRAO.short_text },
+  { rotulo: "Calção dry-fit", descricao: "Calção dry-fit", detalhes: "Tecido dry-fit", valor: PRECOS_PADRAO.short_dry },
   { rotulo: "Meião", descricao: "Meião esportivo", detalhes: "Branco, preto, azul, verde ou vermelho", valor: PRECOS_PADRAO.meiao },
 ];
 

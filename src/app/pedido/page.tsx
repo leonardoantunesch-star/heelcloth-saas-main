@@ -31,6 +31,7 @@ interface LinhaUniforme {
   goleiro: boolean;
   mangaLonga: boolean;
   texturizada: boolean;
+  dryfit: boolean;
   punhos: boolean;
   obs: string;
 }
@@ -133,6 +134,7 @@ export default function FazerPedidoPage() {
       goleiro: i === 0, // Primeiro jogador como goleiro por padrão
       mangaLonga: false,
       texturizada: false,
+      dryfit: false,
       punhos: false,
       obs: "",
     }))
@@ -156,6 +158,7 @@ export default function FazerPedidoPage() {
         goleiro: false,
         mangaLonga: false,
         texturizada: false,
+        dryfit: false,
         punhos: false,
         obs: "",
       },
@@ -183,7 +186,15 @@ export default function FazerPedidoPage() {
         const nova = { ...l, [campo]: valor };
         // Textura já traz o punho incluso: ao marcar, o punho liga sozinho (e fica travado);
         // ao desmarcar, volta ao normal.
-        if (campo === "texturizada") nova.punhos = Boolean(valor);
+        if (campo === "texturizada") {
+          nova.punhos = Boolean(valor);
+          if (valor) nova.dryfit = false;
+        }
+        // Dry-fit e textura são tecidos diferentes: marcar um desmarca o outro.
+        if (campo === "dryfit" && valor && l.texturizada) {
+          nova.texturizada = false;
+          nova.punhos = false;
+        }
         return nova;
       })
     );
@@ -216,6 +227,7 @@ export default function FazerPedidoPage() {
       opcoes: [
         ...(l.mangaLonga ? ["manga_longa"] : []),
         ...(l.texturizada ? ["texturizada"] : []),
+        ...(l.dryfit ? ["dryfit"] : []),
         ...(l.punhos || l.texturizada ? ["punhos"] : []),
       ],
     }))
@@ -259,6 +271,7 @@ export default function FazerPedidoPage() {
         const opcoes: string[] = [];
         if (l.mangaLonga) opcoes.push("manga_longa");
         if (l.texturizada) opcoes.push("texturizada");
+        if (l.dryfit) opcoes.push("dryfit");
         if (l.punhos) opcoes.push("punhos");
 
         return {
@@ -632,6 +645,12 @@ export default function FazerPedidoPage() {
                                 detalhe="R$ 59,90"
                               />
                               <OpcaoCheck
+                                checked={linha.dryfit}
+                                onChange={(v) => atualizarLinha(linha.id, "dryfit", v)}
+                                rotulo="Dry-fit"
+                                detalhe="R$ 41,90"
+                              />
+                              <OpcaoCheck
                                 checked={linha.punhos || linha.texturizada}
                                 disabled={linha.texturizada}
                                 onChange={(v) => atualizarLinha(linha.id, "punhos", v)}
@@ -818,6 +837,13 @@ export default function FazerPedidoPage() {
                       />
                       <OpcaoCheck
                         grande
+                        checked={linha.dryfit}
+                        onChange={(v) => atualizarLinha(linha.id, "dryfit", v)}
+                        rotulo="Dry-fit"
+                        detalhe="R$ 41,90"
+                      />
+                      <OpcaoCheck
+                        grande
                         checked={linha.punhos || linha.texturizada}
                         disabled={linha.texturizada}
                         onChange={(v) => atualizarLinha(linha.id, "punhos", v)}
@@ -853,7 +879,7 @@ export default function FazerPedidoPage() {
                 <div className="flex items-start gap-1.5">
                   <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <span>
-                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
+                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. <strong>Dry-fit</strong>: camisa R$ 41,90 e calção R$ 21,90 (não combina com Textura). Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
                   </span>
                 </div>
 

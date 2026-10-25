@@ -10,6 +10,8 @@ export interface TabelaPrecos {
   manga_longa: number;
   short: number;
   short_text: number;
+  camisa_dry: number;
+  short_dry: number;
   meiao: number;
   [key: string]: number;
 }
@@ -21,6 +23,8 @@ export const PRECOS_PADRAO: TabelaPrecos = {
   manga_longa: 20,
   short: 24.9,
   short_text: 34.9,
+  camisa_dry: 41.9, // camisa dry-fit
+  short_dry: 21.9, // calção dry-fit
   // VALOR PROVISÓRIO: confirme o preço do par de meiões e ajuste aqui (muda no pedido, no catálogo e na cotação).
   meiao: 15,
 };
@@ -35,7 +39,7 @@ export const CORES_MEIAO = [
 ] as const;
 export type CorMeiao = (typeof CORES_MEIAO)[number]["valor"];
 
-export const OPCOES_DISPONIVEIS = ["texturizada", "manga_longa", "punhos"] as const;
+export const OPCOES_DISPONIVEIS = ["texturizada", "dryfit", "manga_longa", "punhos"] as const;
 export type OpcaoItem = (typeof OPCOES_DISPONIVEIS)[number];
 
 export const STATUS_FLUXO = [
@@ -92,15 +96,18 @@ export function calcularOrcamento(
   const brl = (v: number) =>
     Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  const cam: Record<string, { f: { tex: boolean; pun: boolean; man: boolean }; n: number }> = {};
-  const sho: Record<string, { tex: boolean; n: number }> = {};
+  const cam: Record<string, { f: { tex: boolean; dry: boolean; pun: boolean; man: boolean }; n: number }> = {};
+  const sho: Record<string, { tex: boolean; dry: boolean; n: number }> = {};
   const mei: Record<string, number> = {};
   const linhas: LinhaOrcamento[] = [];
 
   const extrairFlags = (i: ItemPedidoOrcamento) => {
     const o = Array.isArray(i.opcoes) ? i.opcoes : padraoOpcoes;
+    const tex = o.includes("texturizada");
     return {
-      tex: o.includes("texturizada"),
+      tex,
+      // dry-fit e textura são tecidos diferentes: se vier os dois, vale a textura
+      dry: o.includes("dryfit") && !tex,
       pun: o.includes("punhos"),
       man: o.includes("manga_longa"),
     };
@@ -112,7 +119,7 @@ export function calcularOrcamento(
     f.pun = f.pun && !f.tex;
 
     if (i.tamCamisa) {
-      const k = (f.tex ? "1" : "0") + (f.pun ? "1" : "0") + (f.man ? "1" : "0");
+      const k = (f.tex ? "1" : "0") + (f.dry ? "1" : "0") + (f.pun ? "1" : "0") + (f.man ? "1" : "0");
       if (!cam[k]) {
         cam[k] = { f, n: 0 };
       }
@@ -124,9 +131,9 @@ export function calcularOrcamento(
     }
 
     if (i.tamShort) {
-      const k = f.tex ? "t" : "p";
+      const k = f.tex ? "t" : f.dry ? "d" : "p";
       if (!sho[k]) {
-        sho[k] = { tex: f.tex, n: 0 };
+        sho[k] = { tex: f.tex, dry: f.dry, n: 0 };
       }
       sho[k].n++;
     }
@@ -136,7 +143,7 @@ export function calcularOrcamento(
   for (const k of Object.keys(cam).sort()) {
     const { f, n } = cam[k];
     const mangaOk = (precos.manga_longa ?? 0) > 0;
-    const precoBase = f.tex ? precos.camisa_text : precos.camisa;
+    const precoBase = f.tex ? precos.camisa_text : f.dry ? precos.camisa_dry : precos.camisa;
     const adicionalPunho = f.pun ? precos.camisa_punho - precos.camisa : 0;
     const adicionalManga = f.man && mangaOk ? precos.manga_longa : 0;
     const unit = r2(precoBase + adicionalPunho + adicionalManga);
@@ -144,7 +151,9 @@ export function calcularOrcamento(
 
     const descTipo = f.tex
       ? `${pl(n, "texturizada", "texturizadas")} (punhos inclusos)`
-      : "tecido padrão";
+      : f.dry
+        ? "dry-fit"
+        : "tecido padrão";
     const descPunho = f.pun ? " com punhos personalizados" : "";
     const descManga = f.man ? " manga longa" : "";
     const descCombinar = combinar ? " (manga longa a combinar)" : "";
@@ -160,10 +169,10 @@ export function calcularOrcamento(
 
   // Linhas dos shorts
   for (const k of Object.keys(sho).sort()) {
-    const { tex, n } = sho[k];
-    const precoShort = tex ? precos.short_text : precos.short;
+    const { tex, dry, n } = sho[k];
+    const precoShort = tex ? precos.short_text : dry ? precos.short_dry : precos.short;
     linhas.push({
-      d: `${n} ${pl(n, "short", "shorts")}${tex ? " texturizado" + (n === 1 ? "" : "s") : ""} × ${brl(precoShort)}`,
+      d: `${n} ${pl(n, "short", "shorts")}${tex ? " texturizado" + (n === 1 ? "" : "s") : dry ? " dry-fit" : ""} × ${brl(precoShort)}`,
       v: r2(n * precoShort),
     });
   }
