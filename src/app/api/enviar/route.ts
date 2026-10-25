@@ -4,6 +4,7 @@ import { PRECOS_PADRAO, calcularOrcamento, gerarProtocolo } from "@/lib/orcament
 import { prisma } from "@/lib/db";
 
 const MIN_CAMISAS = 10;
+const FORMAS_PAGAMENTO = ["PIX", "CARTAO", "BOLETO", "TRANSFERENCIA", "DINHEIRO"] as const;
 
 const itemSchema = z.object({
   nome: z.string().optional().default(""),
@@ -18,6 +19,7 @@ const itemSchema = z.object({
 const enviarSchema = z.object({
   representante: z.string().min(1, "Informe o nome do representante.").max(100),
   contato: z.string().min(10, "Informe o WhatsApp com DDD."),
+  pagamento: z.enum(FORMAS_PAGAMENTO, { message: "Escolha a forma de pagamento." }),
   itens: z.array(itemSchema).min(1, "Lista inválida.").max(500),
 });
 
@@ -33,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { representante, contato, itens: rawItens } = parsed.data;
+    const { representante, contato, pagamento, itens: rawItens } = parsed.data;
 
     // Filtra itens com tamanho definido
     const itens = rawItens.filter((i) => Boolean(i.tamCamisa || i.tamShort));
@@ -77,6 +79,7 @@ export async function POST(req: NextRequest) {
         totalAmount: orcamento.total,
         paidAmount: 0.0,
         pendingAmount: orcamento.total,
+        paymentMethod: pagamento,
         items: {
           create: [
             ...(totalCamisas > 0
@@ -105,8 +108,8 @@ export async function POST(req: NextRequest) {
           create: itens.map((item, idx) => ({
             playerIndex: idx + 1,
             name: (item.nome || `JOGADOR ${idx + 1}`).trim().toUpperCase(),
-            number: (item.numero || `${idx + 1}`).trim(),
-            size: item.tamCamisa || "M",
+            number: (item.numero || "").trim(),
+            size: item.tamCamisa || "-", // pedido só de short: sem camisa
             model: item.goleiro ? "GOLEIRO" : "JOGADOR",
             shortSize: item.tamShort || null,
             options: item.opcoes && item.opcoes.length > 0 ? item.opcoes.join(", ") : null,

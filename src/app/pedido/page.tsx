@@ -32,6 +32,14 @@ interface LinhaUniforme {
   obs: string;
 }
 
+const FORMAS_PAGAMENTO = [
+  { valor: "PIX", rotulo: "Pix" },
+  { valor: "CARTAO", rotulo: "Cartão" },
+  { valor: "BOLETO", rotulo: "Boleto" },
+  { valor: "TRANSFERENCIA", rotulo: "Transferência" },
+  { valor: "DINHEIRO", rotulo: "Dinheiro" },
+] as const;
+
 // Opção marcável (manga longa, textura, punho...) com efeito de hover e de clique.
 function OpcaoCheck({
   checked,
@@ -59,7 +67,7 @@ function OpcaoCheck({
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className={`rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8] ${grande ? "w-4 h-4" : "w-3.5 h-3.5"} ${
+        className={`rounded border-slate-300 text-[#121212] focus:ring-[#121212] ${grande ? "w-4 h-4" : "w-3.5 h-3.5"} ${
           disabled ? "" : "cursor-pointer"
         }`}
       />
@@ -78,14 +86,15 @@ export default function FazerPedidoPage() {
   const [representante, setRepresentante] = useState("");
   const [contato, setContato] = useState("");
   const [tentouEnviar, setTentouEnviar] = useState(false);
+  const [pagamento, setPagamento] = useState("");
 
   // Cria 10 jogadores iniciais (mínimo exigido pela confecção)
   const [linhas, setLinhas] = useState<LinhaUniforme[]>(() =>
     Array.from({ length: 10 }, (_, i) => ({
       id: `linha-${i + 1}`,
       nome: "",
-      numero: (i + 1).toString().padStart(2, "0"),
-      tamCamisa: "M",
+      numero: "",
+      tamCamisa: "",
       tamShort: "",
       goleiro: i === 0, // Primeiro jogador como goleiro por padrão
       mangaLonga: false,
@@ -101,14 +110,13 @@ export default function FazerPedidoPage() {
 
   // Adicionar nova linha de jogador
   const adicionarLinha = () => {
-    const proximoNum = (linhas.length + 1).toString().padStart(2, "0");
     setLinhas((prev) => [
       ...prev,
       {
         id: `linha-${Date.now()}-${prev.length + 1}`,
         nome: "",
-        numero: proximoNum,
-        tamCamisa: "M",
+        numero: "",
+        tamCamisa: "",
         tamShort: "",
         goleiro: false,
         mangaLonga: false,
@@ -196,8 +204,13 @@ export default function FazerPedidoPage() {
 
     if (totalCamisas < 10) {
       setErro(
-        `O pedido mínimo para confecção é de 10 camisas. Atualmente há ${totalCamisas} camisas selecionadas.`
+        `O pedido mínimo para confecção é de 10 camisas. Atualmente há ${totalCamisas} camisas escolhidas (os shorts não contam nesse mínimo).`
       );
+      return;
+    }
+
+    if (!pagamento) {
+      setErro("Escolha a forma de pagamento para enviar o pedido.");
       return;
     }
 
@@ -228,6 +241,7 @@ export default function FazerPedidoPage() {
         body: JSON.stringify({
           representante: representante.trim(),
           contato: cleanContato,
+          pagamento,
           itens: payloadItens,
         }),
       });
@@ -251,7 +265,7 @@ export default function FazerPedidoPage() {
   const representanteInvalido = tentouEnviar && !representante.trim();
 
   return (
-    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#49AAB8] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col justify-between">
       
       <SiteHeader />
 
@@ -263,7 +277,7 @@ export default function FazerPedidoPage() {
         {/* TELA DE SUCESSO PÓS-ENVIO */}
         {protocoloGerado ? (
           <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 max-w-2xl mx-auto text-center space-y-6 shadow-xs animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-[#49AAB8]/15 text-[#49AAB8] flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 rounded-full bg-[#121212]/15 text-[#121212] flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -284,6 +298,15 @@ export default function FazerPedidoPage() {
                 {protocoloGerado}
               </p>
             </div>
+
+            {pagamento && (
+              <p className="text-xs text-slate-600">
+                Forma de pagamento escolhida:{" "}
+                <strong className="text-[#121212]">
+                  {FORMAS_PAGAMENTO.find((f) => f.valor === pagamento)?.rotulo ?? pagamento}
+                </strong>
+              </p>
+            )}
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
@@ -324,11 +347,11 @@ export default function FazerPedidoPage() {
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-slate-200 bg-slate-50/70 text-xs font-medium text-slate-700 self-start sm:self-center shrink-0">
                 <span
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    totalCamisas >= 10 ? "bg-emerald-500" : "bg-[#49AAB8]"
+                    totalCamisas >= 10 ? "bg-emerald-500" : "bg-[#121212]"
                   }`}
                 />
                 <span className="font-semibold text-[#121212]">
-                  {totalCamisas} de 10 peças mínimas
+                  {totalCamisas} de 10 camisas mínimas
                 </span>
                 {totalCamisas >= 10 && (
                   <span className="text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
@@ -381,7 +404,7 @@ export default function FazerPedidoPage() {
                     className={`w-full h-11 px-3.5 text-xs sm:text-sm bg-white border rounded-xl text-[#121212] placeholder-slate-400 transition focus:outline-none focus-visible:ring-2 ${
                       representanteInvalido
                         ? "border-red-400 focus-visible:ring-red-200"
-                        : "border-slate-200 focus:border-[#49AAB8] focus-visible:ring-[#49AAB8]/20"
+                        : "border-slate-200 focus:border-[#121212] focus-visible:ring-[#121212]/20"
                     }`}
                   />
                   {representanteInvalido && (
@@ -411,7 +434,7 @@ export default function FazerPedidoPage() {
                     className={`w-full h-11 px-3.5 text-xs sm:text-sm bg-white border rounded-xl text-[#121212] placeholder-slate-400 transition focus:outline-none focus-visible:ring-2 ${
                       contatoInvalido
                         ? "border-red-400 focus-visible:ring-red-200"
-                        : "border-slate-200 focus:border-[#49AAB8] focus-visible:ring-[#49AAB8]/20"
+                        : "border-slate-200 focus:border-[#121212] focus-visible:ring-[#121212]/20"
                     }`}
                   />
                   {contatoInvalido && (
@@ -431,7 +454,7 @@ export default function FazerPedidoPage() {
                     2. Jogadores e uniformes ({linhas.length} itens)
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Preencha o nome nas costas, número e tamanhos de cada atleta.
+                    Preencha o nome nas costas, o número e os tamanhos de cada atleta. Nada vem preenchido: escolha cada tamanho.
                   </p>
                 </div>
 
@@ -439,7 +462,7 @@ export default function FazerPedidoPage() {
                 <button
                   type="button"
                   onClick={adicionarLinha}
-                  className="ripple-so-clique inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs font-semibold transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] self-start sm:self-auto"
+                  className="ripple-so-clique inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#121212] hover:bg-[#3a3a3a] text-white text-xs font-semibold transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] self-start sm:self-auto"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Adicionar jogador</span>
@@ -481,7 +504,7 @@ export default function FazerPedidoPage() {
                               }
                               placeholder="NOME DO ATLETA"
                               aria-label={`Nome do jogador ${idx + 1}`}
-                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] uppercase placeholder-slate-400 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] uppercase placeholder-slate-400 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -496,7 +519,7 @@ export default function FazerPedidoPage() {
                               placeholder="00"
                               maxLength={4}
                               aria-label={`Número do jogador ${idx + 1}`}
-                              className="w-full h-8 px-1.5 text-xs bg-white border border-slate-200 rounded-lg text-center font-mono font-bold text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                              className="w-full h-8 px-1.5 text-xs bg-white border border-slate-200 rounded-lg text-center font-mono font-bold text-[#121212] focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -506,7 +529,7 @@ export default function FazerPedidoPage() {
                               value={linha.tamCamisa}
                               onChange={(valor) => atualizarLinha(linha.id, "tamCamisa", valor)}
                               ariaLabel={`Tamanho da camisa do jogador ${idx + 1}`}
-                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-[#121212] focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -517,7 +540,7 @@ export default function FazerPedidoPage() {
                               value={linha.tamShort}
                               onChange={(valor) => atualizarLinha(linha.id, "tamShort", valor)}
                               ariaLabel={`Tamanho do short do jogador ${idx + 1}`}
-                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -531,7 +554,7 @@ export default function FazerPedidoPage() {
                                   atualizarLinha(linha.id, "goleiro", e.target.checked)
                                 }
                                 aria-label={`Marcar jogador ${idx + 1} como goleiro`}
-                                className="w-4 h-4 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8] cursor-pointer"
+                                className="w-4 h-4 rounded border-slate-300 text-[#121212] focus:ring-[#121212] cursor-pointer"
                               />
                             </label>
                           </td>
@@ -570,7 +593,7 @@ export default function FazerPedidoPage() {
                               placeholder="Opcional"
                               maxLength={300}
                               aria-label={`Observações da camisa do jogador ${idx + 1} (opcional)`}
-                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -639,7 +662,7 @@ export default function FazerPedidoPage() {
                             atualizarLinha(linha.id, "nome", e.target.value.toUpperCase())
                           }
                           placeholder="Ex: SILVA"
-                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] uppercase placeholder-slate-400 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] uppercase placeholder-slate-400 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                         />
                       </div>
 
@@ -659,7 +682,7 @@ export default function FazerPedidoPage() {
                           }
                           placeholder="10"
                           maxLength={4}
-                          className="w-full h-10 px-1 text-xs bg-white border border-slate-200 rounded-lg text-center font-mono font-bold text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                          className="w-full h-10 px-1 text-xs bg-white border border-slate-200 rounded-lg text-center font-mono font-bold text-[#121212] focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                         />
                       </div>
                     </div>
@@ -677,7 +700,7 @@ export default function FazerPedidoPage() {
                           id={`mobile-camisa-${linha.id}`}
                           value={linha.tamCamisa}
                           onChange={(valor) => atualizarLinha(linha.id, "tamCamisa", valor)}
-                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                         />
                       </div>
 
@@ -693,7 +716,7 @@ export default function FazerPedidoPage() {
                           id={`mobile-short-${linha.id}`}
                           value={linha.tamShort}
                           onChange={(valor) => atualizarLinha(linha.id, "tamShort", valor)}
-                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                         />
                       </div>
                     </div>
@@ -745,7 +768,7 @@ export default function FazerPedidoPage() {
                         rows={2}
                         maxLength={300}
                         placeholder="Ex: gola diferente, nome menor, detalhe no braço..."
-                        className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 resize-none focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                        className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 resize-none focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                       />
                     </div>
                   </div>
@@ -757,7 +780,7 @@ export default function FazerPedidoPage() {
                 <div className="flex items-start gap-1.5">
                   <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <span>
-                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional).
+                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
                   </span>
                 </div>
 
@@ -766,10 +789,54 @@ export default function FazerPedidoPage() {
                   onClick={adicionarLinha}
                   className="ripple-host inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition self-start sm:self-auto"
                 >
-                  <Plus className="w-3.5 h-3.5 text-[#49AAB8]" />
+                  <Plus className="w-3.5 h-3.5 text-[#121212]" />
                   <span>+1 Jogador</span>
                 </button>
               </div>
+            </section>
+
+            {/* 3. SEÇÃO: FORMA DE PAGAMENTO */}
+            <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-7 space-y-4 shadow-2xs">
+              <div className="border-b border-slate-100 pb-3">
+                <h2 className="text-sm font-bold text-[#121212] uppercase tracking-wider font-mono">
+                  3. Forma de pagamento <span className="text-red-500">*</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Escolha como prefere pagar. O pagamento é combinado com a nossa equipe depois da aprovação do layout.
+                </p>
+              </div>
+
+              <div
+                role="radiogroup"
+                aria-label="Forma de pagamento"
+                className="flex flex-wrap gap-2.5"
+              >
+                {FORMAS_PAGAMENTO.map((f) => {
+                  const ativa = pagamento === f.valor;
+                  return (
+                    <button
+                      key={f.valor}
+                      type="button"
+                      role="radio"
+                      aria-checked={ativa}
+                      aria-pressed={ativa}
+                      onClick={() => setPagamento(f.valor)}
+                      className={`ripple-host inline-flex h-11 items-center justify-center rounded-full border px-5 text-xs sm:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] ${
+                        ativa
+                          ? "border-[#121212] bg-[#121212] text-white"
+                          : tentouEnviar && !pagamento
+                            ? "border-red-300 bg-white text-[#121212]"
+                            : "border-black/15 bg-white text-[#121212]"
+                      }`}
+                    >
+                      {f.rotulo}
+                    </button>
+                  );
+                })}
+              </div>
+              {tentouEnviar && !pagamento && (
+                <p className="text-[11px] text-red-600 font-medium">Escolha uma forma de pagamento.</p>
+              )}
             </section>
 
             {/* 4. SEÇÃO: RESUMO & ENVIO */}
@@ -802,7 +869,7 @@ export default function FazerPedidoPage() {
               <button
                 type="submit"
                 disabled={enviando}
-                className="ripple-so-clique w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-sm font-semibold transition active:scale-[0.98] shadow-2xs disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] focus-visible:ring-offset-2"
+                className="ripple-so-clique w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full bg-[#121212] hover:bg-[#3a3a3a] text-white text-sm font-semibold transition active:scale-[0.98] shadow-2xs disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
               >
                 {enviando ? (
                   <>

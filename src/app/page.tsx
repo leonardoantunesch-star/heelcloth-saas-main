@@ -7,57 +7,70 @@ import { EditorialSlideshow } from "@/components/EditorialSlideshow";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
+const DESTAQUES = [
+  { numero: "01", titulo: "Pedido mínimo de 10 camisas", texto: "Monte a lista dos jogadores com nome, número e tamanho de cada um." },
+  { numero: "02", titulo: "Do jeito do seu time", texto: "Camisa, punho, textura, manga longa e short, tudo no mesmo pedido." },
+  { numero: "03", titulo: "Acompanhe online", texto: "Com o código do pedido, você vê em que etapa da produção ele está." },
+];
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#49AAB8] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col justify-between">
       <SiteHeader />
 
-      {/* ==================================================================== */}
-      {/* HERO SECTION — CENTRALIZADO COM SLIDESHOW EDITORIAL NA BASE */}
-      {/* ==================================================================== */}
-      <main className="flex-1 flex flex-col justify-between px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-8 sm:pb-12 max-w-[1440px] w-full mx-auto">
-        
-        {/* Bloco de Título e Chamada Central */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto my-auto py-4 sm:py-8">
-          
-          {/* Título Atualizado */}
-          <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-[#121212] leading-[1.05] max-w-2xl sm:max-w-3xl">
+      <main className="flex-1 flex flex-col px-5 sm:px-8 lg:px-12 max-w-[1440px] w-full mx-auto">
+        {/* Abertura */}
+        <section className="flex flex-col items-center text-center max-w-4xl mx-auto pt-16 sm:pt-24 pb-12 sm:pb-16">
+          <span className="uppercase tracking-[0.3em] font-light text-[10px] sm:text-[11px] text-[#121212]/55">
+            Sublimação esportiva
+          </span>
+          <h1 className="mt-5 text-4xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.03em] leading-[1.02]">
             Uniformes personalizados para o seu time.
           </h1>
-
-          {/* Texto de Apoio Atualizado */}
-          <p className="mt-4 sm:mt-5 text-[15px] sm:text-[17px] text-[#606060] max-w-xl leading-relaxed font-normal">
+          <p className="mt-6 text-[15px] sm:text-[17px] text-[#606060] max-w-xl leading-relaxed">
             Monte seu pedido, informe os jogadores e receba seu orçamento.
           </p>
 
-          {/* CTA Primário em Azul Aqua redirecionando para a rota de Pedido */}
-          <div className="mt-6 sm:mt-8 flex items-center justify-center">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/pedido"
-              className="ripple-so-clique inline-flex items-center justify-center h-11 sm:h-12 px-6 sm:px-7 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-sm sm:text-[15px] font-semibold transition-all duration-200 active:scale-[0.98] shadow-2xs group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] focus-visible:ring-offset-2"
+              className="ripple-so-clique group inline-flex items-center justify-center h-12 px-7 rounded-full bg-[#121212] hover:bg-[#3a3a3a] text-white text-sm sm:text-[15px] font-semibold transition-colors active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
             >
               <span>Fazer pedido</span>
-              <ArrowUpRight
-                className="w-4 h-4 ml-1.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                strokeWidth={2}
-              />
+              <ArrowUpRight className="w-4 h-4 ml-1.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2} />
+            </Link>
+            <Link
+              href="/catalogo"
+              className="ripple-host inline-flex items-center justify-center h-12 px-7 rounded-full border border-black/20 bg-white text-sm sm:text-[15px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
+            >
+              Ver catálogo
             </Link>
           </div>
-        </div>
+        </section>
 
-        {/* Faixa / Slideshow Horizontal Editorial de Imagens Verticais na Base */}
-        <div className="w-full mt-10 sm:mt-14 pt-4 border-t border-black/[0.04]">
-          <div className="flex items-center justify-between mb-3 px-1 text-xs text-[#606060] font-medium">
-            <span className="uppercase tracking-wider font-mono text-[11px] text-[#121212]/50">
-              Galeria de Camisas & Fardamentos
+        {/* Três pontos rápidos */}
+        <section aria-label="Como funciona" className="border-y border-black/[0.08] grid grid-cols-1 md:grid-cols-3 md:divide-x divide-black/[0.08]">
+          {DESTAQUES.map((d) => (
+            <div key={d.numero} className="px-1 md:px-8 py-7 first:md:pl-0 last:md:pr-0">
+              <span className="font-mono text-[11px] text-[#121212]/40">{d.numero}</span>
+              <h2 className="mt-2 text-base font-bold tracking-tight">{d.titulo}</h2>
+              <p className="mt-1.5 text-[13px] text-[#606060] leading-relaxed">{d.texto}</p>
+            </div>
+          ))}
+        </section>
+
+        {/* Faixa de fotos em movimento */}
+        <section className="w-full mt-12 sm:mt-16 pb-12 sm:pb-16">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <span className="uppercase tracking-[0.2em] font-mono text-[11px] text-[#121212]/50">
+              Galeria de camisas &amp; fardamentos
             </span>
-            <span className="hidden sm:inline-block text-[11px] text-[#606060]/70 font-mono">
-              Arraste ou navegue com as setas
-            </span>
+            <Link href="/catalogo" className="ripple-host rounded-md px-2 py-1 text-[11px] font-semibold text-[#121212]/70 hover:text-[#121212]">
+              Ver tudo
+            </Link>
           </div>
-
           <EditorialSlideshow />
-        </div>
+        </section>
       </main>
 
       <SiteFooter />

@@ -165,7 +165,7 @@ export function OrderTrackingView({
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#121212] flex flex-col justify-between selection:bg-[#49AAB8] selection:text-white">
+    <div className="min-h-screen bg-white text-[#121212] flex flex-col justify-between selection:bg-[#121212] selection:text-white">
       {/* ==================================================================== */}
       {/* HEADER BRANCO SIMPLES */}
       {/* ==================================================================== */}
@@ -175,9 +175,9 @@ export function OrderTrackingView({
             href="https://wa.me/5511999999999"
             target="_blank"
             rel="noopener noreferrer"
-            className="ripple-host hidden lg:inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-slate-200 bg-white text-slate-700 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
+            className="ripple-host hidden lg:inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-slate-200 bg-white text-slate-700 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
           >
-            <MessageCircle className="w-4 h-4 text-[#49AAB8]" />
+            <MessageCircle className="w-4 h-4 text-[#121212]" />
             <span>WhatsApp</span>
           </a>
         }
@@ -210,14 +210,14 @@ export function OrderTrackingView({
                   value={buscaInput}
                   onChange={(e) => setBuscaInput(e.target.value.toUpperCase())}
                   placeholder="Ex.: HC-2610-0002"
-                  className="w-full h-11 pl-10 pr-3 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-[#121212] font-mono placeholder:font-sans placeholder-slate-400 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-2 focus-visible:ring-[#49AAB8]/20 transition"
+                  className="w-full h-11 pl-10 pr-3 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-[#121212] font-mono placeholder:font-sans placeholder-slate-400 focus:outline-none focus:border-[#121212] focus-visible:ring-2 focus-visible:ring-[#121212]/20 transition"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !buscaInput.trim()}
-                className="ripple-so-clique min-h-[44px] h-11 px-6 bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs sm:text-sm font-semibold rounded-xl disabled:opacity-50 transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
+                className="ripple-so-clique min-h-[44px] h-11 px-6 bg-[#121212] hover:bg-[#3a3a3a] text-white text-xs sm:text-sm font-semibold rounded-xl disabled:opacity-50 transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
               >
                 {loading ? "Buscando..." : "Rastrear"}
               </button>
@@ -244,7 +244,7 @@ export function OrderTrackingView({
         {/* ESTADO DE CARREGAMENTO */}
         {loading && (
           <div className="py-12 text-center space-y-3">
-            <div className="w-8 h-8 border-2 border-slate-200 border-t-[#49AAB8] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-slate-200 border-t-[#121212] rounded-full animate-spin mx-auto" />
             <p className="text-xs text-slate-500 font-medium">Consultando status do pedido...</p>
           </div>
         )}
@@ -287,7 +287,7 @@ export function OrderTrackingView({
                   <div>
                     <span className="text-[11px] text-slate-400 block font-medium">Previsão de Entrega</span>
                     <span className="font-semibold text-slate-800 flex items-center gap-1.5 mt-0.5">
-                      <Clock className="w-3.5 h-3.5 text-[#49AAB8]" />
+                      <Clock className="w-3.5 h-3.5 text-[#121212]" />
                       {formatarData(pedido.prazoEntrega) || "Sob consulta"}
                     </span>
                   </div>
@@ -295,7 +295,7 @@ export function OrderTrackingView({
                   <div className="col-span-2 sm:col-span-1">
                     <span className="text-[11px] text-slate-400 block font-medium">Total de Peças</span>
                     <span className="font-semibold text-[#121212] flex items-center gap-1.5 mt-0.5">
-                      <Shirt className="w-3.5 h-3.5 text-[#49AAB8]" />
+                      <Shirt className="w-3.5 h-3.5 text-[#121212]" />
                       {pedido.totalPecas} un
                     </span>
                   </div>
@@ -307,7 +307,7 @@ export function OrderTrackingView({
             <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-7 space-y-6 shadow-2xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#49AAB8]" />
+                  <Clock className="w-4 h-4 text-[#121212]" />
                   Linha do Tempo de Produção
                 </h2>
                 <span className="text-[11px] font-semibold text-slate-500">
@@ -323,7 +323,7 @@ export function OrderTrackingView({
 
                   {/* Linha conectora ativa azul aqua */}
                   <div
-                    className="absolute top-5 left-10 h-0.5 bg-[#49AAB8] z-0 transition-all duration-300"
+                    className="absolute top-5 left-10 h-0.5 bg-[#121212] z-0 transition-all duration-300"
                     style={{
                       width: `${Math.min(
                         100,
@@ -345,9 +345,9 @@ export function OrderTrackingView({
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition ${
                             isConcluido
-                              ? "bg-[#49AAB8] text-white"
+                              ? "bg-[#121212] text-white"
                               : isAtual
-                              ? "bg-white text-[#49AAB8] border-2 border-[#49AAB8] ring-4 ring-[#49AAB8]/15"
+                              ? "bg-white text-[#121212] border-2 border-[#121212] ring-4 ring-[#121212]/15"
                               : "bg-slate-100 text-slate-400 border border-slate-200"
                           }`}
                         >
@@ -393,9 +393,9 @@ export function OrderTrackingView({
                       <div
                         className={`absolute -left-[37px] w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
                           isConcluido
-                            ? "bg-[#49AAB8] text-white"
+                            ? "bg-[#121212] text-white"
                             : isAtual
-                            ? "bg-white text-[#49AAB8] border-2 border-[#49AAB8] ring-4 ring-[#49AAB8]/15"
+                            ? "bg-white text-[#121212] border-2 border-[#121212] ring-4 ring-[#121212]/15"
                             : "bg-slate-100 text-slate-400 border border-slate-200"
                         }`}
                       >
@@ -420,7 +420,7 @@ export function OrderTrackingView({
                             {etapa.titulo}
                           </p>
                           {isAtual && (
-                            <span className="text-[10px] font-semibold text-[#49AAB8] bg-[#49AAB8]/10 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-semibold text-[#121212] bg-[#121212]/10 px-2 py-0.5 rounded-full">
                               Etapa atual
                             </span>
                           )}
@@ -441,7 +441,7 @@ export function OrderTrackingView({
                     Fase em andamento na confecção:{" "}
                     <strong className="text-slate-900">{pedido.subEtapaFabril}</strong>
                   </span>
-                  <span className="text-[11px] font-medium text-[#49AAB8] bg-[#49AAB8]/10 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
+                  <span className="text-[11px] font-medium text-[#121212] bg-[#121212]/10 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
                     {pedido.statusEtapaProducao || "Em andamento"}
                   </span>
                 </div>
@@ -453,7 +453,7 @@ export function OrderTrackingView({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-[#49AAB8]" />
+                    <ShieldCheck className="w-4 h-4 text-[#121212]" />
                     Conferência de Nomes e Números ({pedido.jogadores.length} peças)
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
@@ -531,7 +531,7 @@ export function OrderTrackingView({
               <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#49AAB8]" />
+                    <CreditCard className="w-4 h-4 text-[#121212]" />
                     Situação Financeira
                   </h3>
                   <span
@@ -539,7 +539,7 @@ export function OrderTrackingView({
                       pedido.statusPagamento === "PAGO"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                         : pedido.statusPagamento === "PARCIAL"
-                        ? "bg-[#49AAB8]/10 text-[#368D9C] border-[#49AAB8]/30"
+                        ? "bg-[#121212]/10 text-[#3a3a3a] border-[#121212]/30"
                         : "bg-slate-100 text-slate-700 border-slate-200"
                     }`}
                   >
@@ -577,7 +577,7 @@ export function OrderTrackingView({
               <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between space-y-4">
                 <div className="space-y-2">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-[#49AAB8]" />
+                    <MessageCircle className="w-4 h-4 text-[#121212]" />
                     Dúvidas ou Alterações?
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -591,7 +591,7 @@ export function OrderTrackingView({
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-xl bg-[#49AAB8] hover:bg-[#368D9C] text-white font-semibold text-xs transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
+                  className="w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-xl bg-[#121212] hover:bg-[#3a3a3a] text-white font-semibold text-xs transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Falar sobre o Pedido {pedido.orderNumber}</span>

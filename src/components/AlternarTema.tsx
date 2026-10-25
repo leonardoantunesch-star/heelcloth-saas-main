@@ -31,7 +31,7 @@ export function AlternarTema({ className = "" }: { className?: string }) {
       aria-pressed={escuro}
       aria-label={escuro ? "Mudar para o tema branco" : "Mudar para o tema preto"}
       title={escuro ? "Tema branco" : "Tema preto"}
-      className={`ripple-host inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/15 bg-white text-[#121212] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] ${className}`}
+      className={`ripple-host inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/15 bg-white text-[#121212] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] ${className}`}
     >
       {escuro ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>

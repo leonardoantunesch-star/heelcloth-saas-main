@@ -25,13 +25,13 @@
   --radius: 0.5rem;
 
   /* Tokens de Direção de Arte Editorial (Landing Page) */
-  --page-aqua-blue: #49AAB8;
+  --page-aqua-blue: #121212;
   --canvas: #FCFCFB;
   --ink: #121212;
   --editorial-muted: #606060;
   --editorial-line: rgba(18, 18, 18, 0.14);
-  --editorial-accent: #49AAB8;
-  --editorial-accent-hover: #368D9C;
+  --editorial-accent: #121212;
+  --editorial-accent-hover: #3a3a3a;
   --inverse: #FFFFFF;
 }
 
@@ -44,6 +44,8 @@
 }
 
 html {
+  /* Reserva sempre o espaço da barra de rolagem, para o menu não "andar" entre páginas curtas e longas. */
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -109,7 +111,7 @@ body {
 
 /* Opção marcada (checkbox/radio dentro do rótulo) continua com destaque ao passar o mouse. */
 .ripple-host:has(input:checked) {
-  background-color: rgba(73, 170, 184, 0.12);
+  background-color: rgba(18, 18, 18, 0.06);
 }
 
 .ripple-dot {
@@ -186,6 +188,18 @@ body {
   animation: splash-entrar 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s forwards;
 }
 
+.splash-sub {
+  margin-top: -6px;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  padding-left: 0.3em;
+  text-transform: uppercase;
+  color: rgba(18, 18, 18, 0.55);
+  opacity: 0;
+  animation: splash-entrar 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.4s forwards;
+}
 .splash-barra {
   display: block;
   width: 120px;
@@ -199,7 +213,7 @@ body {
 .splash-barra > span {
   display: block;
   height: 100%;
-  background: #49aab8;
+  background: #121212;
   transform: scaleX(0);
   transform-origin: left;
   animation: splash-encher 1s cubic-bezier(0.65, 0, 0.35, 1) 0.5s forwards;
@@ -262,4 +276,32 @@ html.tema-escuro .sem-inverter {
 /* O logo é preto: no tema preto ele fica sem a "desinversão" e aparece branco. */
 html.tema-escuro img[src*="logo.png"] {
   filter: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Carrossel contínuo: anda sempre na mesma velocidade, em ciclo infinito. */
+/* ------------------------------------------------------------------ */
+.carrossel-trilho {
+  display: flex;
+  width: max-content;
+  animation: carrossel-andar var(--carrossel-duracao, 80s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes carrossel-andar {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carrossel-trilho {
+    animation: none;
+  }
+  .carrossel {
+    overflow-x: auto;
+  }
 }

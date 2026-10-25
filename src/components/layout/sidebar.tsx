@@ -18,6 +18,7 @@ import {
   UserCheck,
   Settings,
   Shirt,
+  ClipboardList,
   Shield,
   X,
   ChevronLeft,
@@ -49,6 +50,12 @@ export const navItems: NavItem[] = [
     title: "Orçamentos",
     href: "/admin/orcamentos",
     icon: FileText,
+    roles: ["ADMIN", "VENDEDOR"],
+  },
+  {
+    title: "Cotação",
+    href: "/admin/cotacao",
+    icon: ClipboardList,
     roles: ["ADMIN", "VENDEDOR"],
   },
   {

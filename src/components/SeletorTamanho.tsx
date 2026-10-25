@@ -28,7 +28,7 @@ interface Posicao {
 export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "", tipo = "camisa" }: SeletorTamanhoProps) {
   const ehShort = tipo === "short";
   const textoVazio = ehShort ? "Sem calção" : "Sem camisa";
-  const textoGatilhoVazio = ehShort ? "Sem calção" : "Nenhum";
+  const textoGatilhoVazio = ehShort ? "Sem calção" : "Escolher";
   const nomeValor = (v: string) => (ehShort ? `Short ${nomeDoTamanho(v)}` : nomeDoTamanho(v));
   // O short usa os mesmos tamanhos da camisa, menos o baby look.
   const grupos = GRUPOS.filter((g) => !ehShort || g.id !== "babylook").map((g) => ({
@@ -164,7 +164,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "",
                       aria-label={t.nome}
                       title={t.nome}
                       onClick={() => escolher(t.valor)}
-                      className={`ripple-host inline-flex h-11 min-w-11 items-center justify-center rounded-full border px-3 font-mono text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] ${
+                      className={`ripple-host inline-flex h-11 min-w-11 items-center justify-center rounded-full border px-3 font-mono text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] ${
                         ativo
                           ? "border-[#121212] bg-[#121212] text-white"
                           : "border-black/15 bg-white text-[#121212]"
@@ -183,7 +183,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "",
             type="button"
             aria-pressed={value === ""}
             onClick={() => escolher("")}
-            className={`ripple-host h-9 w-full rounded-full text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] ${
+            className={`ripple-host h-9 w-full rounded-full text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] ${
               value === "" ? "bg-[#121212] text-white" : "text-[#606060]"
             }`}
           >

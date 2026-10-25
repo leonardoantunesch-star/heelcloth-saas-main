@@ -17,6 +17,7 @@ export function TelaCarregamento() {
       <div className="splash-conteudo">
         <Image src="/logo.png" alt="" width={44} height={82} priority className="splash-logo" />
         <span className="splash-nome">HEELCLOTH</span>
+        <span className="splash-sub">Sublimação esportiva</span>
         <span className="splash-barra">
           <span />
         </span>

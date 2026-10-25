@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function ContatoPage() {
   return (
-    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#49AAB8] selection:text-white flex flex-col">
+    <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col">
       <SiteHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-16 sm:py-24">
