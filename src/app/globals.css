@@ -81,7 +81,9 @@ body {
 /* ------------------------------------------------------------------ */
 /* Seletor de tamanho em bolinhas: cinza ao passar o mouse e círculo que expande ao clicar */
 /* ------------------------------------------------------------------ */
-.ripple-host {
+/* "ripple-so-clique": só o círculo ao clicar, sem cinza ao passar o mouse (botões que já têm cor própria). */
+.ripple-host,
+.ripple-so-clique {
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -90,10 +92,24 @@ body {
 }
 
 @media (hover: hover) {
-  .ripple-host:hover:not([aria-selected="true"]):not([aria-pressed="true"]) {
+  .ripple-host:hover:not([aria-selected="true"]):not([aria-pressed="true"]):not([aria-current="page"]):not(:disabled) {
     background-color: #e6e6e6;
     border-color: rgba(18, 18, 18, 0.28);
   }
+}
+
+/* Variante para fundos escuros (menu preto): em vez de cinza, clareia um pouco. */
+@media (hover: hover) {
+  .ripple-host.ripple-escuro:hover:not([aria-selected="true"]):not([aria-pressed="true"]):not([aria-current="page"]) {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-color: transparent;
+    color: #fff;
+  }
+}
+
+/* Opção marcada (checkbox/radio dentro do rótulo) continua com destaque ao passar o mouse. */
+.ripple-host:has(input:checked) {
+  background-color: rgba(73, 170, 184, 0.12);
 }
 
 .ripple-dot {
@@ -224,4 +240,26 @@ body {
   .seletor-painel {
     animation: none;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Tema preto: inverte as cores da página inteira e desfaz a inversão nas imagens. */
+/* ------------------------------------------------------------------ */
+html.tema-escuro {
+  background: #fff;
+  filter: invert(0.93) hue-rotate(180deg);
+  color-scheme: dark;
+}
+
+html.tema-escuro img,
+html.tema-escuro video,
+html.tema-escuro canvas,
+html.tema-escuro iframe,
+html.tema-escuro .sem-inverter {
+  filter: invert(1) hue-rotate(180deg) contrast(1.16);
+}
+
+/* O logo é preto: no tema preto ele fica sem a "desinversão" e aparece branco. */
+html.tema-escuro img[src*="logo.png"] {
+  filter: none;
 }

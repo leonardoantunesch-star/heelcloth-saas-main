@@ -11,7 +11,7 @@ interface EditorialSlideshowProps {
 
 export function EditorialSlideshow({
   slides = editorialSlides,
-  intervalMs = 2200,
+  intervalMs = 1200,
 }: EditorialSlideshowProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -147,7 +147,7 @@ export function EditorialSlideshow({
           className="flex gap-4 sm:gap-5 transition-transform ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             transform: `translate3d(calc(-${currentIndex * 260}px + ${isDragging ? touchDeltaX : 0}px), 0, 0)`,
-            transitionDuration: isDragging ? "0ms" : prefersReducedMotion ? "0ms" : "550ms",
+            transitionDuration: isDragging ? "0ms" : prefersReducedMotion ? "0ms" : "420ms",
           }}
         >
           {/* Renderização dos slides originais + duplicação para transição contínua */}

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SiteHeader } from "@/components/SiteHeader";
 import {
   Shirt,
   Search,
@@ -169,37 +169,19 @@ export function OrderTrackingView({
       {/* ==================================================================== */}
       {/* HEADER BRANCO SIMPLES */}
       {/* ==================================================================== */}
-      <header className="w-full border-b border-slate-200/80 bg-white sticky top-0 z-30">
-        <div className="max-w-[1080px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] rounded-xs"
-          >
-            <Image
-              src="/logo.png"
-              alt="Logo Heelcloth"
-              width={24}
-              height={45}
-              className="h-7 w-auto object-contain transition-transform group-hover:scale-105"
-              priority
-            />
-            <span className="text-lg sm:text-xl font-bold tracking-tight text-[#121212] transition-opacity group-hover:opacity-80">
-              HEELCLOTH
-            </span>
-          </Link>
-
-          {/* Botão Discreto de Suporte via WhatsApp */}
+      <SiteHeader
+        extra={
           <a
             href="https://wa.me/5511999999999"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 min-h-[44px] px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 hover:text-[#121212] hover:bg-slate-50 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
+            className="ripple-host hidden lg:inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-slate-200 bg-white text-slate-700 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
           >
             <MessageCircle className="w-4 h-4 text-[#49AAB8]" />
-            <span>Suporte pelo WhatsApp</span>
+            <span>WhatsApp</span>
           </a>
-        </div>
-      </header>
+        }
+      />
 
       {/* ==================================================================== */}
       {/* CONTEÚDO PRINCIPAL */}
@@ -235,7 +217,7 @@ export function OrderTrackingView({
               <button
                 type="submit"
                 disabled={loading || !buscaInput.trim()}
-                className="min-h-[44px] h-11 px-6 bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs sm:text-sm font-semibold rounded-xl disabled:opacity-50 transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
+                className="ripple-so-clique min-h-[44px] h-11 px-6 bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs sm:text-sm font-semibold rounded-xl disabled:opacity-50 transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8]"
               >
                 {loading ? "Buscando..." : "Rastrear"}
               </button>

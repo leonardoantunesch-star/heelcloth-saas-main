@@ -17,7 +17,7 @@ export const PRECOS_PADRAO: TabelaPrecos = {
   camisa: 44.9,
   camisa_punho: 49.9,
   camisa_text: 59.9,
-  manga_longa: 0,
+  manga_longa: 20,
   short: 24.9,
   short_text: 34.9,
 };

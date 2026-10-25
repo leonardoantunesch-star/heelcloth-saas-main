@@ -18,10 +18,20 @@ export function descreverFalha(error: unknown): { erro: string; codigo: string }
       erro: "O banco de dados está sem as tabelas. Rode 'npm run prisma:push' e depois 'npm run prisma:seed' no seu computador, apontando para o banco de produção.",
     };
   }
-  if (/Environment variable not found: DATABASE_URL|DATABASE_URL/i.test(texto) && /not found|invalid|empty/i.test(texto)) {
+  // A variável não existe no servidor.
+  if (/Environment variable not found/i.test(texto)) {
     return {
       codigo: "DATABASE_URL_AUSENTE",
-      erro: "A variável DATABASE_URL não está configurada no servidor. Cadastre-a na Vercel e faça um Redeploy.",
+      erro: "A variável DATABASE_URL não existe neste ambiente do servidor. Na Vercel, confira em Settings > Environment Variables se ela está cadastrada com o ambiente Production marcado, e faça um Redeploy.",
+    };
+  }
+  // A variável existe, mas o valor não é uma URL de PostgreSQL válida (aspas, espaços, colchetes, texto a mais).
+  if (
+    /must start with the protocol|Error validating datasource|invalid (port|domain|host|database)|empty host|URL.*(invalid|malformed)|the URL .* is not valid/i.test(texto)
+  ) {
+    return {
+      codigo: "DATABASE_URL_INVALIDA",
+      erro: "A DATABASE_URL está cadastrada, mas com formato inválido. O valor precisa começar com postgresql:// e não pode ter aspas, espaços, colchetes nem o texto DATABASE_URL= antes. Edite a variável na Vercel e faça um Redeploy.",
     };
   }
   // P1000: senha errada. P1001/P1002/P1017: banco inacessível. P2024: fila de conexões esgotada.

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Shirt, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AlternarTema } from "@/components/AlternarTema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
@@ -50,6 +51,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6">
+      <div className="absolute top-4 right-4">
+        <AlternarTema />
+      </div>
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">

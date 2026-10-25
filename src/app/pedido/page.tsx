@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SeletorTamanho } from "@/components/SeletorTamanho";
+import { SiteHeader } from "@/components/SiteHeader";
+import { PRECOS_PADRAO, calcularOrcamento } from "@/lib/orcamento";
 import {
   Shirt,
   Plus,
@@ -29,6 +30,45 @@ interface LinhaUniforme {
   texturizada: boolean;
   punhos: boolean;
   obs: string;
+}
+
+// Opção marcável (manga longa, textura, punho...) com efeito de hover e de clique.
+function OpcaoCheck({
+  checked,
+  onChange,
+  rotulo,
+  detalhe,
+  disabled = false,
+  grande = false,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  rotulo: string;
+  detalhe?: string;
+  disabled?: boolean;
+  grande?: boolean;
+}) {
+  return (
+    <label
+      className={`ripple-host inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 select-none ${
+        grande ? "min-h-[44px]" : "py-1.5"
+      } ${disabled ? "cursor-default" : "cursor-pointer"}`}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className={`rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8] ${grande ? "w-4 h-4" : "w-3.5 h-3.5"} ${
+          disabled ? "" : "cursor-pointer"
+        }`}
+      />
+      <span>
+        {rotulo}
+        {detalhe && <span className="ml-1 text-[10px] text-slate-400 font-medium">{detalhe}</span>}
+      </span>
+    </label>
+  );
 }
 
 export default function FazerPedidoPage() {
@@ -95,7 +135,14 @@ export default function FazerPedidoPage() {
   // Atualizar campo específico de uma linha
   const atualizarLinha = (id: string, campo: keyof LinhaUniforme, valor: any) => {
     setLinhas((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, [campo]: valor } : l))
+      prev.map((l) => {
+        if (l.id !== id) return l;
+        const nova = { ...l, [campo]: valor };
+        // Textura já traz o punho incluso: ao marcar, o punho liga sozinho (e fica travado);
+        // ao desmarcar, volta ao normal.
+        if (campo === "texturizada") nova.punhos = Boolean(valor);
+        return nova;
+      })
     );
   };
 
@@ -115,11 +162,21 @@ export default function FazerPedidoPage() {
   const totalCamisas = linhas.filter((l) => Boolean(l.tamCamisa)).length;
   const totalShorts = linhas.filter((l) => Boolean(l.tamShort)).length;
 
-  // Estimativa de preço (valores de referência Heelcloth)
-  const valorUnitarioCamisa = 49.9;
-  const valorUnitarioShort = 29.9;
-  const totalEstimado =
-    totalCamisas * valorUnitarioCamisa + totalShorts * valorUnitarioShort;
+  // Estimativa de preço: usa a mesma regra do servidor (camisa, punho, textura e manga longa).
+  const orcamento = calcularOrcamento(
+    PRECOS_PADRAO,
+    linhas.map((l) => ({
+      tamCamisa: l.tamCamisa,
+      tamShort: l.tamShort,
+      opcoes: [
+        ...(l.mangaLonga ? ["manga_longa"] : []),
+        ...(l.texturizada ? ["texturizada"] : []),
+        ...(l.punhos || l.texturizada ? ["punhos"] : []),
+      ],
+    }))
+  );
+  const totalEstimado = orcamento.total;
+  const brl = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,46 +253,12 @@ export default function FazerPedidoPage() {
   return (
     <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#49AAB8] selection:text-white flex flex-col justify-between">
       
-      {/* ==================================================================== */}
-      {/* HEADER LIMPO E ELEGANTE */}
-      {/* ==================================================================== */}
-      <header className="w-full border-b border-slate-200/80 bg-white sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          {/* Logo da Marca */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] rounded-xs"
-          >
-            <Image
-              src="/logo.png"
-              alt="Logo Heelcloth"
-              width={24}
-              height={45}
-              className="h-7 w-auto object-contain transition-transform group-hover:scale-105"
-              priority
-            />
-            <span className="text-lg sm:text-xl font-bold tracking-tight text-[#121212] transition-opacity group-hover:opacity-80">
-              HEELCLOTH
-            </span>
-          </Link>
-
-          {/* Link Discreto de Rastreamento à Direita */}
-          <div className="flex items-center gap-4">
-            <Link
-              href="/rastreio"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-medium text-slate-600 hover:text-[#121212] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] rounded-md py-1 px-2"
-            >
-              <Search className="w-3.5 h-3.5 text-[#49AAB8]" />
-              <span>Já tem um pedido? Acompanhar pedido</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* ==================================================================== */}
       {/* CONTEÚDO PRINCIPAL DA TELA DE PEDIDO */}
       {/* ==================================================================== */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
         
         {/* TELA DE SUCESSO PÓS-ENVIO */}
         {protocoloGerado ? (
@@ -265,7 +288,7 @@ export default function FazerPedidoPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
                 href={`/rastreio/${protocoloGerado}`}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 h-11 rounded-full bg-[#121212] hover:bg-black/85 text-white text-xs sm:text-sm font-semibold transition"
+                className="ripple-so-clique w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 h-11 rounded-full bg-[#121212] hover:bg-black/85 text-white text-xs sm:text-sm font-semibold transition"
               >
                 <Search className="w-4 h-4" />
                 <span>Acompanhar no Rastreamento</span>
@@ -276,7 +299,7 @@ export default function FazerPedidoPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 h-11 rounded-full border border-slate-200 bg-white text-slate-800 text-xs sm:text-sm font-semibold hover:bg-slate-50 transition"
+                className="ripple-host w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 h-11 rounded-full border border-slate-200 bg-white text-slate-800 text-xs sm:text-sm font-semibold hover:bg-slate-50 transition"
               >
                 <MessageCircle className="w-4 h-4 text-emerald-600" />
                 <span>Confirmar via WhatsApp</span>
@@ -416,7 +439,7 @@ export default function FazerPedidoPage() {
                 <button
                   type="button"
                   onClick={adicionarLinha}
-                  className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs font-semibold transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] self-start sm:self-auto"
+                  className="ripple-so-clique inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-xs font-semibold transition active:scale-[0.98] shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] self-start sm:self-auto"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Adicionar jogador</span>
@@ -436,6 +459,7 @@ export default function FazerPedidoPage() {
                         <th className="px-3 py-3 w-28 text-center">Short</th>
                         <th className="px-3 py-3 w-20 text-center">Goleiro</th>
                         <th className="px-3 py-3">Opções de acabamento</th>
+                        <th className="px-3 py-3 min-w-[180px]">Observações <span className="normal-case font-medium text-slate-400">(opcional)</span></th>
                         <th className="px-2 py-3 w-12 text-center"></th>
                       </tr>
                     </thead>
@@ -488,25 +512,18 @@ export default function FazerPedidoPage() {
 
                           {/* Tamanho do Short */}
                           <td className="px-3 py-2.5 text-center">
-                            <select
+                            <SeletorTamanho
+                              tipo="short"
                               value={linha.tamShort}
-                              onChange={(e) =>
-                                atualizarLinha(linha.id, "tamShort", e.target.value)
-                              }
-                              aria-label={`Tamanho do short do jogador ${idx + 1}`}
-                              className="w-full h-8 px-2 text-xs bg-white border border-slate-200 rounded-lg text-center text-slate-700 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
-                            >
-                              <option value="">Sem calção</option>
-                              <option value="P">P</option>
-                              <option value="M">M</option>
-                              <option value="G">G</option>
-                              <option value="GG">GG</option>
-                            </select>
+                              onChange={(valor) => atualizarLinha(linha.id, "tamShort", valor)}
+                              ariaLabel={`Tamanho do short do jogador ${idx + 1}`}
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                            />
                           </td>
 
                           {/* Checkbox Goleiro */}
                           <td className="px-3 py-2.5 text-center">
-                            <label className="inline-flex items-center justify-center cursor-pointer min-w-[28px] min-h-[28px]">
+                            <label className="ripple-host inline-flex items-center justify-center cursor-pointer min-w-[32px] min-h-[32px] rounded-lg">
                               <input
                                 type="checkbox"
                                 checked={linha.goleiro}
@@ -521,31 +538,40 @@ export default function FazerPedidoPage() {
 
                           {/* Opções de Acabamento */}
                           <td className="px-3 py-2.5">
-                            <div className="flex items-center gap-3 text-xs text-slate-600">
-                              <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-[#121212] select-none">
-                                <input
-                                  type="checkbox"
-                                  checked={linha.mangaLonga}
-                                  onChange={(e) =>
-                                    atualizarLinha(linha.id, "mangaLonga", e.target.checked)
-                                  }
-                                  className="w-3.5 h-3.5 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8] cursor-pointer"
-                                />
-                                <span>Manga Longa</span>
-                              </label>
-
-                              <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-[#121212] select-none">
-                                <input
-                                  type="checkbox"
-                                  checked={linha.punhos}
-                                  onChange={(e) =>
-                                    atualizarLinha(linha.id, "punhos", e.target.checked)
-                                  }
-                                  className="w-3.5 h-3.5 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8] cursor-pointer"
-                                />
-                                <span>Punho</span>
-                              </label>
+                            <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs text-slate-600">
+                              <OpcaoCheck
+                                checked={linha.mangaLonga}
+                                onChange={(v) => atualizarLinha(linha.id, "mangaLonga", v)}
+                                rotulo="Manga longa"
+                                detalhe="+ R$ 20"
+                              />
+                              <OpcaoCheck
+                                checked={linha.texturizada}
+                                onChange={(v) => atualizarLinha(linha.id, "texturizada", v)}
+                                rotulo="Textura"
+                                detalhe="R$ 59,90"
+                              />
+                              <OpcaoCheck
+                                checked={linha.punhos || linha.texturizada}
+                                disabled={linha.texturizada}
+                                onChange={(v) => atualizarLinha(linha.id, "punhos", v)}
+                                rotulo="Punho"
+                                detalhe={linha.texturizada ? "incluso" : "R$ 49,90"}
+                              />
                             </div>
+                          </td>
+
+                          {/* Observações (opcional) */}
+                          <td className="px-3 py-2.5">
+                            <input
+                              type="text"
+                              value={linha.obs}
+                              onChange={(e) => atualizarLinha(linha.id, "obs", e.target.value)}
+                              placeholder="Opcional"
+                              maxLength={300}
+                              aria-label={`Observações da camisa do jogador ${idx + 1} (opcional)`}
+                              className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                            />
                           </td>
 
                           {/* Excluir */}
@@ -555,7 +581,7 @@ export default function FazerPedidoPage() {
                               onClick={() => removerLinha(linha.id)}
                               disabled={linhas.length <= 1}
                               aria-label={`Remover jogador ${idx + 1}`}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-20 transition"
+                              className="ripple-so-clique w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-20 transition"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -590,7 +616,7 @@ export default function FazerPedidoPage() {
                         onClick={() => removerLinha(linha.id)}
                         disabled={linhas.length <= 1}
                         aria-label={`Remover jogador ${idx + 1}`}
-                        className="p-2 text-slate-400 hover:text-red-600 disabled:opacity-20 transition min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="ripple-so-clique p-2 rounded-lg text-slate-400 hover:text-red-600 disabled:opacity-20 transition min-w-[36px] min-h-[36px] flex items-center justify-center"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -662,60 +688,65 @@ export default function FazerPedidoPage() {
                         >
                           Calção / Short
                         </label>
-                        <select
+                        <SeletorTamanho
+                          tipo="short"
                           id={`mobile-short-${linha.id}`}
                           value={linha.tamShort}
-                          onChange={(e) =>
-                            atualizarLinha(linha.id, "tamShort", e.target.value)
-                          }
-                          className="w-full h-10 px-2 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
-                        >
-                          <option value="">Sem calção</option>
-                          <option value="P">P</option>
-                          <option value="M">M</option>
-                          <option value="G">G</option>
-                          <option value="GG">GG</option>
-                        </select>
+                          onChange={(valor) => atualizarLinha(linha.id, "tamShort", valor)}
+                          className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                        />
                       </div>
                     </div>
 
                     {/* Linha 3: Opções e Acabamento com área de toque mínima de 44px */}
-                    <div className="pt-1 border-t border-slate-100 flex flex-wrap items-center gap-3 text-xs text-slate-700">
-                      <label className="inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={linha.goleiro}
-                          onChange={(e) =>
-                            atualizarLinha(linha.id, "goleiro", e.target.checked)
-                          }
-                          className="w-4 h-4 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8]"
-                        />
-                        <span className="font-medium">Goleiro</span>
-                      </label>
+                    <div className="pt-1 border-t border-slate-100 flex flex-wrap items-center gap-x-1 gap-y-0 text-xs text-slate-700">
+                      <OpcaoCheck
+                        grande
+                        checked={linha.goleiro}
+                        onChange={(v) => atualizarLinha(linha.id, "goleiro", v)}
+                        rotulo="Goleiro"
+                      />
+                      <OpcaoCheck
+                        grande
+                        checked={linha.mangaLonga}
+                        onChange={(v) => atualizarLinha(linha.id, "mangaLonga", v)}
+                        rotulo="Manga longa"
+                        detalhe="+ R$ 20"
+                      />
+                      <OpcaoCheck
+                        grande
+                        checked={linha.texturizada}
+                        onChange={(v) => atualizarLinha(linha.id, "texturizada", v)}
+                        rotulo="Textura"
+                        detalhe="R$ 59,90"
+                      />
+                      <OpcaoCheck
+                        grande
+                        checked={linha.punhos || linha.texturizada}
+                        disabled={linha.texturizada}
+                        onChange={(v) => atualizarLinha(linha.id, "punhos", v)}
+                        rotulo="Punho"
+                        detalhe={linha.texturizada ? "incluso" : "R$ 49,90"}
+                      />
+                    </div>
 
-                      <label className="inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={linha.mangaLonga}
-                          onChange={(e) =>
-                            atualizarLinha(linha.id, "mangaLonga", e.target.checked)
-                          }
-                          className="w-4 h-4 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8]"
-                        />
-                        <span>Manga Longa</span>
+                    {/* Observações (opcional) */}
+                    <div>
+                      <label
+                        htmlFor={`mobile-obs-${linha.id}`}
+                        className="block text-[11px] font-semibold text-slate-600 mb-1"
+                      >
+                        Observações <span className="font-normal text-slate-400">(opcional)</span>
                       </label>
-
-                      <label className="inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={linha.punhos}
-                          onChange={(e) =>
-                            atualizarLinha(linha.id, "punhos", e.target.checked)
-                          }
-                          className="w-4 h-4 rounded border-slate-300 text-[#49AAB8] focus:ring-[#49AAB8]"
-                        />
-                        <span>Punho</span>
-                      </label>
+                      <textarea
+                        id={`mobile-obs-${linha.id}`}
+                        value={linha.obs}
+                        onChange={(e) => atualizarLinha(linha.id, "obs", e.target.value)}
+                        rows={2}
+                        maxLength={300}
+                        placeholder="Ex: gola diferente, nome menor, detalhe no braço..."
+                        className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] placeholder-slate-400 resize-none focus:outline-none focus:border-[#49AAB8] focus-visible:ring-1 focus-visible:ring-[#49AAB8]"
+                      />
                     </div>
                   </div>
                 ))}
@@ -726,14 +757,14 @@ export default function FazerPedidoPage() {
                 <div className="flex items-start gap-1.5">
                   <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <span>
-                    Dica: Marque <strong>Goleiro</strong> ou <strong>Manga Longa</strong> diretamente na linha do atleta que terá uniforme diferenciado.
+                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional).
                   </span>
                 </div>
 
                 <button
                   type="button"
                   onClick={adicionarLinha}
-                  className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition self-start sm:self-auto"
+                  className="ripple-host inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition self-start sm:self-auto"
                 >
                   <Plus className="w-3.5 h-3.5 text-[#49AAB8]" />
                   <span>+1 Jogador</span>
@@ -749,15 +780,19 @@ export default function FazerPedidoPage() {
                 </span>
                 <div className="flex items-baseline gap-2.5">
                   <span className="text-2xl sm:text-3xl font-bold text-[#121212] tracking-tight">
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(totalEstimado)}
+                    {brl(totalEstimado)}
                   </span>
                   <span className="text-xs text-slate-500 font-medium">
                     ({totalCamisas} camisas{totalShorts > 0 ? ` + ${totalShorts} calções` : ""})
                   </span>
                 </div>
+                {orcamento.linhas.length > 0 && (
+                  <ul className="pt-1 space-y-0.5 text-[11px] text-slate-500">
+                    {orcamento.linhas.map((l, i) => (
+                      <li key={i}>{l.d}</li>
+                    ))}
+                  </ul>
+                )}
                 <p className="text-[11px] text-slate-400">
                   * Os valores finais serão formalizados após envio e aprovação do layout digital.
                 </p>
@@ -767,7 +802,7 @@ export default function FazerPedidoPage() {
               <button
                 type="submit"
                 disabled={enviando}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-sm font-semibold transition active:scale-[0.98] shadow-2xs disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] focus-visible:ring-offset-2"
+                className="ripple-so-clique w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full bg-[#49AAB8] hover:bg-[#368D9C] text-white text-sm font-semibold transition active:scale-[0.98] shadow-2xs disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] focus-visible:ring-offset-2"
               >
                 {enviando ? (
                   <>

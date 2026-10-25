@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 import { GRUPOS, TAMANHOS_CAMISA, nomeDoTamanho, rotuloCurto } from "@/lib/tamanhos";
-import { ripple } from "@/components/ui/ripple";
 
 interface SeletorTamanhoProps {
   value: string;
@@ -12,6 +11,8 @@ interface SeletorTamanhoProps {
   id?: string;
   ariaLabel?: string;
   className?: string;
+  // "camisa" (padrão) mostra infantil, baby look e adulto. "short" mostra os mesmos, sem o baby look.
+  tipo?: "camisa" | "short";
 }
 
 interface Posicao {
@@ -24,7 +25,17 @@ interface Posicao {
 
 // Seletor de tamanho com bolinhas (estilo Nike).
 // Ordem da lista: infantil, baby look e adulto. Ao abrir, a rolagem já fica nos adultos.
-export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" }: SeletorTamanhoProps) {
+export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "", tipo = "camisa" }: SeletorTamanhoProps) {
+  const ehShort = tipo === "short";
+  const textoVazio = ehShort ? "Sem calção" : "Sem camisa";
+  const textoGatilhoVazio = ehShort ? "Sem calção" : "Nenhum";
+  const nomeValor = (v: string) => (ehShort ? `Short ${nomeDoTamanho(v)}` : nomeDoTamanho(v));
+  // O short usa os mesmos tamanhos da camisa, menos o baby look.
+  const grupos = GRUPOS.filter((g) => !ehShort || g.id !== "babylook").map((g) => ({
+    id: g.id as string,
+    titulo: g.titulo,
+    itens: TAMANHOS_CAMISA.filter((t) => t.grupo === g.id),
+  }));
   const [aberto, setAberto] = useState(false);
   const [pos, setPos] = useState<Posicao | null>(null);
   const gatilhoRef = useRef<HTMLButtonElement>(null);
@@ -118,7 +129,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
       <div
         ref={painelRef}
         role="dialog"
-        aria-label="Escolher o tamanho da camisa"
+        aria-label={ehShort ? "Escolher o tamanho do short" : "Escolher o tamanho da camisa"}
         tabIndex={-1}
         style={{
           position: "fixed",
@@ -132,7 +143,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
         className="seletor-painel flex flex-col rounded-2xl border border-black/10 bg-white shadow-xl outline-none"
       >
         <div ref={rolagemRef} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-          {GRUPOS.map((grupo) => (
+          {grupos.map((grupo) => (
             <div
               key={grupo.id}
               ref={grupo.id === "adulto" ? adultoRef : undefined}
@@ -142,7 +153,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
                 {grupo.titulo}
               </p>
               <div role="listbox" aria-label={grupo.titulo} className="flex flex-wrap gap-2">
-                {TAMANHOS_CAMISA.filter((t) => t.grupo === grupo.id).map((t) => {
+                {grupo.itens.map((t) => {
                   const ativo = t.valor === value;
                   return (
                     <button
@@ -152,7 +163,6 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
                       aria-selected={ativo}
                       aria-label={t.nome}
                       title={t.nome}
-                      onPointerDown={ripple}
                       onClick={() => escolher(t.valor)}
                       className={`ripple-host inline-flex h-11 min-w-11 items-center justify-center rounded-full border px-3 font-mono text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] ${
                         ativo
@@ -172,13 +182,12 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
           <button
             type="button"
             aria-pressed={value === ""}
-            onPointerDown={ripple}
             onClick={() => escolher("")}
             className={`ripple-host h-9 w-full rounded-full text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#49AAB8] ${
               value === "" ? "bg-[#121212] text-white" : "text-[#606060]"
             }`}
           >
-            Sem camisa
+            {textoVazio}
           </button>
         </div>
       </div>
@@ -193,13 +202,12 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "" 
         aria-haspopup="dialog"
         aria-expanded={visivel}
         aria-label={
-          ariaLabel ? `${ariaLabel}: ${value ? nomeDoTamanho(value) : "nenhum"}` : undefined
+          ariaLabel ? `${ariaLabel}: ${value ? nomeValor(value) : "nenhum"}` : undefined
         }
-        onPointerDown={ripple}
         onClick={() => (visivel ? fechar() : abrir())}
         className={`ripple-host inline-flex items-center justify-between gap-1 text-left ${className}`}
       >
-        <span className="truncate">{value ? rotuloCurto(value) : "Nenhum"}</span>
+        <span className="truncate">{value ? rotuloCurto(value) : textoGatilhoVazio}</span>
         <ChevronDown
           className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${visivel ? "rotate-180" : ""}`}
         />

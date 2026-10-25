@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Bell, Search, User, LogOut, Menu, Shirt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AlternarTema } from "@/components/AlternarTema";
 import { useAdminShell } from "./admin-shell-context";
 
 export interface HeaderUser {
@@ -93,6 +94,7 @@ export function Header() {
 
       {/* Right: Actions, Notifications and User Profile */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <AlternarTema />
         <button
           type="button"
           className="relative p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
