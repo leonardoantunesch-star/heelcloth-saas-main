@@ -10,6 +10,7 @@ import { AlternarTema } from "@/components/AlternarTema";
 // Menu do topo, igual em todas as páginas públicas. Cada item abre uma página própria.
 const ITENS = [
   { href: "/pedido", rotulo: "Fazer pedido" },
+  { href: "/", rotulo: "Loja" },
   { href: "/catalogo", rotulo: "Catálogo" },
   { href: "/simulador", rotulo: "Simulador 3D" },
   { href: "/tamanhos", rotulo: "Tamanhos" },
@@ -37,7 +38,7 @@ export function SiteHeader({ extra }: SiteHeaderProps) {
     <header className="font-editorial w-full border-b border-black/[0.06] bg-white/95 backdrop-blur-xs sticky top-0 z-30">
       <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-4 sm:py-5 flex items-center justify-between gap-4 xl:grid xl:grid-cols-[1fr_auto_1fr]">
         <Link
-          href="/"
+          href="/sublimacao"
           className="flex items-center gap-2.5 group justify-self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] rounded-xs"
         >
           <Marca />

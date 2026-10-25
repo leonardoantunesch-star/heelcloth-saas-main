@@ -609,7 +609,7 @@ export function OrderTrackingView({
         <div className="max-w-[1080px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} Heelcloth Sportswear. Confecção especializada sob medida.</p>
           <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-[#121212] transition">
+            <Link href="/sublimacao" className="hover:text-[#121212] transition">
               Início
             </Link>
             <Link href="/pedido" className="hover:text-[#121212] transition">
