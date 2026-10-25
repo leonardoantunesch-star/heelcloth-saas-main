@@ -10,6 +10,7 @@ import { AlternarTema } from "@/components/AlternarTema";
 // Menu do topo, igual em todas as páginas públicas. Cada item abre uma página própria.
 const ITENS = [
   { href: "/pedido", rotulo: "Fazer pedido" },
+  { href: "/loja", rotulo: "Loja" },
   { href: "/catalogo", rotulo: "Catálogo" },
   { href: "/simulador", rotulo: "Simulador 3D" },
   { href: "/tamanhos", rotulo: "Tamanhos" },
