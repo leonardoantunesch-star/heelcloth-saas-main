@@ -182,6 +182,8 @@ body {
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.34em;
+  word-spacing: 0.5em;
+  white-space: nowrap;
   padding-left: 0.34em;
   color: #121212;
   opacity: 0;
