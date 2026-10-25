@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SeletorTamanho } from "@/components/SeletorTamanho";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PRECOS_PADRAO, calcularOrcamento } from "@/lib/orcamento";
+import { CHAVE_SIMULADOR } from "@/lib/simulador/projeto";
 import {
   Shirt,
   Plus,
@@ -87,6 +88,24 @@ export default function FazerPedidoPage() {
   const [contato, setContato] = useState("");
   const [tentouEnviar, setTentouEnviar] = useState(false);
   const [pagamento, setPagamento] = useState("");
+  // Modelo montado no simulador 3D (se a pessoa veio de lá)
+  const [modelo, setModelo] = useState<{ descricao: string; imagem: string | null } | null>(null);
+  useEffect(() => {
+    try {
+      const salvo = localStorage.getItem(CHAVE_SIMULADOR);
+      if (salvo) setModelo(JSON.parse(salvo));
+    } catch {
+      /* sem armazenamento */
+    }
+  }, []);
+  const removerModelo = () => {
+    setModelo(null);
+    try {
+      localStorage.removeItem(CHAVE_SIMULADOR);
+    } catch {
+      /* ignora */
+    }
+  };
 
   // Cria 10 jogadores iniciais (mínimo exigido pela confecção)
   const [linhas, setLinhas] = useState<LinhaUniforme[]>(() =>
@@ -242,6 +261,7 @@ export default function FazerPedidoPage() {
           representante: representante.trim(),
           contato: cleanContato,
           pagamento,
+          modelo: modelo?.descricao ?? "",
           itens: payloadItens,
         }),
       });
@@ -794,6 +814,20 @@ export default function FazerPedidoPage() {
                 </button>
               </div>
             </section>
+
+            {modelo && (
+              <section className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-2xs">
+                {modelo.imagem && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={modelo.imagem} alt="Modelo montado no simulador" className="h-20 w-20 rounded-lg object-cover bg-[#f2f2f2]" />
+                )}
+                <div className="flex-1 text-sm">
+                  <p className="font-semibold text-[#121212]">Modelo do simulador 3D anexado</p>
+                  <p className="text-xs text-[#121212]/60">As cores e o padrão escolhidos vão junto com o pedido.</p>
+                </div>
+                <button type="button" onClick={removerModelo} className="ripple-host text-xs font-medium underline">Remover</button>
+              </section>
+            )}
 
             {/* 3. SEÇÃO: FORMA DE PAGAMENTO */}
             <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-7 space-y-4 shadow-2xs">

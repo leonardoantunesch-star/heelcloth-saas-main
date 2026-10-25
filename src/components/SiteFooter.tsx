@@ -16,6 +16,7 @@ export function SiteFooter() {
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <Link href="/pedido" className={link}>Fazer pedido</Link>
           <Link href="/catalogo" className={link}>Catálogo</Link>
+          <Link href="/simulador" className={link}>Simulador 3D</Link>
           <Link href="/tamanhos" className={link}>Tamanhos</Link>
           <Link href="/rastreio" className={link}>Acompanhe seu pedido</Link>
           <Link href="/contato" className={link}>Contato</Link>

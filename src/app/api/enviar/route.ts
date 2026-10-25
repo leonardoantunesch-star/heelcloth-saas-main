@@ -20,6 +20,7 @@ const enviarSchema = z.object({
   representante: z.string().min(1, "Informe o nome do representante.").max(100),
   contato: z.string().min(10, "Informe o WhatsApp com DDD."),
   pagamento: z.enum(FORMAS_PAGAMENTO, { message: "Escolha a forma de pagamento." }),
+  modelo: z.string().max(2000).optional().default(""),
   itens: z.array(itemSchema).min(1, "Lista inválida.").max(500),
 });
 
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { representante, contato, pagamento, itens: rawItens } = parsed.data;
+    const { representante, contato, pagamento, modelo, itens: rawItens } = parsed.data;
 
     // Filtra itens com tamanho definido
     const itens = rawItens.filter((i) => Boolean(i.tamCamisa || i.tamShort));
@@ -80,6 +81,7 @@ export async function POST(req: NextRequest) {
         paidAmount: 0.0,
         pendingAmount: orcamento.total,
         paymentMethod: pagamento,
+        notes: modelo.trim() || null,
         items: {
           create: [
             ...(totalCamisas > 0
