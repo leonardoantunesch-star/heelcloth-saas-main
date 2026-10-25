@@ -28,7 +28,7 @@ const EMPRESA_PADRAO: EmpresaCotacao = {
   documento: "044.769.741/0001-07",
   telefone: "",
   email: "",
-  endereco: "R. Antônio de Matos, 173 - Centro, Itaúna - MG, 35680-031",
+  endereco: "R. Antônio de Matos, 171 - Centro, Itaúna - MG",
   site: "",
 };
 
@@ -119,7 +119,8 @@ export default function CotacaoPage() {
         const guardado = JSON.parse(salvo) as Partial<EmpresaCotacao>;
         const mesclado = { ...EMPRESA_PADRAO, ...guardado };
         if (!guardado.documento) mesclado.documento = EMPRESA_PADRAO.documento;
-        if (!guardado.endereco) mesclado.endereco = EMPRESA_PADRAO.endereco;
+        // o endereço antigo (nº 173) que ficou gravado no navegador também é trocado
+        if (!guardado.endereco || guardado.endereco.includes("173 - Centro")) mesclado.endereco = EMPRESA_PADRAO.endereco;
         setEmpresa(mesclado);
       }
     } catch {
