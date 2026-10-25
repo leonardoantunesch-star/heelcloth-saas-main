@@ -24,11 +24,11 @@ interface LinhaItem {
 const CHAVE_EMPRESA = "heelcloth-cotacao-empresa";
 
 const EMPRESA_PADRAO: EmpresaCotacao = {
-  nome: "Heelcloth Sportswear",
-  documento: "",
+  nome: "Heel Cloth Sportswear",
+  documento: "044.769.741/0001-07",
   telefone: "",
   email: "",
-  endereco: "",
+  endereco: "R. Antônio de Matos, 173 - Centro, Itaúna - MG, 35680-031",
   site: "",
 };
 
@@ -114,7 +114,14 @@ export default function CotacaoPage() {
     setNumero(gerarNumero());
     try {
       const salvo = localStorage.getItem(CHAVE_EMPRESA);
-      if (salvo) setEmpresa({ ...EMPRESA_PADRAO, ...JSON.parse(salvo) });
+      if (salvo) {
+        // campos que ficaram vazios na versão salva voltam ao padrão (CNPJ e endereço)
+        const guardado = JSON.parse(salvo) as Partial<EmpresaCotacao>;
+        const mesclado = { ...EMPRESA_PADRAO, ...guardado };
+        if (!guardado.documento) mesclado.documento = EMPRESA_PADRAO.documento;
+        if (!guardado.endereco) mesclado.endereco = EMPRESA_PADRAO.endereco;
+        setEmpresa(mesclado);
+      }
     } catch {
       /* sem armazenamento: usa os dados padrão */
     }

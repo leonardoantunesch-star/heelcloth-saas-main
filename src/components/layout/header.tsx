@@ -76,7 +76,7 @@ export function Header() {
               className="h-5 w-auto object-contain"
             />
           </div>
-          <span className="font-bold text-sm text-slate-900 tracking-tight">Heelcloth</span>
+          <span className="font-bold text-sm text-slate-900 tracking-tight">Heel Cloth</span>
         </div>
       </div>
 

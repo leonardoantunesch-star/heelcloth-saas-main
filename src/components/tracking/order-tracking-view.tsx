@@ -607,7 +607,7 @@ export function OrderTrackingView({
       {/* ==================================================================== */}
       <footer className="w-full border-t border-slate-200/80 bg-white py-6 mt-12">
         <div className="max-w-[1080px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Heelcloth Sportswear. Confecção especializada sob medida.</p>
+          <p>© {new Date().getFullYear()} Heel Cloth Sportswear. Confecção especializada sob medida.</p>
           <div className="flex items-center gap-4">
             <Link href="/sublimacao" className="hover:text-[#121212] transition">
               Início

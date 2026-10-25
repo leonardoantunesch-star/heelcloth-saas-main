@@ -67,7 +67,7 @@ export default function LoginPage() {
               priority
             />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Heelcloth SaaS</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Heel Cloth SaaS</h1>
           <p className="text-sm text-slate-500">
             Sistema Integrado de Gestão para Confecção de Uniformes
           </p>
@@ -173,7 +173,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-xs text-slate-400">
-          © {new Date().getFullYear()} Heelcloth Gestão de Confecção. Todos os direitos reservados.
+          © {new Date().getFullYear()} Heel Cloth Gestão de Confecção. Todos os direitos reservados.
         </p>
       </div>
     </div>

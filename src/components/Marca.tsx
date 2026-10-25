@@ -16,10 +16,10 @@ export function Marca({ pequena = false }: { pequena?: boolean }) {
       <span className="flex flex-col leading-none">
         <span
           className={`font-bold text-[#121212] transition-opacity group-hover:opacity-80 ${
-            pequena ? "text-sm tracking-[0.3em]" : "text-lg sm:text-xl tracking-[0.3em]"
+            pequena ? "text-sm tracking-[0.3em] [word-spacing:0.3em]" : "text-lg sm:text-xl tracking-[0.3em] [word-spacing:0.3em]"
           }`}
         >
-          HEELCLOTH
+          HEEL CLOTH
         </span>
         <span className="mt-1.5 text-[9px] font-light uppercase tracking-[0.28em] text-[#121212]/55">
           Sublimação esportiva

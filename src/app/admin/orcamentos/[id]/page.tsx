@@ -284,7 +284,7 @@ export default function OrcamentoDetalhesPage() {
               <Shirt className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight block">Heelcloth Confecção</span>
+              <span className="text-base font-bold tracking-tight block">Heel Cloth Confecção</span>
               <span className="text-xs text-slate-400 block">Uniformes Esportivos & Personalização</span>
             </div>
           </div>

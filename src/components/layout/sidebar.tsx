@@ -238,7 +238,7 @@ export function Sidebar() {
               </div>
               <div>
                 <span className="font-bold text-base text-slate-900 tracking-tight block leading-tight">
-                  Heelcloth
+                  Heel Cloth
                 </span>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Confecção SaaS
@@ -260,7 +260,7 @@ export function Sidebar() {
 
           {/* Footer Mobile */}
           <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500">
-            <div className="font-semibold text-slate-800">Heelcloth SaaS v1.0</div>
+            <div className="font-semibold text-slate-800">Heel Cloth SaaS v1.0</div>
             <div className="mt-0.5">
               Perfil: <span className="text-blue-600 font-bold">{userRole}</span>
             </div>
@@ -294,7 +294,7 @@ export function Sidebar() {
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
               <span className="font-bold text-base text-slate-900 tracking-tight block leading-tight truncate">
-                Heelcloth
+                Heel Cloth
               </span>
               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block truncate">
                 Gestão & Confecção
@@ -310,7 +310,7 @@ export function Sidebar() {
         <div className="p-3 border-t border-slate-100 bg-slate-50/40 flex items-center justify-between">
           {!isCollapsed && (
             <div className="text-xs text-slate-500 truncate mr-2">
-              <span className="font-semibold text-slate-700 block truncate">Heelcloth ERP</span>
+              <span className="font-semibold text-slate-700 block truncate">Heel Cloth ERP</span>
               <span className="text-[10px] text-blue-600 font-semibold">{userRole}</span>
             </div>
           )}
