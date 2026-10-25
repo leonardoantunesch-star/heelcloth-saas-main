@@ -19,6 +19,7 @@ import {
   Settings,
   Shirt,
   ClipboardList,
+  Images,
   Shield,
   X,
   ChevronLeft,
@@ -56,6 +57,12 @@ export const navItems: NavItem[] = [
     title: "Cotação",
     href: "/admin/cotacao",
     icon: ClipboardList,
+    roles: ["ADMIN", "VENDEDOR"],
+  },
+  {
+    title: "Catálogo",
+    href: "/admin/catalogo",
+    icon: Images,
     roles: ["ADMIN", "VENDEDOR"],
   },
   {

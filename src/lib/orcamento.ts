@@ -10,6 +10,7 @@ export interface TabelaPrecos {
   manga_longa: number;
   short: number;
   short_text: number;
+  meiao: number;
   [key: string]: number;
 }
 
@@ -20,7 +21,19 @@ export const PRECOS_PADRAO: TabelaPrecos = {
   manga_longa: 20,
   short: 24.9,
   short_text: 34.9,
+  // VALOR PROVISÓRIO: confirme o preço do par de meiões e ajuste aqui (muda no pedido, no catálogo e na cotação).
+  meiao: 15,
 };
+
+// Cores de meião disponíveis no pedido.
+export const CORES_MEIAO = [
+  { valor: "branco", rotulo: "Branco", hex: "#ffffff" },
+  { valor: "preto", rotulo: "Preto", hex: "#121212" },
+  { valor: "azul", rotulo: "Azul", hex: "#1d4ed8" },
+  { valor: "verde", rotulo: "Verde", hex: "#15803d" },
+  { valor: "vermelho", rotulo: "Vermelho", hex: "#dc2626" },
+] as const;
+export type CorMeiao = (typeof CORES_MEIAO)[number]["valor"];
 
 export const OPCOES_DISPONIVEIS = ["texturizada", "manga_longa", "punhos"] as const;
 export type OpcaoItem = (typeof OPCOES_DISPONIVEIS)[number];
@@ -49,6 +62,7 @@ export interface ItemPedidoOrcamento {
   tamCamisa?: string;
   tamShort?: string;
   goleiro?: boolean;
+  meiao?: string; // cor do meião ("" = sem meião)
   opcoes?: string[];
   obs?: string;
 }
@@ -63,6 +77,8 @@ export interface ResultadoOrcamento {
   linhas: LinhaOrcamento[];
   total: number;
   aCombinar: boolean;
+  // subtotais por tipo de peça (para gravar o pedido por linha)
+  totais: { camisas: number; shorts: number; meioes: number };
 }
 
 const r2 = (v: number) => Math.round(v * 100) / 100;
@@ -78,6 +94,7 @@ export function calcularOrcamento(
 
   const cam: Record<string, { f: { tex: boolean; pun: boolean; man: boolean }; n: number }> = {};
   const sho: Record<string, { tex: boolean; n: number }> = {};
+  const mei: Record<string, number> = {};
   const linhas: LinhaOrcamento[] = [];
 
   const extrairFlags = (i: ItemPedidoOrcamento) => {
@@ -100,6 +117,10 @@ export function calcularOrcamento(
         cam[k] = { f, n: 0 };
       }
       cam[k].n++;
+    }
+
+    if (i.meiao) {
+      mei[i.meiao] = (mei[i.meiao] || 0) + 1;
     }
 
     if (i.tamShort) {
@@ -135,6 +156,8 @@ export function calcularOrcamento(
     });
   }
 
+  const indiceCamisas = linhas.length;
+
   // Linhas dos shorts
   for (const k of Object.keys(sho).sort()) {
     const { tex, n } = sho[k];
@@ -145,10 +168,29 @@ export function calcularOrcamento(
     });
   }
 
+  const indiceShorts = linhas.length;
+
+  // Linhas dos meiões (uma por cor)
+  const precoMeiao = precos.meiao ?? 0;
+  for (const cor of CORES_MEIAO) {
+    const n = mei[cor.valor];
+    if (!n) continue;
+    linhas.push({
+      d: `${n} ${pl(n, "meião", "meiões")} ${cor.rotulo.toLowerCase()} × ${brl(precoMeiao)}`,
+      v: r2(n * precoMeiao),
+    });
+  }
+
+  const soma = (de: number, ate: number) => r2(linhas.slice(de, ate).reduce((acc, l) => acc + l.v, 0));
+  const totais = {
+    camisas: soma(0, indiceCamisas),
+    shorts: soma(indiceCamisas, indiceShorts),
+    meioes: soma(indiceShorts, linhas.length),
+  };
   const total = r2(linhas.reduce((acc, l) => acc + l.v, 0));
   const aCombinar = linhas.some((l) => l.combinar);
 
-  return { linhas, total, aCombinar };
+  return { linhas, total, aCombinar, totais };
 }
 
 const ALFABETO_PROTOCOLO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

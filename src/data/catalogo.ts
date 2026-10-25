@@ -1,37 +1,54 @@
 /**
  * ==============================================================================
- * HEELCLOTH — CATÁLOGO DE PRODUTOS
+ * HEELCLOTH — CATÁLOGO DE PRODUTOS (valores de partida)
  * ==============================================================================
- * Para trocar o desenho de exemplo por uma foto real:
- * 1. Coloque a foto em public/images/catalogo/ (ex: public/images/catalogo/camisa-jogo.jpg).
- * 2. No produto abaixo, troque  src: null  por  src: "/images/catalogo/camisa-jogo.jpg".
+ * Este arquivo traz o catálogo inicial. Fotos e modelos prontos são cadastrados pelo
+ * painel de administração (aba "Catálogo") e ficam salvos no banco de dados.
  * Os preços vêm da tabela de preços do sistema (src/lib/orcamento.ts), então mudam juntos.
  * ==============================================================================
  */
 import { PRECOS_PADRAO } from "@/lib/orcamento";
 
-export type CategoriaCatalogo = "camisas" | "shorts" | "baby-infantil";
+export type CategoriaCatalogo = "camisas" | "shorts" | "baby-infantil" | "acessorios";
+
+// Um modelo pronto (desenho já feito pela Heelcloth) de uma peça do catálogo.
+export interface ModeloCatalogo {
+  id: string;
+  nome: string;
+  descricao: string;
+  imagem: string | null; // id da imagem salva (veja /api/catalogo/imagem/[id])
+}
 
 export interface ProdutoCatalogo {
   id: string;
   nome: string;
   categoria: CategoriaCatalogo;
-  forma: "camisa" | "short";
+  forma: "camisa" | "short" | "meiao";
   descricao: string;
   destaques: string[];
-  preco: number;
+  precoChave: string; // chave na tabela de preços (PRECOS_PADRAO)
   precoPrefixo?: string; // ex: "a partir de"
-  src?: string | null;
+  imagem: string | null; // id da foto do produto, se houver
+  visivel: boolean;
+  modelos: ModeloCatalogo[];
 }
+
+// O que a página recebe: o produto já com o preço calculado.
+export type ProdutoPublico = ProdutoCatalogo & { preco: number };
 
 export const CATEGORIAS_CATALOGO: { id: "todos" | CategoriaCatalogo; rotulo: string }[] = [
   { id: "todos", rotulo: "Todos" },
   { id: "camisas", rotulo: "Camisas" },
   { id: "shorts", rotulo: "Shorts" },
   { id: "baby-infantil", rotulo: "Baby look e infantil" },
+  { id: "acessorios", rotulo: "Meiões" },
 ];
 
-export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
+export function comPreco(p: ProdutoCatalogo): ProdutoPublico {
+  return { ...p, preco: PRECOS_PADRAO[p.precoChave] ?? 0 };
+}
+
+export const PRODUTOS_PADRAO: ProdutoCatalogo[] = [
   {
     id: "camisa-jogo",
     nome: "Camisa de jogo",
@@ -39,9 +56,11 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "Sublimação completa com o desenho do seu time, nome e número nas costas.",
     destaques: ["PP ao G5", "Nome e número", "Manga curta"],
-    preco: PRECOS_PADRAO.camisa,
+    precoChave: "camisa",
     precoPrefixo: "a partir de",
-    src: null,
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "camisa-punho",
@@ -50,8 +69,10 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "A camisa de jogo com punhos personalizados nas mangas.",
     destaques: ["Punhos personalizados", "PP ao G5"],
-    preco: PRECOS_PADRAO.camisa_punho,
-    src: null,
+    precoChave: "camisa_punho",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "camisa-textura",
@@ -60,8 +81,10 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "Tecido com textura e acabamento diferenciado. Os punhos já vêm inclusos.",
     destaques: ["Punhos inclusos", "Tecido texturizado"],
-    preco: PRECOS_PADRAO.camisa_text,
-    src: null,
+    precoChave: "camisa_text",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "camisa-manga-longa",
@@ -70,9 +93,11 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "Qualquer camisa pode ser feita com manga longa. O valor abaixo é somado ao preço da camisa.",
     destaques: ["Adicional por camisa", "Para goleiros e frio"],
-    preco: PRECOS_PADRAO.manga_longa,
+    precoChave: "manga_longa",
     precoPrefixo: "+",
-    src: null,
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "short",
@@ -81,8 +106,10 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "short",
     descricao: "Short combinando com a camisa do time. Pode ser pedido junto ou sozinho.",
     destaques: ["Infantil e adulto", "Pode pedir só o short"],
-    preco: PRECOS_PADRAO.short,
-    src: null,
+    precoChave: "short",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "short-textura",
@@ -91,8 +118,10 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "short",
     descricao: "O mesmo short, no tecido texturizado.",
     destaques: ["Tecido texturizado", "Infantil e adulto"],
-    preco: PRECOS_PADRAO.short_text,
-    src: null,
+    precoChave: "short_text",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "baby-look",
@@ -101,8 +130,10 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "Modelagem feminina ajustada, com os mesmos acabamentos da camisa de jogo.",
     destaques: ["P ao GG", "Modelagem feminina"],
-    preco: PRECOS_PADRAO.camisa,
-    src: null,
+    precoChave: "camisa",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
   {
     id: "infantil",
@@ -111,7 +142,21 @@ export const PRODUTOS_CATALOGO: ProdutoCatalogo[] = [
     forma: "camisa",
     descricao: "Para a garotada, dos tamanhos 2 ao 14, pelo mesmo preço da camisa de jogo.",
     destaques: ["Tamanhos 2 ao 14", "Nome e número"],
-    preco: PRECOS_PADRAO.camisa,
-    src: null,
+    precoChave: "camisa",
+    imagem: null,
+    visivel: true,
+    modelos: [],
+  },
+  {
+    id: "meiao",
+    nome: "Meião",
+    categoria: "acessorios",
+    forma: "meiao",
+    descricao: "Meião esportivo para fechar o uniforme. Escolha a cor de cada jogador na hora do pedido.",
+    destaques: ["Branco", "Preto", "Azul", "Verde", "Vermelho"],
+    precoChave: "meiao",
+    imagem: null,
+    visivel: true,
+    modelos: [],
   },
 ];

@@ -1,7 +1,7 @@
 // Projeto do uniforme no simulador: tudo o que a pessoa pode editar.
 
-export type Padrao = "liso" | "listras-v" | "listras-h" | "diagonal" | "metades" | "degrade";
-export type TipoGola = "redonda" | "v";
+export type Padrao = "curvas" | "esportivo" | "liso" | "listras-v" | "listras-h" | "diagonal" | "metades" | "degrade";
+export type TipoGola = "redonda" | "v" | "v-transp";
 
 export interface ProjetoUniforme {
   padrao: Padrao;
@@ -10,10 +10,12 @@ export interface ProjetoUniforme {
   corDetalhe: string;
   corManga: string;
   corGola: string;
+  corGolaListra: string;
   corPunho: string;
   corTexto: string;
   gola: TipoGola;
   mangaLonga: boolean;
+  raglan: boolean;
   nome: string;
   numero: string;
   numeroFrente: boolean;
@@ -21,26 +23,32 @@ export interface ProjetoUniforme {
   shortBase: string;
   shortFaixa: string;
   shortCos: string;
+  meiao: string;
+  meiaoFaixa: string;
 }
 
 export const PROJETO_INICIAL: ProjetoUniforme = {
-  padrao: "listras-v",
+  padrao: "liso",
   listras: 10,
-  corBase: "#f4f4f4",
-  corDetalhe: "#121212",
-  corManga: "#121212",
-  corGola: "#121212",
-  corPunho: "#121212",
-  corTexto: "#c9a227",
-  gola: "redonda",
+  corBase: "#d10a0a",
+  corDetalhe: "#ffffff",
+  corManga: "#ffffff",
+  corGola: "#d10a0a",
+  corGolaListra: "#ffffff",
+  corPunho: "#d10a0a",
+  corTexto: "#ffffff",
+  gola: "v-transp",
   mangaLonga: false,
+  raglan: true,
   nome: "SEU NOME",
   numero: "10",
-  numeroFrente: true,
+  numeroFrente: false,
   escudo: null,
-  shortBase: "#121212",
-  shortFaixa: "#f4f4f4",
-  shortCos: "#121212",
+  shortBase: "#ffffff",
+  shortFaixa: "#d10a0a",
+  shortCos: "#d10a0a",
+  meiao: "#ffffff",
+  meiaoFaixa: "#d10a0a",
 };
 
 export interface ModeloPronto {
@@ -50,6 +58,24 @@ export interface ModeloPronto {
 }
 
 export const MODELOS_PRONTOS: ModeloPronto[] = [
+  {
+    id: "mockup",
+    nome: "Raglan claro",
+    projeto: {
+      padrao: "curvas", corBase: "#ffffff", corDetalhe: "#7fe3d2", corManga: "#ffffff", corGola: "#7fe3d2",
+      corPunho: "#ffffff", corTexto: "#121212", corGolaListra: "#7fe3d2", gola: "redonda", raglan: true, shortBase: "#ffffff", shortFaixa: "#7fe3d2",
+      shortCos: "#7fe3d2", meiao: "#ffffff", meiaoFaixa: "#7fe3d2",
+    },
+  },
+  {
+    id: "esportivo",
+    nome: "Esportivo",
+    projeto: {
+      padrao: "esportivo", raglan: false, corGolaListra: "#ffffff", corBase: "#d10a0a", corDetalhe: "#121212", corManga: "#d10a0a", corGola: "#121212",
+      corPunho: "#121212", corTexto: "#ffffff", gola: "v-transp", shortBase: "#121212", shortFaixa: "#d10a0a", shortCos: "#121212",
+      meiao: "#f4f4f4", meiaoFaixa: "#9a9a9a",
+    },
+  },
   {
     id: "classico",
     nome: "Clássico",
@@ -63,7 +89,7 @@ export const MODELOS_PRONTOS: ModeloPronto[] = [
     nome: "Listrado",
     projeto: {
       padrao: "listras-v", listras: 10, corBase: "#ffffff", corDetalhe: "#b91c1c", corManga: "#b91c1c", corGola: "#b91c1c",
-      corPunho: "#b91c1c", corTexto: "#111111", gola: "v", shortBase: "#111111", shortFaixa: "#b91c1c", shortCos: "#b91c1c",
+      corPunho: "#b91c1c", corTexto: "#111111", gola: "v-transp", shortBase: "#111111", shortFaixa: "#b91c1c", shortCos: "#b91c1c",
     },
   },
   {
@@ -79,7 +105,7 @@ export const MODELOS_PRONTOS: ModeloPronto[] = [
     nome: "Faixa",
     projeto: {
       padrao: "diagonal", corBase: "#15803d", corDetalhe: "#facc15", corManga: "#15803d", corGola: "#facc15",
-      corPunho: "#facc15", corTexto: "#ffffff", gola: "v", shortBase: "#15803d", shortFaixa: "#facc15", shortCos: "#15803d",
+      corPunho: "#facc15", corTexto: "#ffffff", gola: "v-transp", shortBase: "#15803d", shortFaixa: "#facc15", shortCos: "#15803d",
     },
   },
   {
@@ -95,12 +121,14 @@ export const MODELOS_PRONTOS: ModeloPronto[] = [
     nome: "Retrô",
     projeto: {
       padrao: "listras-h", listras: 8, corBase: "#7c3aed", corDetalhe: "#fde68a", corManga: "#7c3aed", corGola: "#fde68a",
-      corPunho: "#fde68a", corTexto: "#fde68a", gola: "v", shortBase: "#7c3aed", shortFaixa: "#fde68a", shortCos: "#fde68a",
+      corPunho: "#fde68a", corTexto: "#fde68a", gola: "v-transp", shortBase: "#7c3aed", shortFaixa: "#fde68a", shortCos: "#fde68a",
     },
   },
 ];
 
 export const PADROES: { id: Padrao; rotulo: string }[] = [
+  { id: "curvas", rotulo: "Curvas" },
+  { id: "esportivo", rotulo: "Esportivo (ombros e faixas)" },
   { id: "liso", rotulo: "Liso" },
   { id: "listras-v", rotulo: "Listras verticais" },
   { id: "listras-h", rotulo: "Listras horizontais" },
@@ -110,6 +138,8 @@ export const PADROES: { id: Padrao; rotulo: string }[] = [
 ];
 
 const NOME_PADRAO: Record<Padrao, string> = {
+  curvas: "curvas",
+  esportivo: "esportivo (ombros e faixas)",
   liso: "liso",
   "listras-v": "listras verticais",
   "listras-h": "listras horizontais",
@@ -123,9 +153,9 @@ export function descreverProjeto(p: ProjetoUniforme): string {
   const partes = [
     `Modelo do simulador: camisa ${NOME_PADRAO[p.padrao]}${
       p.padrao === "listras-v" || p.padrao === "listras-h" ? ` (${p.listras})` : ""
-    }, gola ${p.gola === "v" ? "em V" : "redonda"}, manga ${p.mangaLonga ? "longa" : "curta"}.`,
-    `Cores da camisa: principal ${p.corBase}, secundária ${p.corDetalhe}, mangas ${p.corManga}, gola ${p.corGola}, punhos ${p.corPunho}, texto ${p.corTexto}.`,
-    `Short: principal ${p.shortBase}, faixa ${p.shortFaixa}, cós ${p.shortCos}.`,
+    }, gola ${p.gola === "v-transp" ? "em V transpassada" : p.gola === "v" ? "em V" : "redonda"}, manga ${p.mangaLonga ? "longa" : "curta"}${p.raglan ? " raglan" : ""}.`,
+    `Cores da camisa: principal ${p.corBase}, secundária ${p.corDetalhe}, mangas ${p.corManga}, gola ${p.corGola} (listra ${p.corGolaListra}), punhos ${p.corPunho}, texto ${p.corTexto}.`,
+    `Short: principal ${p.shortBase}, faixa ${p.shortFaixa}, cós ${p.shortCos}. Meião: ${p.meiao}, faixa ${p.meiaoFaixa}.`,
   ];
   if (p.nome.trim() || p.numero.trim())
     partes.push(`Nome/número de exemplo: ${p.nome.trim() || "-"} / ${p.numero.trim() || "-"}${p.numeroFrente ? " (número na frente)" : ""}.`);

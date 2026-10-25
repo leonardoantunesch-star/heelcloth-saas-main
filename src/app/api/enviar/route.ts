@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { PRECOS_PADRAO, calcularOrcamento, gerarProtocolo } from "@/lib/orcamento";
+import { CORES_MEIAO, PRECOS_PADRAO, calcularOrcamento, gerarProtocolo } from "@/lib/orcamento";
 import { prisma } from "@/lib/db";
 
 const MIN_CAMISAS = 10;
 const FORMAS_PAGAMENTO = ["PIX", "CARTAO", "BOLETO", "TRANSFERENCIA", "DINHEIRO"] as const;
+
+const coresMeiao = CORES_MEIAO.map((c) => c.valor) as [string, ...string[]];
 
 const itemSchema = z.object({
   nome: z.string().optional().default(""),
@@ -12,6 +14,7 @@ const itemSchema = z.object({
   tamCamisa: z.string().optional().default(""),
   tamShort: z.string().optional().default(""),
   goleiro: z.boolean().optional().default(false),
+  meiao: z.enum(["", ...coresMeiao]).optional().default(""),
   opcoes: z.array(z.string()).optional().default([]),
   obs: z.string().optional().default(""),
 });
@@ -39,10 +42,11 @@ export async function POST(req: NextRequest) {
     const { representante, contato, pagamento, modelo, itens: rawItens } = parsed.data;
 
     // Filtra itens com tamanho definido
-    const itens = rawItens.filter((i) => Boolean(i.tamCamisa || i.tamShort));
+    const itens = rawItens.filter((i) => Boolean(i.tamCamisa || i.tamShort || i.meiao));
 
     const totalCamisas = itens.filter((i) => Boolean(i.tamCamisa)).length;
     const totalShorts = itens.filter((i) => Boolean(i.tamShort)).length;
+    const totalMeioes = itens.filter((i) => Boolean(i.meiao)).length;
 
     if (totalCamisas < MIN_CAMISAS) {
       return NextResponse.json(
@@ -89,8 +93,8 @@ export async function POST(req: NextRequest) {
                   {
                     product: "Camisa de Jogo Personalizada",
                     quantity: totalCamisas,
-                    unitPrice: orcamento.total / (totalCamisas || 1),
-                    totalPrice: orcamento.total,
+                    unitPrice: orcamento.totais.camisas / (totalCamisas || 1),
+                    totalPrice: orcamento.totais.camisas,
                   },
                 ]
               : []),
@@ -99,8 +103,18 @@ export async function POST(req: NextRequest) {
                   {
                     product: "Calção Esportivo",
                     quantity: totalShorts,
-                    unitPrice: PRECOS_PADRAO.short,
-                    totalPrice: totalShorts * PRECOS_PADRAO.short,
+                    unitPrice: orcamento.totais.shorts / (totalShorts || 1),
+                    totalPrice: orcamento.totais.shorts,
+                  },
+                ]
+              : []),
+            ...(totalMeioes > 0
+              ? [
+                  {
+                    product: "Meião",
+                    quantity: totalMeioes,
+                    unitPrice: orcamento.totais.meioes / (totalMeioes || 1),
+                    totalPrice: orcamento.totais.meioes,
                   },
                 ]
               : []),
@@ -114,7 +128,8 @@ export async function POST(req: NextRequest) {
             size: item.tamCamisa || "-", // pedido só de short: sem camisa
             model: item.goleiro ? "GOLEIRO" : "JOGADOR",
             shortSize: item.tamShort || null,
-            options: item.opcoes && item.opcoes.length > 0 ? item.opcoes.join(", ") : null,
+            options:
+              [...(item.opcoes || []), ...(item.meiao ? [`meiao ${item.meiao}`] : [])].join(", ") || null,
             notes: item.obs || null,
           })),
         },
@@ -133,6 +148,7 @@ export async function POST(req: NextRequest) {
       pedidoId: novoPedido.id,
       camisas: totalCamisas,
       shorts: totalShorts,
+      meioes: totalMeioes,
       orcamento,
     });
   } catch (err) {

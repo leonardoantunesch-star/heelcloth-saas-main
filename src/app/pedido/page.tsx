@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { SeletorTamanho } from "@/components/SeletorTamanho";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PRECOS_PADRAO, calcularOrcamento } from "@/lib/orcamento";
+import { SeletorMeiao } from "@/components/SeletorMeiao";
 import { CHAVE_SIMULADOR } from "@/lib/simulador/projeto";
 import {
   Shirt,
@@ -26,6 +27,7 @@ interface LinhaUniforme {
   numero: string;
   tamCamisa: string;
   tamShort: string;
+  meiao: string;
   goleiro: boolean;
   mangaLonga: boolean;
   texturizada: boolean;
@@ -98,6 +100,18 @@ export default function FazerPedidoPage() {
       /* sem armazenamento */
     }
   }, []);
+  // Modelo escolhido no catálogo (vem na URL: /pedido?modelo=...&peca=...)
+  const [modeloCatalogo, setModeloCatalogo] = useState<{ nome: string; peca: string } | null>(null);
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const nome = (q.get("modelo") || "").trim().slice(0, 80);
+      const peca = (q.get("peca") || "").trim().slice(0, 80);
+      if (nome) setModeloCatalogo({ nome, peca });
+    } catch {
+      /* sem URL: ignora */
+    }
+  }, []);
   const removerModelo = () => {
     setModelo(null);
     try {
@@ -115,6 +129,7 @@ export default function FazerPedidoPage() {
       numero: "",
       tamCamisa: "",
       tamShort: "",
+      meiao: "",
       goleiro: i === 0, // Primeiro jogador como goleiro por padrão
       mangaLonga: false,
       texturizada: false,
@@ -137,6 +152,7 @@ export default function FazerPedidoPage() {
         numero: "",
         tamCamisa: "",
         tamShort: "",
+        meiao: "",
         goleiro: false,
         mangaLonga: false,
         texturizada: false,
@@ -188,6 +204,7 @@ export default function FazerPedidoPage() {
   // Totais de peças
   const totalCamisas = linhas.filter((l) => Boolean(l.tamCamisa)).length;
   const totalShorts = linhas.filter((l) => Boolean(l.tamShort)).length;
+  const totalMeioes = linhas.filter((l) => Boolean(l.meiao)).length;
 
   // Estimativa de preço: usa a mesma regra do servidor (camisa, punho, textura e manga longa).
   const orcamento = calcularOrcamento(
@@ -195,6 +212,7 @@ export default function FazerPedidoPage() {
     linhas.map((l) => ({
       tamCamisa: l.tamCamisa,
       tamShort: l.tamShort,
+      meiao: l.meiao,
       opcoes: [
         ...(l.mangaLonga ? ["manga_longa"] : []),
         ...(l.texturizada ? ["texturizada"] : []),
@@ -248,6 +266,7 @@ export default function FazerPedidoPage() {
           numero: l.numero.trim(),
           tamCamisa: l.tamCamisa,
           tamShort: l.tamShort || "",
+          meiao: l.meiao || "",
           goleiro: l.goleiro,
           opcoes,
           obs: l.obs.trim(),
@@ -261,7 +280,14 @@ export default function FazerPedidoPage() {
           representante: representante.trim(),
           contato: cleanContato,
           pagamento,
-          modelo: modelo?.descricao ?? "",
+          modelo: [
+            modeloCatalogo
+              ? `Modelo do catálogo: ${modeloCatalogo.nome}${modeloCatalogo.peca ? ` (${modeloCatalogo.peca})` : ""}.`
+              : "",
+            modelo?.descricao ?? "",
+          ]
+            .filter(Boolean)
+            .join(" "),
           itens: payloadItens,
         }),
       });
@@ -500,6 +526,7 @@ export default function FazerPedidoPage() {
                         <th className="px-2 py-3 w-20 text-center">Nº</th>
                         <th className="px-3 py-3 w-28 text-center">Camisa</th>
                         <th className="px-3 py-3 w-28 text-center">Short</th>
+                        <th className="px-3 py-3 w-32 text-center">Meião</th>
                         <th className="px-3 py-3 w-20 text-center">Goleiro</th>
                         <th className="px-3 py-3">Opções de acabamento</th>
                         <th className="px-3 py-3 min-w-[180px]">Observações <span className="normal-case font-medium text-slate-400">(opcional)</span></th>
@@ -561,6 +588,16 @@ export default function FazerPedidoPage() {
                               onChange={(valor) => atualizarLinha(linha.id, "tamShort", valor)}
                               ariaLabel={`Tamanho do short do jogador ${idx + 1}`}
                               className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
+                            />
+                          </td>
+
+                          {/* Meião (opcional) */}
+                          <td className="px-3 py-2.5 text-center">
+                            <SeletorMeiao
+                              value={linha.meiao}
+                              onChange={(valor) => atualizarLinha(linha.id, "meiao", valor)}
+                              ariaLabel={`Cor do meião do jogador ${idx + 1}`}
+                              className="w-full h-8 text-xs bg-white border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
                             />
                           </td>
 
@@ -741,6 +778,22 @@ export default function FazerPedidoPage() {
                       </div>
                     </div>
 
+                    {/* Meião (opcional) */}
+                    <div>
+                      <label
+                        htmlFor={`mobile-meiao-${linha.id}`}
+                        className="block text-[11px] font-semibold text-slate-600 mb-1"
+                      >
+                        Meião <span className="font-normal text-slate-400">(opcional)</span>
+                      </label>
+                      <SeletorMeiao
+                        id={`mobile-meiao-${linha.id}`}
+                        value={linha.meiao}
+                        onChange={(valor) => atualizarLinha(linha.id, "meiao", valor)}
+                        className="w-full h-10 text-xs bg-white border border-slate-200 rounded-lg text-[#121212] font-semibold focus:outline-none focus:border-[#121212] focus-visible:ring-1 focus-visible:ring-[#121212]"
+                      />
+                    </div>
+
                     {/* Linha 3: Opções e Acabamento com área de toque mínima de 44px */}
                     <div className="pt-1 border-t border-slate-100 flex flex-wrap items-center gap-x-1 gap-y-0 text-xs text-slate-700">
                       <OpcaoCheck
@@ -815,6 +868,18 @@ export default function FazerPedidoPage() {
               </div>
             </section>
 
+            {modeloCatalogo && (
+              <section className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-2xs">
+                <div className="flex-1 text-sm">
+                  <p className="font-semibold text-[#121212]">Modelo do catálogo: {modeloCatalogo.nome}</p>
+                  <p className="text-xs text-[#121212]/60">
+                    {modeloCatalogo.peca ? `${modeloCatalogo.peca}. ` : ""}Esse modelo vai junto com o pedido como base do desenho.
+                  </p>
+                </div>
+                <button type="button" onClick={() => setModeloCatalogo(null)} className="ripple-host text-xs font-medium underline">Remover</button>
+              </section>
+            )}
+
             {modelo && (
               <section className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-2xs">
                 {modelo.imagem && (
@@ -884,7 +949,7 @@ export default function FazerPedidoPage() {
                     {brl(totalEstimado)}
                   </span>
                   <span className="text-xs text-slate-500 font-medium">
-                    ({totalCamisas} camisas{totalShorts > 0 ? ` + ${totalShorts} calções` : ""})
+                    ({totalCamisas} camisas{totalShorts > 0 ? ` + ${totalShorts} calções` : ""}{totalMeioes > 0 ? ` + ${totalMeioes} ${totalMeioes === 1 ? "meião" : "meiões"}` : ""})
                   </span>
                 </div>
                 {orcamento.linhas.length > 0 && (

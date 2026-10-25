@@ -39,6 +39,7 @@ const ATALHOS: { rotulo: string; descricao: string; detalhes: string; valor: num
   { rotulo: "Manga longa", descricao: "Manga longa (adicional)", detalhes: "Valor por camisa com manga longa", valor: PRECOS_PADRAO.manga_longa },
   { rotulo: "Short", descricao: "Short esportivo", detalhes: "", valor: PRECOS_PADRAO.short },
   { rotulo: "Short texturizado", descricao: "Short texturizado", detalhes: "", valor: PRECOS_PADRAO.short_text },
+  { rotulo: "Meião", descricao: "Meião esportivo", detalhes: "Branco, preto, azul, verde ou vermelho", valor: PRECOS_PADRAO.meiao },
 ];
 
 const num = (v: string) => {
