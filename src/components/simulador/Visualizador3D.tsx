@@ -29,7 +29,7 @@ interface Props {
 }
 
 // Pontos do contorno do tronco, de baixo (barra) para cima (gola): [altura, meia-largura, meia-profundidade].
-const PERFIL: [number, number, number][] = [
+const PERFIL: [number, number, number][] = ([
   [0.0, 0.262, 0.168],
   [0.18, 0.252, 0.162],
   [0.4, 0.272, 0.176],
@@ -38,8 +38,8 @@ const PERFIL: [number, number, number][] = [
   [0.65, 0.2, 0.14],
   [0.685, 0.13, 0.102],
   [0.7, 0.115, 0.092],
-];
-const Y_TOPO = 0.7;
+] as [number, number, number][]).map(([y, a, b]) => [y * 1.14, a, b] as [number, number, number]);
+const Y_TOPO = 0.7 * 1.14;
 const SEG_U = 120;
 const SEG_V = 48;
 
@@ -108,8 +108,9 @@ function criarTronco(THREE: Three, gola: TipoGola) {
       if (gola === "v") dip = 0.1 * Math.max(0, 1 - dF / 0.62);
       else dip = 0.052 * Math.max(0, Math.cos((Math.min(dF, 0.62) / 0.62) * (Math.PI / 2)));
       dip += 0.012 * Math.max(0, Math.cos((Math.min(dT, 0.62) / 0.62) * (Math.PI / 2)));
-      const y = L.y - dip * suave(0.5, Y_TOPO, L.y);
-      pos.push(-L.a * Math.sin(fi), y, -L.b * Math.cos(fi));
+      const y = L.y - dip * suave(0.57, Y_TOPO, L.y);
+      const dobra = 1 + 0.009 * Math.sin(fi * 6 + L.y * 16) * (1 - suave(0.3, 0.62, L.y)) + 0.005 * Math.sin(fi * 11 - L.y * 23) * (1 - suave(0.2, 0.55, L.y));
+      pos.push(-L.a * dobra * Math.sin(fi), y, -L.b * dobra * Math.cos(fi));
       uv.push(u, L.v);
     }
   }
@@ -136,9 +137,32 @@ function criarTronco(THREE: Three, gola: TipoGola) {
   return g;
 }
 
+// Tubo que acompanha uma linha (fileira) do tronco: usado na gola e na barra para dar espessura de verdade.
+function anelDoTronco(THREE: Three, g: THREE_TYPES.BufferGeometry, linha: number, raio: number) {
+  const pos = g.getAttribute("position");
+  const pts: THREE_TYPES.Vector3[] = [];
+  for (let i = 0; i < SEG_U; i += 2) {
+    const k = linha * (SEG_U + 1) + i;
+    pts.push(new THREE.Vector3(pos.getX(k), pos.getY(k), pos.getZ(k)));
+  }
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 200, raio, 8, true);
+}
+
+function raioPunho(longa: boolean) {
+  return longa ? 0.078 : 0.093;
+}
+
+function criarPunho(THREE: Three, longa: boolean) {
+  const g = new THREE.TorusGeometry(raioPunho(longa), 0.0085, 8, 48);
+  g.rotateX(Math.PI / 2);
+  g.scale(1, 1, 1.12);
+  g.translate(0, longa ? -0.5 : -0.2, 0);
+  return g;
+}
+
 function criarManga(THREE: Three, longa: boolean) {
   const comp = longa ? 0.5 : 0.2;
-  const g = new THREE.CylinderGeometry(0.106, longa ? 0.078 : 0.093, comp, 40, 1, true);
+  const g = new THREE.CylinderGeometry(0.108, raioPunho(longa), comp, 40, 8, true);
   g.translate(0, -comp / 2, 0); // ombro na origem, punho para baixo
   g.scale(1, 1, 1.12);
   return g;
@@ -167,6 +191,10 @@ export const Visualizador3D = forwardRef<Visualizador3DRef, Props>(function Visu
     texPernaE: THREE_TYPES.CanvasTexture;
     texCos: THREE_TYPES.CanvasTexture;
     canvases: Record<string, HTMLCanvasElement>;
+    golaTubo: THREE_TYPES.Mesh;
+    barraTubo: THREE_TYPES.Mesh;
+    punhoD: THREE_TYPES.Mesh;
+    punhoE: THREE_TYPES.Mesh;
     golaAtual: TipoGola;
     longaAtual: boolean;
     parar: boolean;
@@ -200,28 +228,38 @@ export const Visualizador3D = forwardRef<Visualizador3DRef, Props>(function Visu
     if (e.golaAtual !== p.gola) {
       e.tronco.geometry.dispose();
       e.tronco.geometry = criarTronco(THREE, p.gola);
+      e.golaTubo.geometry.dispose();
+      e.golaTubo.geometry = anelDoTronco(THREE, e.tronco.geometry, SEG_V, 0.011);
       e.golaAtual = p.gola;
     }
     if (e.longaAtual !== p.mangaLonga) {
       e.mangaD.geometry.dispose();
       e.mangaD.geometry = criarManga(THREE, p.mangaLonga);
       e.mangaE.geometry = e.mangaD.geometry;
+      e.punhoD.geometry.dispose();
+      e.punhoD.geometry = criarPunho(THREE, p.mangaLonga);
+      e.punhoE.geometry = e.punhoD.geometry;
       e.longaAtual = p.mangaLonga;
     }
-    const ang = p.mangaLonga ? 0.42 : 1.12;
+    (e.golaTubo.material as THREE_TYPES.MeshStandardMaterial).color.set(p.corGola);
+    (e.barraTubo.material as THREE_TYPES.MeshStandardMaterial).color.set(p.corPunho);
+    (e.punhoD.material as THREE_TYPES.MeshStandardMaterial).color.set(p.corPunho);
+    const ang = p.mangaLonga ? 0.36 : 0.78;
     e.mangaD.rotation.z = ang;
     e.mangaE.rotation.z = -ang;
+    e.punhoE.rotation.z = -ang;
+    e.punhoD.rotation.z = ang;
 
     e.grupoCamisa.visible = v !== "short";
     e.grupoShort.visible = v !== "camisa";
     if (v === "conjunto") {
-      e.grupoCamisa.position.y = 0.16;
-      e.grupoShort.position.y = 0.19;
-      e.alvoY = 0.2;
-      e.alvoDist = 3.1;
+      e.grupoCamisa.position.y = 0.1;
+      e.grupoShort.position.y = 0.065;
+      e.alvoY = 0.24;
+      e.alvoDist = 3.2;
     } else if (v === "camisa") {
       e.grupoCamisa.position.y = 0;
-      e.alvoY = 0.36;
+      e.alvoY = 0.4;
       e.alvoDist = 2.2;
     } else {
       e.grupoShort.position.y = 0;
@@ -293,8 +331,12 @@ export const Visualizador3D = forwardRef<Visualizador3DRef, Props>(function Visu
       controls.autoRotateSpeed = 2.2;
       controls.target.set(0, 0.2, 0);
 
-      scene.add(new THREE.HemisphereLight(0xffffff, 0xd2d2d2, 1.35));
-      const luzPrincipal = new THREE.DirectionalLight(0xffffff, 1.9);
+      const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environmentIntensity = 0.55;
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xd2d2d2, 0.8));
+      const luzPrincipal = new THREE.DirectionalLight(0xffffff, 1.5);
       luzPrincipal.position.set(2, 3, 3);
       scene.add(luzPrincipal);
       const luzFundo = new THREE.DirectionalLight(0xffffff, 1.1);
@@ -359,9 +401,18 @@ export const Visualizador3D = forwardRef<Visualizador3DRef, Props>(function Visu
       const geoManga = criarManga(THREE, p0.mangaLonga);
       const mangaD = new THREE.Mesh(geoManga, mat(texManga));
       const mangaE = new THREE.Mesh(geoManga, mat(texManga));
-      mangaD.position.set(0.262, 0.585, 0);
-      mangaE.position.set(-0.262, 0.585, 0);
-      grupoCamisa.add(tronco, mangaD, mangaE);
+      mangaD.position.set(0.248, 0.682, 0);
+      mangaE.position.set(-0.248, 0.682, 0);
+      const matFio = () => new THREE.MeshStandardMaterial({ color: p0.corGola, roughness: 0.8 });
+      const golaTubo = new THREE.Mesh(anelDoTronco(THREE, tronco.geometry, SEG_V, 0.011), matFio());
+      const barraTubo = new THREE.Mesh(anelDoTronco(THREE, tronco.geometry, 0, 0.0095), matFio());
+      const geoPunho = criarPunho(THREE, p0.mangaLonga);
+      const matPunho = matFio();
+      const punhoD = new THREE.Mesh(geoPunho, matPunho);
+      const punhoE = new THREE.Mesh(geoPunho, matPunho);
+      punhoD.position.copy(mangaD.position);
+      punhoE.position.copy(mangaE.position);
+      grupoCamisa.add(tronco, mangaD, mangaE, golaTubo, barraTubo, punhoD, punhoE);
 
       const grupoShort = new THREE.Group();
       const cos = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 0.06, 56, 1, true), mat(texCos));
@@ -383,6 +434,7 @@ export const Visualizador3D = forwardRef<Visualizador3DRef, Props>(function Visu
       estado.current = {
         THREE, renderer, scene, camera, controls, grupoCamisa, grupoShort, tronco, mangaD, mangaE,
         texTronco, texManga, texQuadril, texPernaD, texPernaE, texCos, canvases,
+        golaTubo, barraTubo, punhoD, punhoE,
         golaAtual: p0.gola, longaAtual: p0.mangaLonga, parar: false, alvoY: 0.2, alvoDist: 3.1,
       };
       aplicar();

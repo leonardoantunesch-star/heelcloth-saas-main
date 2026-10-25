@@ -116,10 +116,10 @@ export function pintarTronco(canvas: HTMLCanvasElement, p: ProjetoUniforme, imgE
   const numero = p.numero.trim();
   if (nome) {
     const px = Math.min(104, 1100 / Math.max(6, nome.length) * 1.5);
-    emTodasAsVoltas((x) => contorno(nome, x, h * 0.2, px), 0);
+    emTodasAsVoltas((x) => contorno(nome, x, h * 0.27, px), 0);
   }
   if (numero) {
-    emTodasAsVoltas((x) => contorno(numero, x, h * 0.54, 400), 0);
+    emTodasAsVoltas((x) => contorno(numero, x, h * 0.55, 400), 0);
     if (p.numeroFrente) contorno(numero, w / 2, h * 0.5, 190);
   }
   if (imgEscudo) {
