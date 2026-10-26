@@ -21,7 +21,6 @@ export function SiteFooter() {
           <Link href="/tamanhos" className={link}>Tamanhos</Link>
           <Link href="/rastreio" className={link}>Acompanhe seu pedido</Link>
           <Link href="/contato" className={link}>Contato</Link>
-          <Link href="/login" className={link}>Entrar</Link>
         </div>
       </div>
     </footer>

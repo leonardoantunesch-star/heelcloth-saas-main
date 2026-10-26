@@ -19,7 +19,7 @@ const ITENS = [
 ] as const;
 
 interface SiteHeaderProps {
-  // Conteúdo extra opcional, mostrado ao lado do botão "Entrar" (telas médias para cima).
+  // Conteúdo extra opcional, mostrado ao lado do seletor de tema (telas médias para cima).
   extra?: React.ReactNode;
 }
 
@@ -67,12 +67,6 @@ export function SiteHeader({ extra }: SiteHeaderProps) {
         <div className="hidden sm:flex items-center gap-3 justify-self-end">
           {extra}
           <AlternarTema />
-          <Link
-            href="/login"
-            className="ripple-host inline-flex items-center justify-center h-9 px-4 rounded-full border border-black/15 bg-white text-xs sm:text-[13px] font-medium text-[#121212] active:scale-[0.98] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
-          >
-            Entrar
-          </Link>
         </div>
 
         <button
@@ -104,12 +98,6 @@ export function SiteHeader({ extra }: SiteHeaderProps) {
           </nav>
           <div className="pt-3 border-t border-black/10 flex items-center gap-3">
             <AlternarTema className="shrink-0" />
-            <Link
-              href="/login"
-              className="ripple-host flex-1 text-center py-2.5 rounded-full border border-black/20 text-xs font-semibold text-[#121212]"
-            >
-              Entrar
-            </Link>
           </div>
         </div>
       )}

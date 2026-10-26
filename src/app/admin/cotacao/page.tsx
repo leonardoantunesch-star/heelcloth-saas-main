@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, Plus, Trash2, FileText, Building2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PRECOS_PADRAO } from "@/lib/orcamento";
+import { ADICIONAL_TAMANHO_GRANDE, PRECOS_PADRAO } from "@/lib/orcamento";
 import {
   calcularTotais,
   gerarPdfCotacao,
@@ -38,6 +38,7 @@ const ATALHOS: { rotulo: string; descricao: string; detalhes: string; valor: num
   { rotulo: "Camisa com punho", descricao: "Camisa com punhos personalizados", detalhes: "Punhos personalizados", valor: PRECOS_PADRAO.camisa_punho },
   { rotulo: "Camisa texturizada", descricao: "Camisa texturizada", detalhes: "Tecido texturizado, punhos inclusos", valor: PRECOS_PADRAO.camisa_text },
   { rotulo: "Camisa dry-fit", descricao: "Camisa dry-fit", detalhes: "Tecido dry-fit", valor: PRECOS_PADRAO.camisa_dry },
+  { rotulo: "Adicional G3/G4/G5", descricao: "Adicional de tamanho (G3, G4 ou G5)", detalhes: "Valor por camisa nos tamanhos G3, G4 e G5", valor: ADICIONAL_TAMANHO_GRANDE },
   { rotulo: "Manga longa", descricao: "Manga longa (adicional)", detalhes: "Valor por camisa com manga longa", valor: PRECOS_PADRAO.manga_longa },
   { rotulo: "Short", descricao: "Short esportivo", detalhes: "", valor: PRECOS_PADRAO.short },
   { rotulo: "Short texturizado", descricao: "Short texturizado", detalhes: "", valor: PRECOS_PADRAO.short_text },

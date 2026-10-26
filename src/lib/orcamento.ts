@@ -29,6 +29,12 @@ export const PRECOS_PADRAO: TabelaPrecos = {
   meiao: 15,
 };
 
+// Camisas nos tamanhos G3, G4 e G5 custam R$ 10,00 a mais cada (o short não muda).
+export const TAMANHOS_COM_ADICIONAL = ["G3", "G4", "G5"] as const;
+export const ADICIONAL_TAMANHO_GRANDE = 10;
+export const temAdicionalDeTamanho = (tam?: string) =>
+  (TAMANHOS_COM_ADICIONAL as readonly string[]).includes(String(tam ?? "").toUpperCase());
+
 // Cores de meião disponíveis no pedido.
 export const CORES_MEIAO = [
   { valor: "branco", rotulo: "Branco", hex: "#ffffff" },
@@ -96,7 +102,7 @@ export function calcularOrcamento(
   const brl = (v: number) =>
     Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  const cam: Record<string, { f: { tex: boolean; dry: boolean; pun: boolean; man: boolean }; n: number }> = {};
+  const cam: Record<string, { f: { tex: boolean; dry: boolean; pun: boolean; man: boolean; gr: boolean }; n: number }> = {};
   const sho: Record<string, { tex: boolean; dry: boolean; n: number }> = {};
   const mei: Record<string, number> = {};
   const linhas: LinhaOrcamento[] = [];
@@ -110,6 +116,7 @@ export function calcularOrcamento(
       dry: o.includes("dryfit") && !tex,
       pun: o.includes("punhos"),
       man: o.includes("manga_longa"),
+      gr: false,
     };
   };
 
@@ -117,9 +124,10 @@ export function calcularOrcamento(
     const f = extrairFlags(i);
     // Na camisa texturizada os punhos personalizados já estão inclusos
     f.pun = f.pun && !f.tex;
+    f.gr = temAdicionalDeTamanho(i.tamCamisa);
 
     if (i.tamCamisa) {
-      const k = (f.tex ? "1" : "0") + (f.dry ? "1" : "0") + (f.pun ? "1" : "0") + (f.man ? "1" : "0");
+      const k = (f.tex ? "1" : "0") + (f.dry ? "1" : "0") + (f.pun ? "1" : "0") + (f.man ? "1" : "0") + (f.gr ? "1" : "0");
       if (!cam[k]) {
         cam[k] = { f, n: 0 };
       }
@@ -146,7 +154,8 @@ export function calcularOrcamento(
     const precoBase = f.tex ? precos.camisa_text : f.dry ? precos.camisa_dry : precos.camisa;
     const adicionalPunho = f.pun ? precos.camisa_punho - precos.camisa : 0;
     const adicionalManga = f.man && mangaOk ? precos.manga_longa : 0;
-    const unit = r2(precoBase + adicionalPunho + adicionalManga);
+    const adicionalTamanho = f.gr ? ADICIONAL_TAMANHO_GRANDE : 0;
+    const unit = r2(precoBase + adicionalPunho + adicionalManga + adicionalTamanho);
     const combinar = f.man && !mangaOk;
 
     const descTipo = f.tex
@@ -156,10 +165,11 @@ export function calcularOrcamento(
         : "tecido padrão";
     const descPunho = f.pun ? " com punhos personalizados" : "";
     const descManga = f.man ? " manga longa" : "";
+    const descTam = f.gr ? " tam. G3 a G5" : "";
     const descCombinar = combinar ? " (manga longa a combinar)" : "";
 
     linhas.push({
-      d: `${n} ${pl(n, "camisa", "camisas")} ${descTipo}${descPunho}${descManga} × ${brl(unit)}${descCombinar}`,
+      d: `${n} ${pl(n, "camisa", "camisas")} ${descTipo}${descPunho}${descManga}${descTam} × ${brl(unit)}${descCombinar}`,
       v: r2(n * unit),
       combinar,
     });

@@ -7,7 +7,6 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
-  Lock,
 } from "lucide-react";
 
 interface FAQItem {
@@ -204,12 +203,6 @@ export default function AjudaPage() {
       <footer className="bg-white border-t border-slate-200 py-8 mt-auto">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Heel Cloth Sportswear. Todos os direitos reservados.</p>
-          <div className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition">
-            <Lock className="h-3 w-3" />
-            <Link href="/login" className="hover:underline">
-              Acesso do Colaborador
-            </Link>
-          </div>
         </div>
       </footer>
     </div>

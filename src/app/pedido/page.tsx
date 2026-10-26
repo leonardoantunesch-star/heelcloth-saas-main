@@ -879,7 +879,7 @@ export default function FazerPedidoPage() {
                 <div className="flex items-start gap-1.5">
                   <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <span>
-                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. <strong>Dry-fit</strong>: camisa R$ 41,90 e calção R$ 21,90 (não combina com Textura). Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
+                    Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. <strong>Dry-fit</strong>: camisa R$ 41,90 e calção R$ 21,90 (não combina com Textura). Camisas nos tamanhos <strong>G3, G4 e G5</strong> têm <strong>+ R$ 10,00</strong> cada. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
                   </span>
                 </div>
 
