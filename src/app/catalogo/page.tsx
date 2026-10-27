@@ -6,7 +6,10 @@ import { comPreco } from "@/data/catalogo";
 
 // Sempre lê o catálogo atual (fotos e modelos publicados pelo painel).
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Catálogo | Heelcloth" };
+export const metadata = {
+  title: "Catálogo de modelos de uniformes",
+  description: "Veja os modelos de camisas e shorts já desenhados pela Heel Cloth e escolha um como base do seu pedido.",
+};
 
 export default async function CatalogoPage() {
   const produtos = (await lerCatalogo()).map(comPreco);

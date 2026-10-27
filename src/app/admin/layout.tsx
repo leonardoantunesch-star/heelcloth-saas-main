@@ -1,7 +1,11 @@
 import React from "react";
+import type { Metadata } from "next";
 import { AdminShellProvider } from "@/components/layout/admin-shell-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+
+// O painel não deve aparecer no Google.
+export const metadata: Metadata = { title: "Painel", robots: { index: false, follow: false } };
 
 export default function AdminLayout({
   children,

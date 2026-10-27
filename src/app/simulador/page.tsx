@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 // O simulador 3D completo está guardado em ./SimuladorCompleto.tsx e volta para esta página quando estiver pronto.
-export const metadata = { title: "Simulador 3D | Heelcloth" };
+export const metadata = { title: "Simulador 3D" };
 
 export default function SimuladorPage() {
   return (

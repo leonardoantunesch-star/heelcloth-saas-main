@@ -4,7 +4,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Contato — Heelcloth",
+  title: "Contato",
+  description: "Fale com a Heel Cloth pelo WhatsApp ou e-mail. R. Antônio de Matos, 171 - Centro, Itaúna - MG.",
 };
 
 export default function ContatoPage() {

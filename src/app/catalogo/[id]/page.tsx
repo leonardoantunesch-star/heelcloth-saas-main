@@ -19,7 +19,7 @@ const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", curren
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const produto = (await lerCatalogo()).find((p) => p.id === id && p.visivel);
-  return { title: produto ? `${produto.nome} | Catálogo Heelcloth` : "Catálogo | Heelcloth" };
+  return { title: produto ? `${produto.nome} | Catálogo` : "Catálogo" };
 }
 
 export default async function ProdutoPage({ params }: PageProps) {
