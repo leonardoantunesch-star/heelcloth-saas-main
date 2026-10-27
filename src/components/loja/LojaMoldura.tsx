@@ -1,4 +1,5 @@
 import React from "react";
+import { SITE_DESCRICAO, TITULO_LOJA } from "@/lib/site";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { lojaDaRequisicao } from "@/lib/loja-publica";
@@ -41,6 +42,10 @@ export async function LojaMoldura({ children }: { children: React.ReactNode }) {
 
 export async function metadataDaLoja(): Promise<import("next").Metadata> {
   const { config } = await lojaDaRequisicao();
-  return { title: { default: config.marca.nome, template: `%s | ${config.marca.nome}` }, description: config.marca.slogan };
+  // A página inicial usa o título de SEO (src/lib/site.ts); as demais páginas da loja ficam "Página | Nome da loja".
+  return {
+    title: { default: TITULO_LOJA, template: `%s | ${config.marca.nome}` },
+    description: config.marca.slogan ? `${config.marca.slogan} ${SITE_DESCRICAO}` : SITE_DESCRICAO,
+  };
 }
 

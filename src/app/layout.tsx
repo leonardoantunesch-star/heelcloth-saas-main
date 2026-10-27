@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TelaCarregamento } from "@/components/TelaCarregamento";
 import { EfeitoToque } from "@/components/EfeitoToque";
-import { SITE_DESCRICAO, SITE_ENDERECO, SITE_NOME, SITE_TITULO, SITE_URL } from "@/lib/site";
+import { SITE_NOMES_ALTERNATIVOS, SITE_DESCRICAO, SITE_ENDERECO, SITE_NOME, SITE_TITULO, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   description: SITE_DESCRICAO,
   applicationName: SITE_NOME,
   keywords: [
-    "Heel Cloth",
+    ...SITE_NOMES_ALTERNATIVOS,
     "uniformes personalizados",
     "camisas sublimadas",
     "uniforme de futebol",
     "sublimação esportiva",
     "roupas esportivas",
-    "Itaúna MG",
+    "camisas Itaúna MG",
   ],
   alternates: { canonical: "/" },
   openGraph: {
@@ -39,6 +39,7 @@ const DADOS_EMPRESA = {
   "@context": "https://schema.org",
   "@type": "ClothingStore",
   name: SITE_NOME,
+  alternateName: SITE_NOMES_ALTERNATIVOS.filter((n) => n !== SITE_NOME),
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   image: `${SITE_URL}/logo.png`,

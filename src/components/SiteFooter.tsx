@@ -10,7 +10,7 @@ export function SiteFooter() {
       <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#606060]">
         <div className="flex flex-col items-center sm:items-start gap-1.5">
           <Marca pequena />
-          <span className="text-[11px] text-[#606060]">Uniformes esportivos sob medida</span>
+          <span className="text-[11px] text-[#606060]">Heel Cloth (Heel Clothing) · Camisas e uniformes esportivos sob medida · Itaúna - MG</span>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
