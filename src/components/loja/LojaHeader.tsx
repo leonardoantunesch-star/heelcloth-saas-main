@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useLoja } from "./LojaContexto";
+import { MenuConta } from "./MenuConta";
 import { urlImagemLoja } from "@/data/loja";
 
 export function MarcaLoja({ claro = false }: { claro?: boolean }) {
@@ -101,9 +102,7 @@ export function LojaHeader() {
             <button type="button" className="p-2" aria-label="Buscar" aria-expanded={busca} onClick={() => setBusca((v) => !v)}>
               <Search className="h-5 w-5" />
             </button>
-            <Link href="/loja/conta" aria-label="Minha conta" title="Minha conta" className="hidden p-2 sm:block">
-              <UserRound className="h-5 w-5" />
-            </Link>
+            <MenuConta />
             <button type="button" className="relative p-2" aria-label={`Abrir carrinho (${quantidadeTotal} itens)`} onClick={() => setAberto(true)}>
               <ShoppingBag className="h-5 w-5" />
               {quantidadeTotal > 0 && (
