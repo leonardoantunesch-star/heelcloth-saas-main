@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { ipDe, limitar, textoEspera } from "@/lib/limite";
 import { gerarProtocolo } from "@/lib/orcamento";
 import { baixarEstoque, criarPreferencia, lerLoja, tokenMercadoPago } from "@/lib/loja";
 import { calcularFrete, precoFinal } from "@/data/loja";
@@ -45,6 +46,9 @@ const pedidoSchema = z
 // devolve o link de pagamento do Mercado Pago.
 export async function POST(req: NextRequest) {
   try {
+    // Limite de pedidos por IP: sem isso, alguém poderia criar pedidos falsos sem parar e segurar o estoque.
+    const lim = await limitar(`pedido:${ipDe(req)}`, 15, 3600);
+    if (!lim.ok) return NextResponse.json({ erro: textoEspera(lim.esperaSeg) }, { status: 429 });
     const parsed = pedidoSchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
       return NextResponse.json({ erro: parsed.error.issues[0]?.message || "Dados inválidos." }, { status: 400 });

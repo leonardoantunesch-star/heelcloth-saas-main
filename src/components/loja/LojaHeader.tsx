@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useLoja } from "./LojaContexto";
 import { urlImagemLoja } from "@/data/loja";
 
@@ -101,6 +101,9 @@ export function LojaHeader() {
             <button type="button" className="p-2" aria-label="Buscar" aria-expanded={busca} onClick={() => setBusca((v) => !v)}>
               <Search className="h-5 w-5" />
             </button>
+            <Link href="/loja/conta" aria-label="Minha conta" title="Minha conta" className="hidden p-2 sm:block">
+              <UserRound className="h-5 w-5" />
+            </Link>
             <button type="button" className="relative p-2" aria-label={`Abrir carrinho (${quantidadeTotal} itens)`} onClick={() => setAberto(true)}>
               <ShoppingBag className="h-5 w-5" />
               {quantidadeTotal > 0 && (
@@ -151,6 +154,7 @@ export function LojaHeader() {
                   {l.rotulo}
                 </Link>
               ))}
+              <Link href="/loja/conta" className="block border-b border-black/5 px-5 py-4 text-sm font-bold uppercase tracking-[0.08em]">Minha conta</Link>
             </nav>
             <Link href={sublimacao.href} className="flex items-center justify-between border-t border-black/10 bg-[var(--lj-pri)] px-5 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white">
               {sublimacao.rotulo} <span aria-hidden="true">→</span>

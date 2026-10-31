@@ -57,6 +57,7 @@ export function LojaRodape() {
               <li key={cat.id}><Link href={`/loja/categoria/${cat.id}`} className="hover:text-white">{cat.nome}</Link></li>
             ))}
             <li><Link href="/loja/ofertas" className="hover:text-white">Ofertas</Link></li>
+            <li><Link href="/loja/conta" className="hover:text-white">Minha conta</Link></li>
           </ul>
         </div>
         <div>

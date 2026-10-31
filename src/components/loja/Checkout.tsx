@@ -28,6 +28,19 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
   const [avisos, setAvisos] = useState<string[]>([]);
+  const [logada, setLogada] = useState<string | null>(null);
+
+  // Cliente com conta: já vem com nome, e-mail e telefone preenchidos.
+  useEffect(() => {
+    fetch("/api/conta/eu", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.conta) return;
+        setLogada(j.conta.nome);
+        setCliente((c) => ({ ...c, nome: c.nome || j.conta.nome, email: c.email || j.conta.email, whatsapp: c.whatsapp || j.conta.telefone || "" }));
+      })
+      .catch(() => {});
+  }, []);
 
   // Atualiza o carrinho com preço e estoque atuais (o cliente pode ter adicionado há dias).
   useEffect(() => {
@@ -109,6 +122,11 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
     <form onSubmit={enviar} className="mx-auto grid max-w-[1200px] gap-10 px-4 py-10 sm:px-8 lg:grid-cols-[1fr_400px]">
       <div className="space-y-10">
         <h1 className="text-3xl font-extrabold uppercase tracking-tight">Finalizar compra</h1>
+        {logada ? (
+          <p className="mt-2 text-sm text-black/60">Comprando como {logada}. <Link href="/loja/conta" className="font-semibold underline">Minha conta</Link></p>
+        ) : (
+          <p className="mt-2 text-sm text-black/60">Já tem conta? <Link href="/loja/conta/entrar?voltar=/loja/carrinho" className="font-semibold underline">Entre</Link> para preencher seus dados.</p>
+        )}
         {avisos.length > 0 && (
           <div role="status" className="border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
             {avisos.map((a) => <p key={a}>{a}</p>)}
