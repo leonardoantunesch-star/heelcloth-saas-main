@@ -8,6 +8,8 @@ import { MarcaLoja } from "./LojaHeader";
 import { brl } from "@/data/loja";
 import { EMPRESA, FORMAS_PAGAMENTO } from "@/lib/empresa";
 
+const SITE_HOST = "heelclothing.com.br";
+
 // Selos de confiança (frete, parcelamento, compra segura), como nas lojas de referência.
 export function SelosLoja() {
   const { config } = useLoja();
@@ -131,6 +133,11 @@ export function LojaRodape() {
               <Chip><Lock className="h-3.5 w-3.5" aria-hidden="true" /> Site seguro (HTTPS)</Chip>
               <Chip><ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Pagamento pelo Mercado Pago</Chip>
             </div>
+            <p className="mt-3 text-xs text-white/55">
+              <a href={`https://transparencyreport.google.com/safe-browsing/search?url=${SITE_HOST}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-white">
+                Conferir a segurança do site no Google
+              </a>
+            </p>
           </div>
         </div>
       </div>

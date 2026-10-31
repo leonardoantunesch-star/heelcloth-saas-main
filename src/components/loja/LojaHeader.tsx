@@ -14,8 +14,8 @@ export function MarcaLoja({ claro = false }: { claro?: boolean }) {
     <span className="inline-flex items-center gap-2.5">
       {/* sem logo configurada no admin, usa a logo da Heel */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={config.marca.logo ? urlImagemLoja(config.marca.logo) : "/logo.png"} alt="" className={`h-9 w-auto object-contain ${claro ? "brightness-0 invert" : ""}`} />
-      <span className={`whitespace-nowrap text-lg font-extrabold uppercase tracking-[0.22em] [word-spacing:0.25em] ${claro ? "text-white" : ""}`}>
+      <img src={config.marca.logo ? urlImagemLoja(config.marca.logo) : "/logo.png"} alt="" className={`h-8 w-auto object-contain sm:h-9 ${claro ? "brightness-0 invert" : ""}`} />
+      <span className={`whitespace-nowrap text-[15px] font-extrabold uppercase tracking-[0.14em] [word-spacing:0.2em] sm:text-lg sm:tracking-[0.22em] sm:[word-spacing:0.25em] ${claro ? "text-white" : ""}`}>
         {config.marca.nome}
       </span>
     </span>
@@ -72,8 +72,8 @@ export function LojaHeader() {
     <header className="sticky top-0 z-40">
       <FaixaPromo />
       <div className="border-b border-black/10 bg-[var(--lj-bg)]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-3 sm:px-8 lg:py-4">
-          <button type="button" className="-ml-2 p-2 lg:hidden" aria-label="Abrir menu" aria-expanded={menu} onClick={() => setMenu(true)}>
+        <div className="mx-auto flex max-w-[1440px] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-8 lg:py-4">
+          <button type="button" className="-ml-2 p-1.5 sm:p-2 lg:hidden" aria-label="Abrir menu" aria-expanded={menu} onClick={() => setMenu(true)}>
             <Menu className="h-5 w-5" />
           </button>
           <Link href="/" className="shrink-0" aria-label="Página inicial da loja">
@@ -99,11 +99,11 @@ export function LojaHeader() {
             {sublimacao.rotulo}
           </Link>
           <div className="ml-auto flex items-center gap-1 lg:ml-2">
-            <button type="button" className="p-2" aria-label="Buscar" aria-expanded={busca} onClick={() => setBusca((v) => !v)}>
+            <button type="button" className="p-1.5 sm:p-2" aria-label="Buscar" aria-expanded={busca} onClick={() => setBusca((v) => !v)}>
               <Search className="h-5 w-5" />
             </button>
             <MenuConta />
-            <button type="button" className="relative p-2" aria-label={`Abrir carrinho (${quantidadeTotal} itens)`} onClick={() => setAberto(true)}>
+            <button type="button" className="relative p-1.5 sm:p-2" aria-label={`Abrir carrinho (${quantidadeTotal} itens)`} onClick={() => setAberto(true)}>
               <ShoppingBag className="h-5 w-5" />
               {quantidadeTotal > 0 && (
                 <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--lj-dest)] px-1 text-[10px] font-bold text-white">

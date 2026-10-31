@@ -68,7 +68,7 @@ export function MenuConta({ className = "" }: { className?: string }) {
         aria-label={conta ? `Minha conta (${primeiroNome})` : "Entrar ou criar conta"}
         aria-expanded={aberto}
         aria-haspopup="true"
-        className="relative inline-flex h-11 w-11 items-center justify-center"
+        className="relative inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center"
       >
         <UserRound className="h-[22px] w-[22px]" aria-hidden="true" strokeWidth={1.6} />
         {conta && <span aria-hidden="true" className="absolute right-[9px] top-[9px] h-2.5 w-2.5 rounded-full border-2 border-[var(--lj-bg,#fff)] bg-[var(--lj-dest,var(--lj-pri,#000))]" />}

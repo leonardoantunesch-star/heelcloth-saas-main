@@ -11,13 +11,13 @@ export function FaixaInstagram() {
           href={EMPRESA.instagramLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="mx-auto flex w-fit flex-col items-center text-center"
+          className="mx-auto flex min-h-11 w-fit flex-col items-center text-center"
         >
           <Camera className="h-8 w-8" aria-hidden="true" />
           <span className="mt-2 text-sm text-black/60">Siga-nos no Instagram</span>
           <span className="text-xl font-extrabold tracking-tight sm:text-2xl">@{EMPRESA.instagram}</span>
         </a>
-        <ul className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
+        <ul className="mt-6 grid grid-cols-3 gap-1 sm:mt-8 sm:gap-3 lg:grid-cols-6">
           {FOTOS_INSTAGRAM.map((f) => (
             <li key={f.arquivo}>
               <a
@@ -41,6 +41,14 @@ export function FaixaInstagram() {
             </li>
           ))}
         </ul>
+        <a
+          href={EMPRESA.instagramLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mx-auto mt-6 flex h-12 w-full max-w-sm items-center justify-center rounded-full bg-[var(--lj-pri)] text-sm font-semibold text-white sm:hidden"
+        >
+          Seguir @{EMPRESA.instagram}
+        </a>
       </div>
     </section>
   );
