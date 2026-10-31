@@ -85,7 +85,6 @@ export function MenuConta({ className = "" }: { className?: string }) {
             <>
               <div className="px-5 pb-3 pt-5">
                 <p className="text-base font-bold">Olá, {primeiroNome}</p>
-                <p className="mt-0.5 truncate text-xs text-[var(--lj-mudo,#555)]">{conta.email}</p>
               </div>
               <div className="border-t py-1" style={{ borderColor: borda }}>
                 <Link href="/loja/conta" role="menuitem" className={item}>Meus pedidos</Link>

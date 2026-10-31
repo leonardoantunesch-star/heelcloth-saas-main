@@ -20,6 +20,13 @@ const botao = "h-14 w-full rounded-full bg-[var(--lj-pri)] text-base font-semibo
 const botaoVazado = "inline-flex h-11 items-center justify-center rounded-full border border-[var(--lj-borda)] px-5 text-sm font-semibold hover:border-[var(--lj-pri)] disabled:opacity-50";
 const dia = (v: string) => new Date(v).toLocaleDateString("pt-BR");
 
+// Nunca mostra o e-mail inteiro na tela: "maria@gmail.com" vira "m***@g***.com".
+function mascararEmail(e: string): string {
+  const [u = "", d = ""] = e.split("@");
+  const [dom = "", ...resto] = d.split(".");
+  return `${u.slice(0, 1)}***@${dom.slice(0, 1)}***${resto.length ? "." + resto.join(".") : ""}`;
+}
+
 // Só aceita voltar para caminhos do próprio site (evita "redirecionamento aberto").
 const caminhoSeguro = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") && !v.includes("\\") ? v : "/loja/conta");
 
@@ -127,7 +134,7 @@ export function TelaCadastrar() {
       <Moldura titulo="Conta criada">
         <div className="rounded-[var(--lj-r-gg)] bg-[var(--lj-suave)] p-6 text-center">
           <CheckCircle2 className="mx-auto h-8 w-8 text-[var(--lj-pri)]" aria-hidden="true" />
-          <p className="mt-3 font-semibold">{feito.emailEnviado ? `Enviamos um e-mail de confirmação para ${f.email}.` : "Sua conta está pronta."}</p>
+          <p className="mt-3 font-semibold">{feito.emailEnviado ? `Enviamos um e-mail de confirmação para ${mascararEmail(f.email)}.` : "Sua conta está pronta."}</p>
           <p className="mt-2 text-sm text-[var(--lj-mudo)]">
             {feito.emailEnviado
               ? "Abra o e-mail e toque no botão para confirmar. Enquanto isso você já pode comprar."
@@ -182,7 +189,7 @@ export function TelaEsqueci() {
     <Moldura titulo="Esqueci minha senha" texto="Digite o e-mail da sua conta e enviaremos um link para criar uma nova senha.">
       {feito ? (
         <div role="status" className="rounded-[var(--lj-r-gg)] bg-[var(--lj-suave)] p-6 text-center">
-          <p className="font-semibold">Pronto! Se existir uma conta com {email}, o link já está a caminho.</p>
+          <p className="font-semibold">Pronto! Se existir uma conta com {mascararEmail(email)}, o link já está a caminho.</p>
           <p className="mt-2 text-sm text-[var(--lj-mudo)]">Olhe também a caixa de spam. O link vale por 1 hora.</p>
         </div>
       ) : (
@@ -352,7 +359,7 @@ export function TelaMinhaConta() {
       {!conta.verificado && (
         <div role="status" className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
           <MailWarning className="h-5 w-5 shrink-0" aria-hidden="true" />
-          <p className="min-w-0 flex-1">Confirme seu e-mail ({conta.email}) para ver aqui os pedidos que você já fez antes de criar a conta.</p>
+          <p className="min-w-0 flex-1">Confirme seu e-mail ({mascararEmail(conta.email)}) para ver aqui os pedidos que você já fez antes de criar a conta.</p>
           <button type="button" onClick={reenviar} className="rounded-full border border-amber-400 px-4 py-2 font-semibold">Reenviar e-mail</button>
         </div>
       )}
@@ -385,7 +392,7 @@ export function TelaMinhaConta() {
           <h2 className="text-lg font-bold">Meus dados</h2>
           <Campo rotulo="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required minLength={3} />
           <Campo rotulo="WhatsApp" type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
-          <p className="text-sm text-[var(--lj-mudo)]">E-mail: {conta.email} {conta.verificado ? "(confirmado)" : "(não confirmado)"}</p>
+          <p className="text-sm text-[var(--lj-mudo)]">E-mail: {mascararEmail(conta.email)} {conta.verificado ? "(confirmado)" : "(não confirmado)"}</p>
           <button type="submit" className={botaoVazado}>Salvar dados</button>
         </form>
         <form onSubmit={trocarSenha} className={`${bloco} space-y-3`}>
