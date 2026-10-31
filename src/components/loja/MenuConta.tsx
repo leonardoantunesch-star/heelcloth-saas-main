@@ -64,7 +64,7 @@ export function MenuConta({ className = "" }: { className?: string }) {
     <div ref={raiz} className={`relative ${className}`} onMouseEnter={() => passou(true)} onMouseLeave={() => passou(false)}>
       <button
         type="button"
-        onClick={() => setAberto((v) => !v)}
+        onClick={() => setAberto((v) => (window.matchMedia("(hover: hover)").matches ? true : !v))}
         aria-label={conta ? `Minha conta (${primeiroNome})` : "Entrar ou criar conta"}
         aria-expanded={aberto}
         aria-haspopup="true"
