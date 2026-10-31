@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const loja = await lerLoja();
     if (loja.config.aberta) {
       lista.unshift({ url: SITE_URL, lastModified: agora, priority: 1 });
-      for (const rota of ["/loja/novidades", "/loja/ofertas", "/loja/todos"]) {
+      for (const rota of ["/loja/novidades", "/loja/ofertas", "/loja/todos", "/loja/institucional", "/loja/duvidas"]) {
         lista.push({ url: `${SITE_URL}${rota}`, lastModified: agora, priority: 0.7 });
       }
       const idsCat = new Set<string>();

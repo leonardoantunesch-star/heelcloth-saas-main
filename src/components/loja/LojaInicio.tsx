@@ -5,6 +5,7 @@ import { Banners } from "@/components/loja/Banners";
 import { GradeProdutos } from "@/components/loja/CardProduto";
 import { ImagemLoja } from "@/components/loja/ImagemLoja";
 import { SelosLoja } from "@/components/loja/LojaRodape";
+import { FaixaInstagram } from "@/components/loja/FaixaInstagram";
 import { emPromocao, type ProdutoLoja } from "@/data/loja";
 
 function Vitrine({ titulo, href, produtos, parcelasMax }: { titulo: string; href: string; produtos: ProdutoLoja[]; parcelasMax: number }) {
@@ -60,6 +61,9 @@ export async function LojaInicio() {
       )}
 
       <SelosLoja />
+
+      {/* acima do rodapé, só na página inicial */}
+      <FaixaInstagram />
     </>
   );
 }

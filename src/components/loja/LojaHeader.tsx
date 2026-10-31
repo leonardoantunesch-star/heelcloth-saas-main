@@ -14,7 +14,7 @@ export function MarcaLoja({ claro = false }: { claro?: boolean }) {
     <span className="inline-flex items-center gap-2.5">
       {/* sem logo configurada no admin, usa a logo da Heel */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={config.marca.logo ? urlImagemLoja(config.marca.logo) : "/logo.png"} alt="" className="h-9 w-auto object-contain" />
+      <img src={config.marca.logo ? urlImagemLoja(config.marca.logo) : "/logo.png"} alt="" className={`h-9 w-auto object-contain ${claro ? "brightness-0 invert" : ""}`} />
       <span className={`whitespace-nowrap text-lg font-extrabold uppercase tracking-[0.22em] [word-spacing:0.25em] ${claro ? "text-white" : ""}`}>
         {config.marca.nome}
       </span>
