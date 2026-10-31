@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth";
-import { SENHA_FALSA, gravarCookieConta } from "@/lib/conta";
+import { SENHA_FALSA, MINUTOS_CODIGO_LOGIN, anularCodigosLogin, criarCodigoLogin, criarDesafioLogin, gravarCookieConta, loginComCodigoAtivo } from "@/lib/conta";
+import { emailCodigoLogin } from "@/lib/email";
 import { ipDe, limitar, marcaDe, textoEspera, zerarLimite } from "@/lib/limite";
 
 const schema = z.object({ email: z.string().trim().toLowerCase().email("E-mail inválido.").max(120), senha: z.string().min(1, "Digite a senha.").max(128) });
 
-// POST /api/conta/entrar - login do cliente. Limite por IP e por e-mail, e a mesma mensagem para e-mail ou senha errados.
+// POST /api/conta/entrar - 1ª etapa do login do cliente: e-mail e senha. Se conferem, manda um código de 6 dígitos
+// para o e-mail e devolve um "desafio" assinado; a sessão só é criada em /api/conta/entrar/codigo.
+// Limite por IP e por e-mail, e a mesma mensagem para e-mail ou senha errados.
 export async function POST(req: NextRequest) {
   try {
     const parsed = schema.safeParse(await req.json().catch(() => null));
@@ -24,9 +27,23 @@ export async function POST(req: NextRequest) {
     if (!conta || !confere) return NextResponse.json({ erro: "E-mail ou senha incorretos." }, { status: 401 });
 
     await zerarLimite(chaveEmail);
-    const res = NextResponse.json({ ok: true });
-    gravarCookieConta(res, conta);
-    return res;
+
+    if (!loginComCodigoAtivo()) {
+      const res = NextResponse.json({ ok: true });
+      gravarCookieConta(res, conta);
+      return res;
+    }
+
+    // No máximo 5 e-mails de código por hora para a mesma conta (evita encher a caixa de entrada de alguém).
+    const envios = await limitar(`login-codigo-envio:${conta.id}`, 5, 3600);
+    if (!envios.ok) return NextResponse.json({ erro: textoEspera(envios.esperaSeg) }, { status: 429 });
+    const codigo = await criarCodigoLogin(conta.id);
+    const enviado = await emailCodigoLogin(conta.email, conta.nome, codigo, MINUTOS_CODIGO_LOGIN);
+    if (!enviado) {
+      await anularCodigosLogin(conta.id);
+      return NextResponse.json({ erro: "Não conseguimos enviar o código para o seu e-mail agora. Tente de novo em instantes." }, { status: 503 });
+    }
+    return NextResponse.json({ etapa: "codigo", desafio: criarDesafioLogin(conta), minutos: MINUTOS_CODIGO_LOGIN });
   } catch (erro) {
     console.error("Login de cliente:", erro);
     return NextResponse.json({ erro: "Não foi possível entrar. Tente de novo." }, { status: 500 });

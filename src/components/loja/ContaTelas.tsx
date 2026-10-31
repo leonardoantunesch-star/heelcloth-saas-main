@@ -73,20 +73,113 @@ export function TelaEntrar() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+  // 2ª etapa: código de 6 dígitos enviado ao e-mail
+  const [desafio, setDesafio] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [aviso, setAviso] = useState("");
+  const [espera, setEspera] = useState(0);
+
+  useEffect(() => {
+    if (espera <= 0) return;
+    const t = setTimeout(() => setEspera((v) => v - 1), 1000);
+    return () => clearTimeout(t);
+  }, [espera]);
+
+  const reiniciar = (msg: string) => {
+    setDesafio("");
+    setCodigo("");
+    setSenha("");
+    setAviso("");
+    setErro(msg);
+  };
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
     setEnviando(true);
     const { ok, j } = await chamar("/api/conta/entrar", { email, senha });
+    if (ok && j.etapa === "codigo" && typeof j.desafio === "string") {
+      setDesafio(j.desafio);
+      setEspera(30);
+      setSenha("");
+    } else if (ok) {
+      router.push(voltar);
+      router.refresh();
+      return;
+    } else {
+      setErro(j.erro || "Não foi possível entrar.");
+    }
+    setEnviando(false);
+  };
+
+  const confirmar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro("");
+    setAviso("");
+    setEnviando(true);
+    const { ok, j } = await chamar("/api/conta/entrar/codigo", { desafio, codigo });
     if (ok) {
       router.push(voltar);
       router.refresh();
-    } else {
-      setErro(j.erro || "Não foi possível entrar.");
+      return;
+    }
+    if (j.reiniciar) {
+      reiniciar(j.erro || "Entre de novo.");
       setEnviando(false);
+      return;
+    }
+    setErro(j.erro || "Código incorreto.");
+    setCodigo("");
+    setEnviando(false);
+  };
+
+  const reenviar = async () => {
+    setErro("");
+    setAviso("");
+    const { ok, j } = await chamar("/api/conta/entrar/reenviar", { desafio });
+    if (ok) {
+      setAviso("Enviamos um novo código.");
+      setEspera(30);
+    } else if (j.reiniciar) {
+      reiniciar(j.erro || "Entre de novo.");
+    } else {
+      setErro(j.erro || "Não foi possível reenviar.");
     }
   };
+
+  if (desafio) {
+    return (
+      <Moldura titulo="Digite o código" texto={`Enviamos um código de 6 dígitos para ${mascararEmail(email)}. Ele vale por 10 minutos.`}>
+        <form onSubmit={confirmar} className="space-y-3">
+          <label className="block text-sm font-semibold">
+            Código de 6 dígitos
+            <input
+              className={`${campo} mt-1 text-center text-2xl tracking-[0.5em]`}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              autoFocus
+              required
+            />
+          </label>
+          <Erro texto={erro} />
+          {aviso && <p role="status" className="text-sm font-semibold text-[var(--lj-pri)]">{aviso}</p>}
+          <button type="submit" disabled={enviando || codigo.length !== 6} className={botao}>{enviando ? "Conferindo..." : "Confirmar e entrar"}</button>
+        </form>
+        <p className="mt-5 text-center text-sm">
+          <button type="button" onClick={reenviar} disabled={espera > 0} className="font-semibold text-[var(--lj-pri)] underline disabled:no-underline disabled:opacity-50">
+            {espera > 0 ? `Reenviar código em ${espera}s` : "Reenviar código"}
+          </button>
+        </p>
+        <p className="mt-3 text-center text-sm text-[var(--lj-mudo)]">
+          <button type="button" onClick={() => reiniciar("")} className="font-semibold underline">Voltar</button>
+        </p>
+      </Moldura>
+    );
+  }
 
   return (
     <Moldura titulo="Entrar" texto="Acompanhe seus pedidos e compre mais rápido.">

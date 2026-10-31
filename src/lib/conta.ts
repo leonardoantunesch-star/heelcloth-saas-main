@@ -87,7 +87,7 @@ export const semSenha = ({ passwordHash: _ignorado, ...resto }: ContaPublica & {
 // O link leva um código aleatório; no banco guardamos só a impressão (SHA-256) dele.
 const impressao = (codigo: string) => crypto.createHash("sha256").update(codigo).digest("hex");
 
-export type TipoToken = "VERIFICAR_EMAIL" | "REDEFINIR_SENHA";
+export type TipoToken = "VERIFICAR_EMAIL" | "REDEFINIR_SENHA" | "LOGIN";
 
 export async function criarCodigo(contaId: string, tipo: TipoToken, minutos: number): Promise<string> {
   const codigo = crypto.randomBytes(32).toString("base64url");
@@ -115,3 +115,59 @@ export async function origemSite(req: Request): Promise<string> {
 
 // Senha "falsa" para gastar o mesmo tempo quando o e-mail não existe (não revela quais e-mails têm conta).
 export const SENHA_FALSA = `${"00".repeat(16)}:${"00".repeat(64)}`;
+
+// --- Código de 6 dígitos no login (2ª etapa) ---------------------------------------------------------
+// Depois de e-mail + senha corretos, ainda não existe sessão: o cliente recebe um "desafio" assinado (vale 10 min)
+// e um código de 6 dígitos no e-mail. A sessão só nasce quando o código confere. No banco fica só a impressão do
+// código (misturada com o id da conta), ele vale uma vez e some depois de 5 erros.
+export const MINUTOS_CODIGO_LOGIN = 10;
+export const loginComCodigoAtivo = () => process.env.LOGIN_SEM_CODIGO !== "1";
+
+export function criarDesafioLogin(c: { id: string; passwordHash: string }): string {
+  const corpo = Buffer.from(JSON.stringify({ t: "desafio", sub: c.id, v: marcaSenha(c.passwordHash), exp: Math.floor(Date.now() / 1000) + MINUTOS_CODIGO_LOGIN * 60 })).toString("base64url");
+  return `${corpo}.${assinar(corpo)}`;
+}
+
+export function lerDesafioLogin(token: string | undefined): { sub: string; v: string } | null {
+  try {
+    if (!token || token.length > 600) return null;
+    const [corpo, assinatura] = token.split(".");
+    if (!corpo || !assinatura) return null;
+    const esperada = Buffer.from(assinar(corpo));
+    const recebida = Buffer.from(assinatura);
+    if (esperada.length !== recebida.length || !crypto.timingSafeEqual(esperada, recebida)) return null;
+    const dados = JSON.parse(Buffer.from(corpo, "base64url").toString("utf8"));
+    if (dados.t !== "desafio" || typeof dados.sub !== "string" || dados.exp < Math.floor(Date.now() / 1000)) return null;
+    return { sub: dados.sub, v: String(dados.v) };
+  } catch {
+    return null;
+  }
+}
+
+// Conta do desafio, se ele ainda vale (a senha não mudou e a conta existe).
+export async function contaDoDesafio(token: string | undefined) {
+  const d = lerDesafioLogin(token);
+  if (!d) return null;
+  const c = await prisma.conta.findUnique({ where: { id: d.sub } });
+  if (!c || marcaSenha(c.passwordHash) !== d.v) return null;
+  return c;
+}
+
+export async function criarCodigoLogin(contaId: string): Promise<string> {
+  const codigo = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
+  await prisma.tokenConta.updateMany({ where: { contaId, tipo: "LOGIN", usadoEm: null }, data: { usadoEm: new Date() } });
+  await prisma.tokenConta.create({ data: { contaId, tipo: "LOGIN", hash: impressao(`${contaId}:${codigo}`), expiraEm: new Date(Date.now() + MINUTOS_CODIGO_LOGIN * 60_000) } });
+  return codigo;
+}
+
+export async function anularCodigosLogin(contaId: string) {
+  await prisma.tokenConta.updateMany({ where: { contaId, tipo: "LOGIN", usadoEm: null }, data: { usadoEm: new Date() } });
+}
+
+export async function usarCodigoLogin(contaId: string, codigo: string): Promise<boolean> {
+  if (!/^\d{6}$/.test(codigo)) return false;
+  const t = await prisma.tokenConta.findUnique({ where: { hash: impressao(`${contaId}:${codigo}`) } });
+  if (!t || t.tipo !== "LOGIN" || t.contaId !== contaId) return false;
+  const r = await prisma.tokenConta.updateMany({ where: { id: t.id, usadoEm: null, expiraEm: { gt: new Date() } }, data: { usadoEm: new Date() } });
+  return r.count === 1;
+}
