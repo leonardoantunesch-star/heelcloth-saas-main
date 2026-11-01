@@ -69,7 +69,7 @@ export function SiteFooter() {
 
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-[1440px] px-5 py-5 text-[11px] text-white/50 sm:px-8 lg:px-12">
-          © {new Date().getFullYear()} {EMPRESA.nome} (Heel Clothing) · Camisas e uniformes esportivos sob medida · Itaúna - MG
+          © {new Date().getFullYear()} {EMPRESA.nome} (Heel Clothing) · Camisas e uniformes esportivos sob medida · Itaúna - MG · Conexão protegida (HTTPS)
         </p>
       </div>
     </footer>
