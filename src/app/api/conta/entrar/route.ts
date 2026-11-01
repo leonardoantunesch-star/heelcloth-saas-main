@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth";
-import { SENHA_FALSA, MINUTOS_CODIGO_LOGIN, anularCodigosLogin, criarCodigoLogin, criarDesafioLogin, gravarCookieConta, loginComCodigoAtivo } from "@/lib/conta";
-import { emailCodigoLogin } from "@/lib/email";
+import { SENHA_FALSA, MINUTOS_CODIGO_LOGIN, gravarCookieConta, loginComCodigoAtivo } from "@/lib/conta";
+import { mandarCodigoLogin } from "@/lib/conta-codigo";
 import { ipDe, limitar, marcaDe, textoEspera, zerarLimite } from "@/lib/limite";
 
 const schema = z.object({ email: z.string().trim().toLowerCase().email("E-mail inválido.").max(120), senha: z.string().min(1, "Digite a senha.").max(128) });
@@ -34,16 +34,9 @@ export async function POST(req: NextRequest) {
       return res;
     }
 
-    // No máximo 5 e-mails de código por hora para a mesma conta (evita encher a caixa de entrada de alguém).
-    const envios = await limitar(`login-codigo-envio:${conta.id}`, 5, 3600);
-    if (!envios.ok) return NextResponse.json({ erro: textoEspera(envios.esperaSeg) }, { status: 429 });
-    const codigo = await criarCodigoLogin(conta.id);
-    const enviado = await emailCodigoLogin(conta.email, conta.nome, codigo, MINUTOS_CODIGO_LOGIN);
-    if (!enviado) {
-      await anularCodigosLogin(conta.id);
-      return NextResponse.json({ erro: "Não conseguimos enviar o código para o seu e-mail agora. Tente de novo em instantes." }, { status: 503 });
-    }
-    return NextResponse.json({ etapa: "codigo", desafio: criarDesafioLogin(conta), minutos: MINUTOS_CODIGO_LOGIN });
+    const r = await mandarCodigoLogin(conta);
+    if (!r.ok) return NextResponse.json({ erro: r.erro }, { status: r.status });
+    return NextResponse.json({ etapa: "codigo", desafio: r.desafio, minutos: MINUTOS_CODIGO_LOGIN });
   } catch (erro) {
     console.error("Login de cliente:", erro);
     return NextResponse.json({ erro: "Não foi possível entrar. Tente de novo." }, { status: 500 });

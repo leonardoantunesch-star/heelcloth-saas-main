@@ -7,6 +7,7 @@ import { LojaProvider } from "@/components/loja/LojaContexto";
 import { LojaHeader } from "@/components/loja/LojaHeader";
 import { LojaRodape } from "@/components/loja/LojaRodape";
 import { CarrinhoLateral } from "@/components/loja/CarrinhoLateral";
+import { ContaLateral } from "@/components/loja/ContaLateral";
 
 // Moldura da loja (cores, cabeçalho, rodapé, carrinho). Usada na página inicial e nas páginas /loja/...
 export async function LojaMoldura({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,7 @@ export async function LojaMoldura({ children }: { children: React.ReactNode }) {
         <main id="conteudo">{children}</main>
         <LojaRodape />
         <CarrinhoLateral />
+        <ContaLateral />
       </LojaProvider>
     </div>
   );

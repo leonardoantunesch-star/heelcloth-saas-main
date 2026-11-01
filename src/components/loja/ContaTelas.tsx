@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, MailWarning, UserRound } from "lucide-react";
 import { brl } from "@/data/loja";
+import { Erro, PassoCodigo, botao, campo, caminhoSeguro, chamar, mascararEmail } from "./ContaComum";
 
 const SITUACOES: Record<string, string> = {
   ORCAMENTO: "Em análise", AGUARDANDO_APROVACAO: "Aguardando aprovação", APROVADO: "Aprovado", PAGAMENTO_PENDENTE: "Aguardando pagamento",
@@ -15,32 +16,8 @@ const rotuloSituacao = (s: string, _x?: boolean) => SITUACOES[s] ?? "Em andament
 
 // Telas da conta do cliente: entrar, criar conta, esqueci a senha, nova senha, confirmar e-mail e "Minha conta".
 
-const campo = "h-12 w-full rounded-2xl border border-[var(--lj-borda)] bg-[var(--lj-bg)] px-4 text-base outline-none focus:border-[var(--lj-pri)]";
-const botao = "h-14 w-full rounded-full bg-[var(--lj-pri)] text-base font-semibold text-[var(--lj-pri-txt)] hover:opacity-95 disabled:opacity-50";
 const botaoVazado = "inline-flex h-11 items-center justify-center rounded-full border border-[var(--lj-borda)] px-5 text-sm font-semibold hover:border-[var(--lj-pri)] disabled:opacity-50";
 const dia = (v: string) => new Date(v).toLocaleDateString("pt-BR");
-
-// Nunca mostra o e-mail inteiro na tela: "maria@gmail.com" vira "m***@g***.com".
-function mascararEmail(e: string): string {
-  const [u = "", d = ""] = e.split("@");
-  const [dom = "", ...resto] = d.split(".");
-  return `${u.slice(0, 1)}***@${dom.slice(0, 1)}***${resto.length ? "." + resto.join(".") : ""}`;
-}
-
-// Só aceita voltar para caminhos do próprio site (evita "redirecionamento aberto").
-const caminhoSeguro = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") && !v.includes("\\") ? v : "/loja/conta");
-
-type Resposta = { ok: boolean; j: Record<string, unknown> & { erro?: string } };
-
-async function chamar(url: string, corpo?: unknown, metodo = "POST"): Promise<Resposta> {
-  try {
-    const r = await fetch(url, { method: metodo, headers: { "Content-Type": "application/json" }, body: corpo === undefined ? undefined : JSON.stringify(corpo) });
-    const j = await r.json().catch(() => ({}));
-    return { ok: r.ok, j };
-  } catch {
-    return { ok: false, j: { erro: "Sem conexão. Tente de novo." } };
-  }
-}
 
 function Moldura({ titulo, texto, children }: { titulo: string; texto?: string; children: React.ReactNode }) {
   return (
@@ -64,8 +41,6 @@ function Campo({ rotulo, ...props }: { rotulo: string } & React.InputHTMLAttribu
   );
 }
 
-const Erro = ({ texto }: { texto: string }) => (texto ? <p role="alert" className="text-sm font-semibold text-[#b42318]">{texto}</p> : null);
-
 export function TelaEntrar() {
   const router = useRouter();
   const voltar = caminhoSeguro(useSearchParams().get("voltar"));
@@ -75,22 +50,16 @@ export function TelaEntrar() {
   const [enviando, setEnviando] = useState(false);
   // 2ª etapa: código de 6 dígitos enviado ao e-mail
   const [desafio, setDesafio] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [aviso, setAviso] = useState("");
-  const [espera, setEspera] = useState(0);
-
-  useEffect(() => {
-    if (espera <= 0) return;
-    const t = setTimeout(() => setEspera((v) => v - 1), 1000);
-    return () => clearTimeout(t);
-  }, [espera]);
 
   const reiniciar = (msg: string) => {
     setDesafio("");
-    setCodigo("");
     setSenha("");
-    setAviso("");
     setErro(msg);
+  };
+
+  const concluir = () => {
+    router.push(voltar);
+    router.refresh();
   };
 
   const enviar = async (e: React.FormEvent) => {
@@ -100,11 +69,9 @@ export function TelaEntrar() {
     const { ok, j } = await chamar("/api/conta/entrar", { email, senha });
     if (ok && j.etapa === "codigo" && typeof j.desafio === "string") {
       setDesafio(j.desafio);
-      setEspera(30);
       setSenha("");
     } else if (ok) {
-      router.push(voltar);
-      router.refresh();
+      concluir();
       return;
     } else {
       setErro(j.erro || "Não foi possível entrar.");
@@ -112,71 +79,10 @@ export function TelaEntrar() {
     setEnviando(false);
   };
 
-  const confirmar = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErro("");
-    setAviso("");
-    setEnviando(true);
-    const { ok, j } = await chamar("/api/conta/entrar/codigo", { desafio, codigo });
-    if (ok) {
-      router.push(voltar);
-      router.refresh();
-      return;
-    }
-    if (j.reiniciar) {
-      reiniciar(j.erro || "Entre de novo.");
-      setEnviando(false);
-      return;
-    }
-    setErro(j.erro || "Código incorreto.");
-    setCodigo("");
-    setEnviando(false);
-  };
-
-  const reenviar = async () => {
-    setErro("");
-    setAviso("");
-    const { ok, j } = await chamar("/api/conta/entrar/reenviar", { desafio });
-    if (ok) {
-      setAviso("Enviamos um novo código.");
-      setEspera(30);
-    } else if (j.reiniciar) {
-      reiniciar(j.erro || "Entre de novo.");
-    } else {
-      setErro(j.erro || "Não foi possível reenviar.");
-    }
-  };
-
   if (desafio) {
     return (
-      <Moldura titulo="Digite o código" texto={`Enviamos um código de 6 dígitos para ${mascararEmail(email)}. Ele vale por 10 minutos.`}>
-        <form onSubmit={confirmar} className="space-y-3">
-          <label className="block text-sm font-semibold">
-            Código de 6 dígitos
-            <input
-              className={`${campo} mt-1 text-center text-2xl tracking-[0.5em]`}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              autoFocus
-              required
-            />
-          </label>
-          <Erro texto={erro} />
-          {aviso && <p role="status" className="text-sm font-semibold text-[var(--lj-pri)]">{aviso}</p>}
-          <button type="submit" disabled={enviando || codigo.length !== 6} className={botao}>{enviando ? "Conferindo..." : "Confirmar e entrar"}</button>
-        </form>
-        <p className="mt-5 text-center text-sm">
-          <button type="button" onClick={reenviar} disabled={espera > 0} className="font-semibold text-[var(--lj-pri)] underline disabled:no-underline disabled:opacity-50">
-            {espera > 0 ? `Reenviar código em ${espera}s` : "Reenviar código"}
-          </button>
-        </p>
-        <p className="mt-3 text-center text-sm text-[var(--lj-mudo)]">
-          <button type="button" onClick={() => reiniciar("")} className="font-semibold underline">Voltar</button>
-        </p>
+      <Moldura titulo="Digite o código">
+        <PassoCodigo email={email} desafio={desafio} aoConcluir={concluir} aoReiniciar={(m) => { reiniciar(m); setEnviando(false); }} />
       </Moldura>
     );
   }
@@ -208,6 +114,7 @@ export function TelaCadastrar() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [feito, setFeito] = useState<{ emailEnviado: boolean } | null>(null);
+  const [desafio, setDesafio] = useState("");
   const mudar = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF((v) => ({ ...v, [k]: e.target.value }));
 
   const enviar = async (e: React.FormEvent) => {
@@ -217,10 +124,24 @@ export function TelaCadastrar() {
     if (!aceite) return setErro("Para criar a conta, marque a caixa de concordância.");
     setEnviando(true);
     const { ok, j } = await chamar("/api/conta/cadastro", { nome: f.nome, email: f.email, telefone: f.telefone, senha: f.senha });
-    if (ok) setFeito({ emailEnviado: j.emailEnviado === true });
+    if (ok && j.etapa === "codigo" && typeof j.desafio === "string") setDesafio(j.desafio);
+    else if (ok) setFeito({ emailEnviado: j.emailEnviado === true });
     else setErro(j.erro || "Não foi possível criar a conta.");
     setEnviando(false);
   };
+
+  if (desafio) {
+    return (
+      <Moldura titulo="Confirme seu e-mail">
+        <PassoCodigo
+          email={f.email}
+          desafio={desafio}
+          aoConcluir={() => { router.push(voltar); router.refresh(); }}
+          aoReiniciar={(m) => { setDesafio(""); setF((v) => ({ ...v, senha: "", repetir: "" })); setErro(m); setEnviando(false); }}
+        />
+      </Moldura>
+    );
+  }
 
   if (feito) {
     return (
