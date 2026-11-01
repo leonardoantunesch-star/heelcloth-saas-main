@@ -22,128 +22,41 @@ import {
   Images,
   Store,
   Shield,
+  LineChart,
   X,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdminShell } from "./admin-shell-context";
+import { PERFIL_INFO, areasDoPerfil, type Area, type Perfil } from "@/lib/permissoes";
 
-export interface NavItem {
-  title: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  badge?: string;
-  roles?: string[];
-}
-
-export const navItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Pedidos",
-    href: "/admin/pedidos",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Orçamentos",
-    href: "/admin/orcamentos",
-    icon: FileText,
-    roles: ["ADMIN", "VENDEDOR"],
-  },
-  {
-    title: "Cotação",
-    href: "/admin/cotacao",
-    icon: ClipboardList,
-    roles: ["ADMIN", "VENDEDOR"],
-  },
-  {
-    title: "Loja online",
-    href: "/admin/loja",
-    icon: Store,
-    roles: ["ADMIN", "VENDEDOR"],
-  },
-  {
-    title: "Catálogo",
-    href: "/admin/catalogo",
-    icon: Images,
-    roles: ["ADMIN", "VENDEDOR"],
-  },
-  {
-    title: "Clientes",
-    href: "/admin/clientes",
-    icon: Users,
-    roles: ["ADMIN", "VENDEDOR"],
-  },
-  {
-    title: "Produção",
-    href: "/admin/producao",
-    icon: Layers,
-    roles: ["ADMIN", "PRODUCAO"],
-  },
-  {
-    title: "CorelDRAW",
-    href: "/admin/coreldraw",
-    icon: Shirt,
-    roles: ["ADMIN", "PRODUCAO"],
-  },
-  {
-    title: "Estoque",
-    href: "/admin/estoque",
-    icon: Package,
-    roles: ["ADMIN", "PRODUCAO"],
-  },
-  {
-    title: "Financeiro",
-    href: "/admin/financeiro",
-    icon: DollarSign,
-    roles: ["ADMIN", "FINANCEIRO"],
-  },
-  {
-    title: "NF-e Fiscal",
-    href: "/admin/nfe",
-    icon: Receipt,
-    roles: ["ADMIN"],
-  },
-  {
-    title: "WhatsApp",
-    href: "/admin/whatsapp",
-    icon: MessageSquare,
-    roles: ["ADMIN", "PRODUCAO", "VENDEDOR"],
-  },
-  {
-    title: "Relatórios",
-    href: "/admin/relatorios",
-    icon: BarChart3,
-    roles: ["ADMIN", "FINANCEIRO"],
-  },
-  {
-    title: "Usuários",
-    href: "/admin/usuarios",
-    icon: UserCheck,
-    roles: ["ADMIN"],
-  },
-  {
-    title: "Auditoria",
-    href: "/admin/auditoria",
-    icon: Shield,
-    roles: ["ADMIN"],
-  },
-  {
-    title: "Configurações",
-    href: "/admin/configuracoes",
-    icon: Settings,
-    roles: ["ADMIN"],
-  },
-];
+// Ícone de cada área. Quem pode abrir cada área (e o título) vem de "@/lib/permissoes", a fonte única.
+const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
+  "/admin/dashboard": LayoutDashboard,
+  "/admin/pedidos": ShoppingCart,
+  "/admin/orcamentos": FileText,
+  "/admin/cotacao": ClipboardList,
+  "/admin/loja": Store,
+  "/admin/catalogo": Images,
+  "/admin/clientes": Users,
+  "/admin/producao": Layers,
+  "/admin/coreldraw": Shirt,
+  "/admin/estoque": Package,
+  "/admin/financeiro": DollarSign,
+  "/admin/nfe": Receipt,
+  "/admin/whatsapp": MessageSquare,
+  "/admin/configuracoes": Settings,
+  "/admin/equipe": UserCheck,
+  "/admin/analytics": LineChart,
+  "/admin/relatorios": BarChart3,
+  "/admin/auditoria": Shield,
+};
 
 export function Sidebar() {
   const pathname = usePathname();
   const { isMobileNavOpen, closeMobileNav, isCollapsed, toggleCollapse } = useAdminShell();
-  const [userRole, setUserRole] = useState<string>("ADMIN");
+  const [userRole, setUserRole] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -156,45 +69,47 @@ export function Sidebar() {
       .catch(() => {});
   }, []);
 
-  const visibleItems = navItems.filter((item) => {
-    if (!item.roles) return true;
-    return item.roles.includes(userRole);
-  });
+  const nomeDoPerfil = PERFIL_INFO[userRole as Perfil]?.nome ?? userRole;
+  const areas = areasDoPerfil(userRole);
+  const principais = areas.filter((a) => a.grupo === "principal");
+  const daEquipe = areas.filter((a) => a.grupo === "equipe");
+
+  const renderLink = (item: Area, isMobile: boolean) => {
+    const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+    const Icon = ICONES[item.href] ?? LayoutDashboard;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={isMobile ? closeMobileNav : undefined}
+        title={isCollapsed && !isMobile ? item.titulo : undefined}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all select-none min-h-[42px]",
+          isActive
+            ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border border-blue-100/60"
+            : "text-slate-600 hover:bg-slate-100/70 hover:text-slate-900",
+          isCollapsed && !isMobile && "justify-center px-2"
+        )}
+      >
+        <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", isActive ? "text-blue-600" : "text-slate-400")} />
+        {(!isCollapsed || isMobile) && <span className="truncate">{item.titulo}</span>}
+      </Link>
+    );
+  };
 
   const renderNavLinks = (isMobile = false) => (
     <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-      {visibleItems.map((item) => {
-        const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={isMobile ? closeMobileNav : undefined}
-            title={isCollapsed && !isMobile ? item.title : undefined}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all select-none min-h-[42px]",
-              isActive
-                ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border border-blue-100/60"
-                : "text-slate-600 hover:bg-slate-100/70 hover:text-slate-900",
-              isCollapsed && !isMobile && "justify-center px-2"
-            )}
-          >
-            <Icon
-              className={cn(
-                "h-4.5 w-4.5 shrink-0 transition-colors",
-                isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"
-              )}
-            />
-            {(!isCollapsed || isMobile) && <span className="truncate">{item.title}</span>}
-            {(!isCollapsed || isMobile) && item.badge && (
-              <span className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                {item.badge}
-              </span>
-            )}
-          </Link>
-        );
-      })}
+      {principais.map((item) => renderLink(item, isMobile))}
+      {daEquipe.length > 0 && (
+        <>
+          {!isCollapsed || isMobile ? (
+            <p className="px-3 pt-5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Equipe e Analytics</p>
+          ) : (
+            <div className="mx-3 my-3 border-t border-slate-200" role="separator" />
+          )}
+          {daEquipe.map((item) => renderLink(item, isMobile))}
+        </>
+      )}
     </nav>
   );
 
@@ -262,7 +177,7 @@ export function Sidebar() {
           <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500">
             <div className="font-semibold text-slate-800">Heel Cloth SaaS v1.0</div>
             <div className="mt-0.5">
-              Perfil: <span className="text-blue-600 font-bold">{userRole}</span>
+              Perfil: <span className="text-blue-600 font-bold">{nomeDoPerfil}</span>
             </div>
           </div>
         </aside>
@@ -311,7 +226,7 @@ export function Sidebar() {
           {!isCollapsed && (
             <div className="text-xs text-slate-500 truncate mr-2">
               <span className="font-semibold text-slate-700 block truncate">Heel Cloth ERP</span>
-              <span className="text-[10px] text-blue-600 font-semibold">{userRole}</span>
+              <span className="text-[10px] text-blue-600 font-semibold">{nomeDoPerfil}</span>
             </div>
           )}
           <button

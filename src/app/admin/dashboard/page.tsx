@@ -15,6 +15,12 @@ import {
   Users,
 } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { getSession } from "@/lib/auth";
+import { lerCampanhas } from "@/lib/campanhas";
+import { verValores } from "@/lib/permissoes";
+import { hojeBrasil, progressoPorStatus, seriePorSemana } from "@/lib/painel-dados";
+import { GraficoBarras, Rosca } from "@/components/painel/graficos";
+import { CampanhasAtivas } from "@/components/painel/campanhas-ativas";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +52,11 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const now = new Date();
+  const sessao = await getSession();
+  const podeVerValores = verValores(sessao?.role);
+  const podeEditarCampanhas = sessao?.role === "ADMIN" || sessao?.role === "VENDEDOR";
+  const hoje = hojeBrasil();
+  const desde = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 7 * 8 - 3);
 
   // Buscar dados em paralelo diretamente do banco de dados
   const [
@@ -60,6 +71,11 @@ export default async function DashboardPage() {
     despesasPagar,
     despesasPagas,
     pedidosRecentes,
+    pedidosPeriodo,
+    contagemStatus,
+    producaoAberta,
+    usuariosAtivos,
+    campanhas,
   ] = await Promise.all([
     prisma.order.count(),
     prisma.order.count({ where: { status: "EM_PRODUCAO" } }),
@@ -110,7 +126,39 @@ export default async function DashboardPage() {
         players: true,
       },
     }),
+    prisma.order.findMany({
+      where: { createdAt: { gte: desde }, status: { not: "CANCELADO" } },
+      select: { createdAt: true, totalAmount: true },
+    }),
+    prisma.order.groupBy({ by: ["status"], _count: { _all: true } }),
+    prisma.productionOrder.findMany({
+      where: { stageStatus: { not: "CONCLUIDO" }, finishedAt: null },
+      select: { responsible: true, stageStatus: true, deadline: true },
+    }),
+    prisma.user.count({ where: { active: true } }),
+    lerCampanhas(),
   ]);
+
+  // Gráficos novos (semana a semana, andamento, equipe)
+  const semanas = seriePorSemana(pedidosPeriodo as { createdAt: Date; totalAmount: number }[], hoje, 8);
+  const progresso = progressoPorStatus(
+    (contagemStatus as { status: string; _count: { _all: number } }[]).map((g) => ({ status: g.status, quantidade: g._count._all }))
+  );
+  const tarefas = producaoAberta as { responsible: string | null; stageStatus: string; deadline: Date | null }[];
+  const porResponsavel = new Map<string, { abertas: number; atrasadas: number }>();
+  for (const t of tarefas) {
+    const nome = t.responsible?.trim() || "Sem responsável";
+    const a = porResponsavel.get(nome) ?? { abertas: 0, atrasadas: 0 };
+    a.abertas += 1;
+    if (t.stageStatus === "ATRASADO" || (t.deadline && t.deadline < now)) a.atrasadas += 1;
+    porResponsavel.set(nome, a);
+  }
+  const equipeTarefas = [...porResponsavel.entries()]
+    .map(([nome, v]) => ({ nome, ...v }))
+    .sort((x, y) => y.abertas - x.abertas)
+    .slice(0, 5);
+  const maxTarefas = Math.max(...equipeTarefas.map((e) => e.abertas), 1);
+  const compacto = (n: number) => (n >= 1000 ? `${(n / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}k` : String(Math.round(n)));
 
   const faturamento = somaPedidos._sum.totalAmount || receitasPagas._sum.amount || 0;
   const aReceber = somaPedidos._sum.pendingAmount ?? receitasPendentes._sum.amount ?? 0;
@@ -255,7 +303,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Financial Overview (Section 4 summary cards) */}
+      {/* Financial Overview (só quem vê valores: administrador e financeiro) */}
+      {podeVerValores && (
       <div>
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
           Indicadores Financeiros Sintéticos
@@ -283,6 +332,103 @@ export default async function DashboardPage() {
             );
           })}
         </div>
+      </div>
+      )}
+
+      {/* Desempenho e andamento (gráficos) */}
+      <div>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Desempenho</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-3 flex flex-row items-start justify-between gap-3">
+              <div>
+                <CardTitle className="text-base sm:text-lg">{podeVerValores ? "Vendas por semana" : "Pedidos por semana"}</CardTitle>
+                <CardDescription className="text-xs">Últimas 8 semanas{podeVerValores ? ", em R$" : ""} (a semana começa na segunda)</CardDescription>
+              </div>
+              {podeVerValores && (
+                <Link href="/admin/analytics" className="shrink-0 text-xs font-semibold text-blue-600 hover:text-blue-800">
+                  Ver Analytics →
+                </Link>
+              )}
+            </CardHeader>
+            <CardContent>
+              <GraficoBarras
+                descricao={podeVerValores ? "Vendas por semana" : "Pedidos por semana"}
+                dados={semanas.map((s) => ({
+                  rotulo: s.rotulo,
+                  valor: podeVerValores ? s.faturamento : s.pedidos,
+                  dica: `Semana de ${s.rotulo}: ${s.pedidos} pedidos${podeVerValores ? `, ${formatCurrency(s.faturamento)}` : ""}`,
+                }))}
+                formatar={podeVerValores ? compacto : undefined}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base sm:text-lg">Andamento dos pedidos</CardTitle>
+              <CardDescription className="text-xs">Cancelados não entram na conta</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Rosca
+                descricao="Andamento dos pedidos"
+                centro="pedidos"
+                fatias={[
+                  { rotulo: "Concluídos", valor: progresso.concluido, stroke: "stroke-emerald-500", ponto: "bg-emerald-500" },
+                  { rotulo: "Em produção", valor: progresso.producao, stroke: "stroke-amber-500", ponto: "bg-amber-500" },
+                  { rotulo: "Aguardando", valor: progresso.pendente, stroke: "stroke-slate-400", ponto: "bg-slate-400" },
+                ]}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Equipe e tarefas + Campanhas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="pb-3 flex flex-row items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base sm:text-lg">Equipe e tarefas</CardTitle>
+              <CardDescription className="text-xs">
+                {usuariosAtivos} {usuariosAtivos === 1 ? "pessoa ativa" : "pessoas ativas"} • {tarefas.length} {tarefas.length === 1 ? "pedido aberto" : "pedidos abertos"} na produção
+              </CardDescription>
+            </div>
+            {sessao?.role === "ADMIN" && (
+              <Link href="/admin/equipe" className="shrink-0 text-xs font-semibold text-blue-600 hover:text-blue-800">
+                Gerenciar equipe →
+              </Link>
+            )}
+          </CardHeader>
+          <CardContent>
+            {equipeTarefas.length === 0 ? (
+              <EmptyState title="Nenhuma tarefa aberta" description="Quando houver pedidos na produção, a carga de cada responsável aparece aqui." />
+            ) : (
+              <ul className="space-y-4">
+                {equipeTarefas.map((e) => (
+                  <li key={e.nome}>
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="truncate font-semibold text-slate-900">{e.nome}</span>
+                      <span className="shrink-0 text-xs text-slate-500">
+                        {e.abertas} {e.abertas === 1 ? "tarefa" : "tarefas"}
+                        {e.atrasadas > 0 && <span className="ml-2 font-semibold text-rose-600">{e.atrasadas} em atraso</span>}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`${e.nome}: ${e.abertas} tarefas abertas`}>
+                      <div className={cn("h-full rounded-full", e.atrasadas > 0 ? "bg-amber-500" : "bg-blue-500")} style={{ width: `${(e.abertas / maxTarefas) * 100}%` }} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <CampanhasAtivas
+          iniciais={campanhas}
+          podeEditar={podeEditarCampanhas}
+          hoje={`${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`}
+        />
       </div>
 
       {/* Recent Orders Preview */}
