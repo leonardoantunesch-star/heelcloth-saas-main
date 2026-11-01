@@ -5,16 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { Erro, PassoCodigo, botao, campo, chamar } from "./ContaComum";
-import { IconeApple, IconeFacebook, IconeGoogle } from "./IconesSociais";
+import { IconeGoogle } from "./IconesSociais";
 
 // Aba lateral de login e cadastro (como nas grandes lojas): abre ao tocar no bonequinho do topo.
 // Passos: entrar (e-mail e senha) -> código de 6 dígitos no e-mail; ou criar conta -> código de 6 dígitos no e-mail.
-// Também tem "Entrar com Google / Facebook / Apple" (cada um só funciona depois de ligado nas variáveis da loja).
+// Também tem "Entrar com Google" (só funciona depois de ligado nas variáveis da loja). Facebook e Apple não são mostrados.
 
 export const EVENTO_ABRIR_CONTA = "loja:abrir-conta";
 
 type Modo = "entrar" | "criar" | "codigo";
-type Disponiveis = Partial<Record<"google" | "facebook" | "apple", boolean>>;
+type Disponiveis = Partial<Record<"google", boolean>>;
 
 const AVISOS: Record<string, string> = {
   "social-indisponivel": "Esse tipo de login ainda não está ativo nesta loja. Entre com seu e-mail.",
@@ -24,8 +24,8 @@ const AVISOS: Record<string, string> = {
   "social-email-nao-confirmado": "O e-mail dessa conta ainda não foi confirmado no provedor. Confirme lá e tente de novo.",
 };
 
-const NOMES = { google: "Google", facebook: "Facebook", apple: "Apple" } as const;
-const ICONES = { google: IconeGoogle, facebook: IconeFacebook, apple: IconeApple } as const;
+const NOMES = { google: "Google" } as const;
+const ICONES = { google: IconeGoogle } as const;
 
 function Rotulo({ texto, children }: { texto: string; children: React.ReactNode }) {
   return (
@@ -212,7 +212,7 @@ export function ContaLateral() {
             <>
               <div className="mt-6">
                 <p className="mb-2 text-sm font-medium">Continuar com</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   {(Object.keys(NOMES) as (keyof typeof NOMES)[]).map((p) => {
                     const Icone = ICONES[p];
                     return (
