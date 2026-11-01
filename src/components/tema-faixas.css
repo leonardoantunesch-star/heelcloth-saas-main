@@ -1,0 +1,13 @@
+/* Faixas pretas fixas (aviso do topo, destaque e rodapé): continuam pretas no tema preto.
+   O filtro desfaz a inversão da página só nessa faixa; imagens dentro dela ficam como são. */
+html.tema-escuro .bloco-preto {
+  filter: invert(1) hue-rotate(180deg) contrast(1.16);
+}
+
+html.tema-escuro .bloco-preto img {
+  filter: none;
+}
+
+html.tema-escuro .bloco-preto img.logo-claro {
+  filter: brightness(0) invert(1);
+}
