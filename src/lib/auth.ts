@@ -84,7 +84,9 @@ export function verifyToken(token: string): SessionPayload | null {
       .replace(/\+/g, "-")
       .replace(/\//g, "_");
 
-    if (signature !== expectedSignature) return null;
+    const a = Buffer.from(signature);
+    const b = Buffer.from(expectedSignature);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
 
     const decodedPayload = JSON.parse(base64UrlDecode(payload)) as SessionPayload;
     if (decodedPayload.exp && decodedPayload.exp < Math.floor(Date.now() / 1000)) {

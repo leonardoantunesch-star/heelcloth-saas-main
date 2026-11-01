@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { ipDe, limitar, textoEspera } from "@/lib/limite";
 
 // GET /api/rastreio/[codigo] - Endpoint público de rastreamento de pedido (Seção 8)
 // Sem autenticação exigida para permitir que o cliente final consulte via link do WhatsApp
@@ -8,8 +9,19 @@ export async function GET(
   { params }: { params: Promise<{ codigo: string }> }
 ) {
   try {
+    // Limite de consultas guardado no banco: impede testar números de pedido em sequência.
+    const lim = await limitar(`rastreio:${ipDe(req)}`, 30, 600);
+    if (!lim.ok) {
+      return NextResponse.json({ erro: textoEspera(lim.esperaSeg) }, { status: 429 });
+    }
+
     const { codigo } = await params;
-    const codigoFormatado = decodeURIComponent(codigo).trim();
+    let codigoFormatado = "";
+    try {
+      codigoFormatado = decodeURIComponent(codigo).trim().toUpperCase();
+    } catch {
+      codigoFormatado = "";
+    }
 
     if (!codigoFormatado) {
       return NextResponse.json(
@@ -17,14 +29,16 @@ export async function GET(
         { status: 400 }
       );
     }
+    // Só aceita o formato do protocolo (ex.: NX-2610-AB12). O id interno do banco não serve mais para consultar.
+    if (!/^[A-Z0-9][A-Z0-9-]{4,28}$/.test(codigoFormatado)) {
+      return NextResponse.json(
+        { erro: "Pedido não encontrado. Verifique o número informado e tente novamente." },
+        { status: 404 }
+      );
+    }
 
     const pedido = await prisma.order.findFirst({
-      where: {
-        OR: [
-          { orderNumber: { equals: codigoFormatado } },
-          { id: { equals: codigoFormatado } },
-        ],
-      },
+      where: { orderNumber: codigoFormatado },
       include: {
         customer: {
           select: {
@@ -124,7 +138,6 @@ export async function GET(
     return NextResponse.json({
       sucesso: true,
       pedido: {
-        id: pedido.id,
         orderNumber: pedido.orderNumber,
         status: pedido.status,
         etapaNumero,
