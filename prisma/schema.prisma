@@ -339,3 +339,40 @@ model Setting {
   description String?
   updatedAt   DateTime @updatedAt
 }
+
+// -------------------------------------------------------------
+// CONTAS DE CLIENTE DA LOJA (login do cliente, separado do painel da equipe)
+// -------------------------------------------------------------
+model Conta {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  nome              String
+  telefone          String?
+  passwordHash      String
+  emailVerificadoEm DateTime?
+  criadoEm          DateTime  @default(now())
+  atualizadoEm      DateTime  @updatedAt
+
+  tokens TokenConta[]
+}
+
+// Códigos de uso único enviados por e-mail (confirmar e-mail, trocar senha). Guarda só a impressão do código.
+model TokenConta {
+  id       String    @id @default(uuid())
+  contaId  String
+  conta    Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  tipo     String    // VERIFICAR_EMAIL | REDEFINIR_SENHA
+  hash     String    @unique
+  expiraEm DateTime
+  usadoEm  DateTime?
+  criadoEm DateTime  @default(now())
+
+  @@index([contaId])
+}
+
+// Contador do limite de tentativas (login, cadastro, recuperação de senha, pedidos).
+model LimiteTaxa {
+  chave    String   @id
+  contagem Int
+  expiraEm DateTime
+}

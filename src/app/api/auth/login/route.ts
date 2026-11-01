@@ -3,6 +3,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword, createToken, COOKIE_NAME } from "@/lib/auth";
 import { descreverFalha } from "@/lib/erro-login";
+import { SENHA_FALSA } from "@/lib/conta";
+import { ipDe, limitar, marcaDe, textoEspera, zerarLimite } from "@/lib/limite";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -23,9 +25,20 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = parsed.data;
 
+    // Limite de tentativas: por IP e por e-mail (15 minutos).
+    const chaveEmail = `login-equipe:e:${marcaDe(email)}`;
+    const porIp = await limitar(`login-equipe:ip:${ipDe(req)}`, 30, 900);
+    const porEmail = await limitar(chaveEmail, 6, 900);
+    if (!porIp.ok || !porEmail.ok) {
+      return NextResponse.json({ erro: textoEspera(Math.max(porIp.esperaSeg, porEmail.esperaSeg)) }, { status: 429 });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
+
+    // Confere a senha mesmo sem usuário, para o tempo de resposta não revelar quais e-mails existem.
+    const senhaConfere = verifyPassword(password, user?.passwordHash ?? SENHA_FALSA);
 
     if (!user || !user.active) {
       return NextResponse.json(
@@ -34,13 +47,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isValid = verifyPassword(password, user.passwordHash);
+    const isValid = senhaConfere;
     if (!isValid) {
       return NextResponse.json(
         { erro: "Credenciais inválidas ou usuário inativo" },
         { status: 401 }
       );
     }
+
+    await zerarLimite(chaveEmail);
 
     // Gerar token de sessão (24h)
     const token = createToken({
