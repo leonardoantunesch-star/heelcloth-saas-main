@@ -67,6 +67,10 @@ export async function emailCodigoLogin(para: string, nome: string, codigo: strin
     console.error("Código de login não enviado: RESEND_API_KEY ausente.");
     return false;
   }
+  if (process.env.NODE_ENV === "production" && !process.env.EMAIL_REMETENTE?.trim()) {
+    // Sem remetente próprio o Resend só entrega para o dono da conta dele: clientes não receberiam o código.
+    console.error("Aviso: EMAIL_REMETENTE ausente. Com o remetente de teste do Resend, o código só chega para o e-mail do dono da conta Resend.");
+  }
   const loja = await nomeDaLoja();
   const primeiro = nome.split(" ")[0];
   const html = `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif;color:#18181b">

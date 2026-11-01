@@ -4,7 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
-import { Erro, PassoCodigo, botaoReto as botao, campoReto as campo, chamar } from "./ContaComum";
+import { Erro, PassoCodigo, botao, campo, chamar } from "./ContaComum";
+import { IconeApple, IconeFacebook, IconeGoogle } from "./IconesSociais";
 
 // Aba lateral de login e cadastro (como nas grandes lojas): abre ao tocar no bonequinho do topo.
 // Passos: entrar (e-mail e senha) -> código de 6 dígitos no e-mail; ou criar conta -> código de 6 dígitos no e-mail.
@@ -24,6 +25,7 @@ const AVISOS: Record<string, string> = {
 };
 
 const NOMES = { google: "Google", facebook: "Facebook", apple: "Apple" } as const;
+const ICONES = { google: IconeGoogle, facebook: IconeFacebook, apple: IconeApple } as const;
 
 function Rotulo({ texto, children }: { texto: string; children: React.ReactNode }) {
   return (
@@ -183,7 +185,7 @@ export function ContaLateral() {
     modo === "criar"
       ? "Leva um minuto. Você acompanha seus pedidos e não digita seus dados toda vez."
       : "Acompanhe seus pedidos e compre mais rápido, com seus dados já preenchidos.";
-  const botaoSocial = "flex h-14 items-center justify-center border border-[var(--lj-txt,#111)] px-2 text-sm font-bold transition-colors hover:bg-[var(--lj-txt,#111)] hover:text-[var(--lj-bg,#fff)] focus-visible:bg-[var(--lj-txt,#111)] focus-visible:text-[var(--lj-bg,#fff)]";
+  const botaoSocial = "flex h-14 items-center justify-center rounded-full border border-[var(--lj-txt,#111)]/30 bg-[var(--lj-bg,#fff)] px-2 text-[var(--lj-txt,#111)] transition-colors hover:border-[var(--lj-txt,#111)] hover:bg-black/5 focus-visible:border-[var(--lj-txt,#111)] focus-visible:bg-black/5";
 
   return (
     <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby="conta-lateral-titulo">
@@ -204,18 +206,21 @@ export function ContaLateral() {
 
           {modo === "codigo" ? (
             <div className="mt-6">
-              <PassoCodigo email={f.email} desafio={desafio} aoConcluir={concluir} aoReiniciar={recomecar} reto />
+              <PassoCodigo email={f.email} desafio={desafio} aoConcluir={concluir} aoReiniciar={recomecar} />
             </div>
           ) : (
             <>
               <div className="mt-6">
                 <p className="mb-2 text-sm font-medium">Continuar com</p>
                 <div className="grid grid-cols-3 gap-2">
-                  {(Object.keys(NOMES) as (keyof typeof NOMES)[]).map((p) => (
-                    <button key={p} type="button" onClick={() => social(p)} aria-label={`Entrar com ${NOMES[p]}`} className={botaoSocial}>
-                      {NOMES[p]}
-                    </button>
-                  ))}
+                  {(Object.keys(NOMES) as (keyof typeof NOMES)[]).map((p) => {
+                    const Icone = ICONES[p];
+                    return (
+                      <button key={p} type="button" onClick={() => social(p)} aria-label={`Entrar com ${NOMES[p]}`} title={NOMES[p]} className={botaoSocial}>
+                        <Icone className="h-6 w-6" />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
