@@ -23,7 +23,7 @@ const ATALHOS = [
   { href: "/contato", numero: "04", titulo: "Contato", texto: "Dúvidas sobre tecidos, personalização e prazos." },
 ];
 
-const botaoReto = "inline-flex h-12 items-center justify-center gap-2 px-7 text-xs font-bold uppercase tracking-[0.18em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+const botaoReto = "inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-xs font-bold uppercase tracking-[0.18em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
 export default function SublimacaoPage() {
   // A galeria só aparece quando houver fotos de verdade (sem as caixas "imagem a ser enviada").
@@ -98,7 +98,7 @@ export default function SublimacaoPage() {
               <li key={a.href}>
                 <Link
                   href={a.href}
-                  className="group flex min-h-[200px] flex-col justify-between bg-[#f3f3f1] p-5 sm:min-h-[260px] transition-colors duration-300 hover:bg-[#121212] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
+                  className="group flex min-h-[200px] flex-col justify-between rounded-2xl bg-[#f3f3f1] p-5 sm:min-h-[260px] transition-colors duration-300 hover:bg-[#121212] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
                 >
                   <div className="flex items-start justify-between">
                     <span className="font-mono text-[11px] text-current opacity-50">{a.numero}</span>
