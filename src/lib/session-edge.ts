@@ -13,11 +13,16 @@ function base64UrlParaBytes(texto: string): Uint8Array<ArrayBuffer> {
   return bytes;
 }
 
-export async function sessaoValidaNoEdge(token: string | undefined): Promise<boolean> {
-  if (!token) return false;
+export interface SessaoEdge {
+  role?: string;
+}
+
+// Devolve os dados da sessão (perfil) quando o token é válido; null quando não vale.
+export async function sessaoNoEdge(token: string | undefined): Promise<SessaoEdge | null> {
+  if (!token) return null;
   try {
     const [cabecalho, corpo, assinatura] = token.split(".");
-    if (!cabecalho || !corpo || !assinatura) return false;
+    if (!cabecalho || !corpo || !assinatura) return null;
 
     const chave = await crypto.subtle.importKey(
       "raw",
@@ -33,13 +38,13 @@ export async function sessaoValidaNoEdge(token: string | undefined): Promise<boo
       base64UrlParaBytes(assinatura),
       new TextEncoder().encode(`${cabecalho}.${corpo}`)
     );
-    if (!ok) return false;
+    if (!ok) return null;
 
-    const dados = JSON.parse(new TextDecoder().decode(base64UrlParaBytes(corpo))) as { exp?: number };
-    if (dados.exp && dados.exp < Math.floor(Date.now() / 1000)) return false;
-    return true;
+    const dados = JSON.parse(new TextDecoder().decode(base64UrlParaBytes(corpo))) as { exp?: number; role?: string };
+    if (dados.exp && dados.exp < Math.floor(Date.now() / 1000)) return null;
+    return { role: dados.role };
   } catch {
     // Inclui a falta de JWT_SECRET em produção: sem chave, nenhuma sessão vale.
-    return false;
+    return null;
   }
 }

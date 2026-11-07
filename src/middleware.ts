@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { sessaoValidaNoEdge } from "@/lib/session-edge";
+import { sessaoNoEdge } from "@/lib/session-edge";
+import { AREAS, podeAcessar } from "@/lib/permissoes";
 
 const COOKIE = "heelcloth_session";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(COOKIE)?.value;
-  const logado = await sessaoValidaNoEdge(token);
+  const sessao = await sessaoNoEdge(token);
+  const logado = sessao !== null;
 
   // Proteger rotas administrativas (/admin e sub-rotas): só entra com sessão assinada e dentro da validade.
   if (pathname.startsWith("/admin")) {
@@ -18,6 +20,14 @@ export async function middleware(request: NextRequest) {
       // Cookie vencido ou inválido é apagado, para não ficar preso em /admin sem acesso de verdade.
       if (token) resposta.cookies.delete(COOKIE);
       return resposta;
+    }
+  }
+
+  // Cada área do painel tem os perfis que podem abri-la (src/lib/permissoes.ts). Digitar o endereço direto não burla o menu.
+  if (pathname.startsWith("/admin") && sessao) {
+    const area = AREAS.find((a) => pathname === a.href || pathname.startsWith(`${a.href}/`));
+    if (area && !podeAcessar(sessao.role, area)) {
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
   }
 

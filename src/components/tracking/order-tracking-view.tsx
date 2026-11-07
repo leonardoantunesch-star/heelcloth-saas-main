@@ -23,7 +23,6 @@ interface Jogador {
   size: string;
   model: string;
   shortSize?: string | null;
-  notes?: string | null;
 }
 
 interface Item {
@@ -50,6 +49,8 @@ interface DadosRastreio {
   statusPagamento: "PAGO" | "PARCIAL" | "PENDENTE";
   totalPecas: number;
   qualidadeAprovada: boolean;
+  detalhesLiberados?: boolean;
+  telIncorreto?: boolean;
   itens: Item[];
   jogadores: Jogador[];
 }
@@ -74,8 +75,9 @@ export function OrderTrackingView({
   const [loading, setLoading] = useState(Boolean(codigoInicial));
   const [erro, setErro] = useState<string | null>(null);
   const [pedido, setPedido] = useState<DadosRastreio | null>(null);
+  const [tel, setTel] = useState("");
 
-  const consultarPedido = async (cod: string) => {
+  const consultarPedido = async (cod: string, finaisTel = "") => {
     const codLimpo = cod.trim();
     if (!codLimpo) {
       setErro("Informe o código do pedido para consultar.");
@@ -86,7 +88,8 @@ export function OrderTrackingView({
     setErro(null);
 
     try {
-      const res = await fetch(`/api/rastreio/${encodeURIComponent(codLimpo)}`);
+      const q = finaisTel.length === 4 ? `?tel=${finaisTel}` : "";
+      const res = await fetch(`/api/rastreio/${encodeURIComponent(codLimpo)}${q}`);
       const data = await res.json();
 
       if (res.ok && data.sucesso && data.pedido) {
@@ -116,7 +119,13 @@ export function OrderTrackingView({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setTel("");
     consultarPedido(buscaInput);
+  };
+
+  const liberarLista = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (tel.length === 4) consultarPedido(codigo, tel);
   };
 
   const formatarMoeda = (val: number) => {
@@ -454,7 +463,7 @@ export function OrderTrackingView({
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-[#121212]" />
-                    Conferência de Nomes e Números ({pedido.jogadores.length} peças)
+                    Conferência de Nomes e Números{pedido.detalhesLiberados ? ` (${pedido.jogadores.length} peças)` : ""}
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Verifique os nomes, números e tamanhos cadastrados para a produção.
@@ -468,7 +477,38 @@ export function OrderTrackingView({
                 )}
               </div>
 
-              {pedido.jogadores.length > 0 ? (
+              {!pedido.detalhesLiberados ? (
+                <form onSubmit={liberarLista} className="p-4 bg-slate-50/70 border border-slate-200 rounded-xl space-y-3">
+                  <p className="text-xs text-slate-600">
+                    Para proteger os dados da equipe, a lista de nomes e números só aparece com os <strong>4 últimos dígitos do WhatsApp</strong> usado no pedido.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <label htmlFor="tel-final" className="sr-only">4 últimos dígitos do WhatsApp</label>
+                    <input
+                      id="tel-final"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      maxLength={4}
+                      value={tel}
+                      onChange={(e) => setTel(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder="Ex.: 1234"
+                      className="h-11 w-full sm:w-40 px-3 text-sm bg-white border border-slate-200 rounded-xl text-[#121212] font-mono tracking-widest focus:outline-none focus:border-[#121212] focus-visible:ring-2 focus-visible:ring-[#121212]/20"
+                    />
+                    <button
+                      type="submit"
+                      disabled={loading || tel.length !== 4}
+                      className="min-h-[44px] h-11 px-6 bg-[#121212] hover:bg-[#3a3a3a] text-white text-xs sm:text-sm font-semibold rounded-xl disabled:opacity-50 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
+                    >
+                      {loading ? "Conferindo..." : "Ver lista"}
+                    </button>
+                  </div>
+                  {pedido.telIncorreto && (
+                    <p role="alert" className="text-xs font-semibold text-red-700">
+                      Os dígitos não conferem com o WhatsApp do pedido.
+                    </p>
+                  )}
+                </form>
+              ) : pedido.jogadores.length > 0 ? (
                 <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
                   <div className="overflow-x-auto max-h-[460px] overflow-y-auto">
                     <table className="w-full text-xs text-left text-slate-700 border-collapse">
@@ -480,7 +520,6 @@ export function OrderTrackingView({
                           <th className="px-3 py-2.5 w-24 text-center">Camisa</th>
                           <th className="px-3 py-2.5 w-24 text-center">Short</th>
                           <th className="px-3 py-2.5">Modelo / Tipo</th>
-                          <th className="px-3 py-2.5">Observações</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white">
@@ -508,9 +547,6 @@ export function OrderTrackingView({
                             </td>
                             <td className="px-3 py-2.5 text-slate-600">
                               {jogador.model || "PADRÃO"}
-                            </td>
-                            <td className="px-3 py-2.5 text-slate-400 italic text-[11px]">
-                              {jogador.notes || "—"}
                             </td>
                           </tr>
                         ))}

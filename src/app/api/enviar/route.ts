@@ -2,34 +2,47 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { CORES_MEIAO, PRECOS_PADRAO, calcularOrcamento, gerarProtocolo } from "@/lib/orcamento";
 import { prisma } from "@/lib/db";
+import { ipDe, limitar, textoEspera } from "@/lib/limite";
 
 const MIN_CAMISAS = 10;
 const FORMAS_PAGAMENTO = ["PIX", "TRANSFERENCIA", "DINHEIRO"] as const;
 
 const coresMeiao = CORES_MEIAO.map((c) => c.valor) as [string, ...string[]];
 
+// Tamanho máximo de cada texto: ninguém grava um parágrafo gigante no banco.
 const itemSchema = z.object({
-  nome: z.string().optional().default(""),
-  numero: z.string().optional().default(""),
-  tamCamisa: z.string().optional().default(""),
-  tamShort: z.string().optional().default(""),
+  nome: z.string().max(60).optional().default(""),
+  numero: z.string().max(6).optional().default(""),
+  tamCamisa: z.string().max(10).optional().default(""),
+  tamShort: z.string().max(10).optional().default(""),
   goleiro: z.boolean().optional().default(false),
   meiao: z.enum(["", ...coresMeiao]).optional().default(""),
-  opcoes: z.array(z.string()).optional().default([]),
-  obs: z.string().optional().default(""),
+  opcoes: z.array(z.string().max(40)).max(10).optional().default([]),
+  obs: z.string().max(300).optional().default(""),
 });
 
 const enviarSchema = z.object({
   representante: z.string().min(1, "Informe o nome do representante.").max(100),
-  contato: z.string().min(10, "Informe o WhatsApp com DDD."),
+  contato: z.string().min(10, "Informe o WhatsApp com DDD.").max(30, "WhatsApp inválido."),
   pagamento: z.enum(FORMAS_PAGAMENTO, { message: "Escolha a forma de pagamento." }),
   modelo: z.string().max(2000).optional().default(""),
-  itens: z.array(itemSchema).min(1, "Lista inválida.").max(500),
+  itens: z.array(itemSchema).min(1, "Lista inválida.").max(300, "A lista passou de 300 peças. Fale com a gente pelo WhatsApp."),
 });
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    // Até 5 pedidos por hora por IP. Um time real manda 1 ou 2; um script que enche o banco é barrado.
+    const lim = await limitar(`enviar:ip:${ipDe(req)}`, 5, 3600);
+    if (!lim.ok) {
+      return NextResponse.json({ erro: textoEspera(lim.esperaSeg) }, { status: 429, headers: { "Retry-After": String(lim.esperaSeg) } });
+    }
+
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ erro: "Dados inválidos." }, { status: 400 });
+    }
     const parsed = enviarSchema.safeParse(body);
 
     if (!parsed.success) {

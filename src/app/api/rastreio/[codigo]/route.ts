@@ -1,21 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { ipDe, limitar, textoEspera } from "@/lib/limite";
 
-// GET /api/rastreio/[codigo] - Endpoint público de rastreamento de pedido (Seção 8)
-// Sem autenticação exigida para permitir que o cliente final consulte via link do WhatsApp
+// Só os 4 últimos dígitos, comparados sem pontuação.
+const finais = (v: string | null | undefined) => (v ?? "").replace(/\D/g, "").slice(-4);
+
+// "Maria da Silva" vira "Maria S." (o nome inteiro não sai do servidor).
+function abreviarNome(nome?: string | null): string {
+  const partes = (nome ?? "").trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return "Cliente";
+  if (partes.length === 1) return partes[0];
+  return `${partes[0]} ${partes[partes.length - 1][0].toUpperCase()}.`;
+}
+
+// GET /api/rastreio/[codigo]?tel=1234 - consulta pública de rastreamento de pedido (Seção 8)
+// Qualquer pessoa com o código vê a situação do pedido (etapas, prazo, pagamento), para o link do WhatsApp continuar funcionando.
+// A lista de jogadores (nomes e números) só aparece com os 4 últimos dígitos do WhatsApp do pedido.
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ codigo: string }> }
 ) {
   try {
     const { codigo } = await params;
-    const codigoFormatado = decodeURIComponent(codigo).trim();
+    let codigoFormatado = "";
+    try {
+      codigoFormatado = decodeURIComponent(codigo).trim();
+    } catch {
+      return NextResponse.json({ erro: "Código do pedido inválido." }, { status: 400 });
+    }
 
-    if (!codigoFormatado) {
+    if (!codigoFormatado || codigoFormatado.length > 40) {
       return NextResponse.json(
         { erro: "Código do pedido não fornecido" },
         { status: 400 }
       );
+    }
+
+    // Limite por IP: segura quem tenta adivinhar códigos em massa.
+    const lim = await limitar(`rastreio:ip:${ipDe(req)}`, 30, 600);
+    if (!lim.ok) {
+      return NextResponse.json({ erro: textoEspera(lim.esperaSeg) }, { status: 429, headers: { "Retry-After": String(lim.esperaSeg) } });
+    }
+
+    const telInformado = finais(req.nextUrl.searchParams.get("tel"));
+    // Palpites dos 4 dígitos: poucos por pedido, não importa de qual IP venham.
+    if (telInformado.length === 4) {
+      const limTel = await limitar(`rastreio:tel:${codigoFormatado.toUpperCase()}`, 8, 3600);
+      if (!limTel.ok) {
+        return NextResponse.json({ erro: textoEspera(limTel.esperaSeg) }, { status: 429, headers: { "Retry-After": String(limTel.esperaSeg) } });
+      }
     }
 
     const pedido = await prisma.order.findFirst({
@@ -29,6 +62,8 @@ export async function GET(
         customer: {
           select: {
             name: true,
+            whatsapp: true,
+            phone: true,
           },
         },
         items: {
@@ -50,7 +85,6 @@ export async function GET(
             size: true,
             model: true,
             shortSize: true,
-            notes: true,
           },
         },
         productionOrder: {
@@ -74,6 +108,11 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    // Só libera nomes e números quando os 4 últimos dígitos do telefone do pedido conferem.
+    const detalhesLiberados =
+      telInformado.length === 4 &&
+      [finais(pedido.customer?.whatsapp), finais(pedido.customer?.phone)].includes(telInformado);
 
     // Calcular status financeiro
     let statusPagamento: "PAGO" | "PARCIAL" | "PENDENTE" = "PENDENTE";
@@ -130,7 +169,7 @@ export async function GET(
         etapaNumero,
         subEtapaFabril,
         statusEtapaProducao: pedido.productionOrder?.stageStatus || null,
-        clienteNome: pedido.customer?.name || "Cliente",
+        clienteNome: abreviarNome(pedido.customer?.name),
         createdAt: pedido.createdAt,
         prazoEntrega: pedido.deliveryDeadline,
         totalAmount: pedido.totalAmount,
@@ -140,7 +179,9 @@ export async function GET(
         totalPecas,
         qualidadeAprovada: pedido.qualityCheck?.isApproved || false,
         itens: pedido.items,
-        jogadores: pedido.players,
+        detalhesLiberados,
+        telIncorreto: telInformado.length === 4 && !detalhesLiberados,
+        jogadores: detalhesLiberados ? pedido.players : [],
       },
     });
   } catch (error) {
