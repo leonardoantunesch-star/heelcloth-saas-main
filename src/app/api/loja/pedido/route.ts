@@ -149,7 +149,6 @@ export async function POST(req: NextRequest) {
         email: cliente.email,
         nome: cliente.nome,
         origem: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin,
-        parcelasMax: loja.config.pagamento.parcelasMax,
       });
       return NextResponse.json({ ok: true, protocolo, total, pagamentoUrl });
     } catch {

@@ -42,7 +42,7 @@ export function Banners({ banners }: { banners: BannerLoja[] }) {
                 {b.titulo && <h2 className="max-w-3xl text-4xl font-extrabold uppercase leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">{b.titulo}</h2>}
                 {b.subtitulo && <p className="mt-4 max-w-xl text-sm sm:text-base opacity-90">{b.subtitulo}</p>}
                 {b.botao && (
-                  <span className={`mt-7 inline-flex h-12 items-center px-7 text-xs font-bold uppercase tracking-[0.18em] ${b.textoClaro ? "bg-white text-black" : "bg-black text-white"}`}>
+                  <span className={`mt-7 inline-flex h-12 items-center rounded-full px-7 text-xs font-bold uppercase tracking-[0.18em] ${b.textoClaro ? "bg-white text-black" : "bg-black text-white"}`}>
                     {b.botao}
                   </span>
                 )}

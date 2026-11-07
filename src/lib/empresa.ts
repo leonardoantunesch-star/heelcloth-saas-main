@@ -24,11 +24,9 @@ export const FOTOS_INSTAGRAM = [
   { arquivo: "bege.webp", alt: "Camiseta bege mescla com a prancha estampada em letras Heel Clothing" },
 ] as const;
 
-// Formas de pagamento e envio realmente usadas pela loja (Mercado Pago; frete fixo e retirada).
+// Formas de pagamento e envio realmente usadas pela loja (Pix pelo Mercado Pago; frete fixo e retirada).
 // Para trocar o texto por logo oficial, ponha o arquivo em public/pagamento/ e informe "logo": "pix.svg".
 export const FORMAS_PAGAMENTO: { nome: string; logo?: string }[] = [
   { nome: "Pix" },
-  { nome: "Cartão de crédito" },
-  { nome: "Boleto" },
   { nome: "Mercado Pago" },
 ];

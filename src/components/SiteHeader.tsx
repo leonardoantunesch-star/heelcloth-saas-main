@@ -140,7 +140,7 @@ export function SiteHeader({ extra }: SiteHeaderProps) {
                 <AlternarTema />
               </div>
             </nav>
-            <Link href="/" className="bloco-preto flex items-center justify-between border-t border-black/10 bg-[#121212] px-5 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white">
+            <Link href="/" className="bloco-preto m-4 flex items-center justify-between rounded-full bg-[#121212] px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white">
               Heel Loja <span aria-hidden="true">→</span>
             </Link>
           </div>

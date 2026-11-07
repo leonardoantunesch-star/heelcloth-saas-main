@@ -61,12 +61,12 @@ export function CarrinhoLateral() {
                     <p className="truncate text-sm font-semibold">{i.nome}</p>
                     <p className="text-xs text-black/55">Tamanho {i.tamanho}{i.cor && ` · ${i.cor}`}</p>
                     <div className="mt-auto flex items-center justify-between">
-                      <div className="flex items-center border border-black/20">
-                        <button type="button" aria-label="Diminuir" className="p-1.5 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}>
+                      <div className="flex items-center rounded-full border border-black/20 px-1">
+                        <button type="button" aria-label="Diminuir" className="rounded-full p-1.5 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}>
                           <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="w-7 text-center text-sm tabular-nums" aria-label="Quantidade">{i.quantidade}</span>
-                        <button type="button" aria-label="Aumentar" className="p-1.5" onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade + 1)}>
+                        <button type="button" aria-label="Aumentar" className="rounded-full p-1.5" onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade + 1)}>
                           <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -87,7 +87,7 @@ export function CarrinhoLateral() {
               <Link
                 href="/loja/carrinho"
                 onClick={() => setAberto(false)}
-                className="flex h-12 items-center justify-center bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white hover:opacity-90"
+                className="flex h-12 items-center justify-center rounded-full bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white hover:opacity-90"
               >
                 Finalizar compra
               </Link>

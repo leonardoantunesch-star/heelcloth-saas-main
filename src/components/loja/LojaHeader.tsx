@@ -122,9 +122,9 @@ export function LojaHeader() {
               onChange={(e) => setTermo(e.target.value)}
               placeholder="O que você procura?"
               aria-label="Buscar produtos"
-              className="h-11 flex-1 border border-black/20 bg-white px-4 text-sm outline-none focus:border-black"
+              className="h-11 flex-1 rounded-full border border-black/20 bg-white px-5 text-sm outline-none focus:border-black"
             />
-            <button type="submit" className="h-11 bg-[var(--lj-pri)] px-5 text-xs font-bold uppercase tracking-widest text-white">
+            <button type="submit" className="h-11 rounded-full bg-[var(--lj-pri)] px-6 text-xs font-bold uppercase tracking-widest text-white">
               Buscar
             </button>
           </form>
@@ -155,7 +155,7 @@ export function LojaHeader() {
               ))}
               <Link href="/loja/conta" className="block border-b border-black/5 px-5 py-4 text-sm font-bold uppercase tracking-[0.08em]">Minha conta</Link>
             </nav>
-            <Link href={sublimacao.href} className="flex items-center justify-between border-t border-black/10 bg-[var(--lj-pri)] px-5 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white">
+            <Link href={sublimacao.href} className="m-4 flex items-center justify-between rounded-full bg-[var(--lj-pri)] px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white">
               {sublimacao.rotulo} <span aria-hidden="true">→</span>
             </Link>
           </div>

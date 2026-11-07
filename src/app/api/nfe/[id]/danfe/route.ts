@@ -3,12 +3,6 @@ import { prisma } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-
-// Escapa texto vindo do banco (nome do cliente, produto etc.) antes de montar o HTML: sem isso,
-// um nome com <script> digitado num formulário público rodaria no navegador do administrador.
-const esc = (v: unknown) =>
-  String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
-
 interface RouteParams {
   params: Promise<{ id: string }>; // invoice id or accessKey
 }
@@ -42,7 +36,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>DANFE - NF-e nº ${esc(nota.invoiceNumber || "1001")}</title>
+  <title>DANFE - NF-e nº ${nota.invoiceNumber || "1001"}</title>
   <style>
     body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; color: #111; }
     .box { border: 1px solid #000; padding: 6px; margin-bottom: 6px; }
@@ -67,24 +61,24 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
     <div style="text-align: right;">
       <div class="title">DANFE</div>
       <div>Documento Auxiliar da Nota Fiscal Eletrônica</div>
-      <div><strong>Nº ${esc(nota.invoiceNumber || "1001")}</strong> - SÉRIE ${esc(nota.series || "1")}</div>
+      <div><strong>Nº ${nota.invoiceNumber || "1001"}</strong> - SÉRIE ${nota.series || "1"}</div>
       <div>0 - ENTRADA / 1 - SAÍDA: <strong>1 (SAÍDA)</strong></div>
     </div>
   </div>
 
   <div class="box">
     <div class="bold">CHAVE DE ACESSO:</div>
-    <div class="chave">${esc(nota.accessKey || "35261000000000000100550010000010011123456780")}</div>
+    <div class="chave">${nota.accessKey || "35261000000000000100550010000010011123456780"}</div>
     <div style="margin-top: 4px;">Consulta de autenticidade no portal nacional da NF-e (www.nfe.fazenda.gov.br)</div>
   </div>
 
   <div class="box">
     <div class="bold" style="border-bottom: 1px solid #ddd; padding-bottom: 3px; margin-bottom: 4px;">DESTINATÁRIO / REMETENTE</div>
     <div style="display: flex; justify-content: space-between;">
-      <div>NOME / RAZÃO SOCIAL: <strong>${esc(nota.order?.customer?.name || "Cliente Padrão")}</strong></div>
-      <div>CNPJ / CPF: <strong>${esc(nota.order?.customer?.document || "000.000.000-00")}</strong></div>
+      <div>NOME / RAZÃO SOCIAL: <strong>${nota.order?.customer?.name || "Cliente Padrão"}</strong></div>
+      <div>CNPJ / CPF: <strong>${nota.order?.customer?.document || "000.000.000-00"}</strong></div>
     </div>
-    <div style="margin-top: 4px;">TELEFONE: ${esc(nota.order?.customer?.phone || nota.order?.customer?.whatsapp || "-")}</div>
+    <div style="margin-top: 4px;">TELEFONE: ${nota.order?.customer?.phone || nota.order?.customer?.whatsapp || "-"}</div>
   </div>
 
   <div class="box">
@@ -107,12 +101,12 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
         ${(nota.order?.items || []).map((i) => `
           <tr>
             <td>HC-01</td>
-            <td>${esc(i.product)}</td>
+            <td>${i.product}</td>
             <td>61091000</td>
             <td>0102</td>
             <td>5101</td>
             <td>UN</td>
-            <td class="text-right">${esc(i.quantity)}</td>
+            <td class="text-right">${i.quantity}</td>
             <td class="text-right">${formatCurrency(i.unitPrice)}</td>
             <td class="text-right">${formatCurrency(i.totalPrice)}</td>
           </tr>
@@ -127,7 +121,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 
   <div class="box">
     <div class="bold">DADOS ADICIONAIS</div>
-    <div>Inf. Contribuinte: Documento emitido por ME ou EPP optante pelo Simples Nacional. Pedido: #${esc(nota.order?.orderNumber)}. Status SEFAZ: ${esc(nota.status)}.</div>
+    <div>Inf. Contribuinte: Documento emitido por ME ou EPP optante pelo Simples Nacional. Pedido: #${nota.order?.orderNumber}. Status SEFAZ: ${nota.status}.</div>
     <div>Data de Emissão: ${formatDate(nota.emittedAt || nota.createdAt)}</div>
   </div>
 </body>
@@ -135,12 +129,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 
     return new NextResponse(htmlDanfe, {
       status: 200,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        // Defesa extra: a nota não precisa rodar script nenhum.
-        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; img-src data:",
-        "X-Content-Type-Options": "nosniff",
-      },
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   } catch (error: any) {
     if (error?.message === "UNAUTHORIZED") {

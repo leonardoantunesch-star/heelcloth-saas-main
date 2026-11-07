@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Barcode, Camera, Clock, CreditCard, ExternalLink, Lock, Mail, MapPin, Phone, QrCode, RefreshCcw, ShieldCheck, Store, Truck, Wallet } from "lucide-react";
+import { Camera, Clock, CreditCard, ExternalLink, Lock, Mail, MapPin, Phone, QrCode, RefreshCcw, ShieldCheck, Store, Truck, Wallet } from "lucide-react";
 import { useLoja } from "./LojaContexto";
 import { MarcaLoja } from "./LojaHeader";
 import { brl } from "@/data/loja";
@@ -19,7 +19,7 @@ export function SelosLoja() {
       titulo: config.frete.gratisAcima !== null ? `Frete grátis acima de ${brl(config.frete.gratisAcima)}` : "Entrega para todo o Brasil",
       texto: config.frete.prazo,
     },
-    { icone: CreditCard, titulo: `Até ${config.pagamento.parcelasMax}x no cartão`, texto: "Pix, cartão de crédito ou boleto." },
+    { icone: QrCode, titulo: "Pague com Pix", texto: "Confirmação rápida e segura." },
     { icone: ShieldCheck, titulo: "Compra segura", texto: "Pagamento processado pelo Mercado Pago." },
     { icone: RefreshCcw, titulo: "Troca fácil", texto: "Fale com a gente pelo WhatsApp." },
   ];
@@ -52,8 +52,6 @@ function Info({ icone: Icone, children }: { icone: React.ComponentType<{ classNa
 
 const ICONE_PAGAMENTO: Record<string, React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>> = {
   Pix: QrCode,
-  "Cartão de crédito": CreditCard,
-  Boleto: Barcode,
   "Mercado Pago": Wallet,
 };
 
@@ -126,7 +124,6 @@ export function LojaRodape() {
             <ul className="mt-4 space-y-2.5">
               {FORMAS_PAGAMENTO.map((f) => <Info key={f.nome} icone={ICONE_PAGAMENTO[f.nome] ?? CreditCard}>{f.nome}</Info>)}
             </ul>
-            <p className="mt-3 text-xs text-white/55">Cartão em até {config.pagamento.parcelasMax}x.</p>
           </div>
           <div>
             <h2 className={titulo}>Meios de envio</h2>

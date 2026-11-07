@@ -138,7 +138,7 @@ export const LOJA_PADRAO: Loja = {
     aberta: false,
     marca: { nome: "HEEL CLOTH.", logo: null, slogan: "Roupas esportivas e casuais." },
     cores: { primaria: "#121212", destaque: "#c8102e", fundo: "#ffffff", texto: "#121212" },
-    faixa: ["Frete grátis acima de R$ 299", "Parcele em até 6x no cartão", "Pague com Pix, cartão ou boleto"],
+    faixa: ["Frete grátis acima de R$ 299", "Pague com Pix e receba a confirmação na hora"],
     banners: [
       {
         id: "banner-principal",

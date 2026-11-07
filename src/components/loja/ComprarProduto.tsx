@@ -31,7 +31,7 @@ export function GaleriaProduto({ produto }: { produto: ProdutoLoja }) {
 }
 
 export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
-  const { adicionar, config } = useLoja();
+  const { adicionar } = useLoja();
   const unico = p.tamanhos.length === 1 ? p.tamanhos[0].nome : "";
   const [tamanho, setTamanho] = useState(unico);
   const [qtd, setQtd] = useState(1);
@@ -40,7 +40,6 @@ export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
   const promo = emPromocao(p);
   const t = p.tamanhos.find((x) => x.nome === tamanho);
   const esgotado = p.tamanhos.every((x) => x.estoque === 0);
-  const parcelas = Math.min(config.pagamento.parcelasMax, Math.max(1, Math.floor(final / 20)));
 
   const comprar = () => {
     if (!t) return setErro("Escolha um tamanho.");
@@ -56,7 +55,7 @@ export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
         <span className={`text-2xl font-extrabold tabular-nums ${promo ? "text-[var(--lj-dest)]" : ""}`}>{brl(final)}</span>
         {promo && <span className="text-sm text-black/40 line-through tabular-nums">{brl(p.preco)}</span>}
       </div>
-      {parcelas > 1 && <p className="mt-1 text-sm text-black/60">ou {parcelas}x de {brl(final / parcelas)} no cartão</p>}
+      <p className="mt-1 text-sm text-black/60">Pagamento por Pix.</p>
 
       {p.tamanhos.length > 0 && (
         <fieldset className="mt-8">
@@ -74,7 +73,7 @@ export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
                   setTamanho(x.nome);
                   setErro("");
                 }}
-                className={`h-11 min-w-[52px] border px-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:text-black/25 disabled:line-through ${
+                className={`h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:text-black/25 disabled:line-through ${
                   tamanho === x.nome ? "border-black bg-black text-white" : "border-black/20 hover:border-black"
                 }`}
               >
@@ -87,16 +86,16 @@ export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
       )}
 
       <div className="mt-6 flex gap-3">
-        <div className="flex items-center border border-black/20">
-          <button type="button" aria-label="Diminuir quantidade" className="h-12 px-3 disabled:opacity-30" disabled={qtd <= 1} onClick={() => setQtd(qtd - 1)}><Minus className="h-4 w-4" /></button>
+        <div className="flex items-center rounded-full border border-black/20 px-1">
+          <button type="button" aria-label="Diminuir quantidade" className="h-12 rounded-full px-3 disabled:opacity-30" disabled={qtd <= 1} onClick={() => setQtd(qtd - 1)}><Minus className="h-4 w-4" /></button>
           <span className="w-8 text-center tabular-nums" aria-live="polite" aria-label="Quantidade">{qtd}</span>
-          <button type="button" aria-label="Aumentar quantidade" className="h-12 px-3" onClick={() => setQtd(Math.min(50, qtd + 1))}><Plus className="h-4 w-4" /></button>
+          <button type="button" aria-label="Aumentar quantidade" className="h-12 rounded-full px-3" onClick={() => setQtd(Math.min(50, qtd + 1))}><Plus className="h-4 w-4" /></button>
         </div>
         <button
           type="button"
           onClick={comprar}
           disabled={esgotado}
-          className="h-12 flex-1 bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="h-12 flex-1 rounded-full bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-90 disabled:opacity-40"
         >
           {esgotado ? "Esgotado" : "Adicionar ao carrinho"}
         </button>

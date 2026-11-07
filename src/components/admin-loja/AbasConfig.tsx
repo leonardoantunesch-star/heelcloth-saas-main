@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, CheckCircle2, ExternalLink, Plus, Trash2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Cartao, Cor, Dinheiro, Inteiro, Marcar, Texto, UmaImagem, estiloCampo } from "./Campos";
+import { Cartao, Cor, Dinheiro, Marcar, Texto, UmaImagem, estiloCampo } from "./Campos";
 import { brl, criarId, type BannerLoja, type BlocoLoja, type CategoriaLoja, type ConfigLoja, type ProdutoLoja } from "@/data/loja";
 
 function mover<T>(lista: T[], i: number, d: number): T[] {
@@ -212,7 +212,7 @@ export function AbaEntrega({ config, mercadoPago, onChange }: { config: ConfigLo
           {mercadoPago ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /> : <XCircle className="mt-0.5 h-5 w-5 shrink-0" />}
           <div>
             {mercadoPago ? (
-              <p><strong>Conectado.</strong> Os clientes pagam com Pix, cartão ou boleto e o pedido é confirmado sozinho.</p>
+              <p><strong>Conectado.</strong> Os clientes pagam só com Pix e o pedido é confirmado sozinho.</p>
             ) : (
               <>
                 <p><strong>Mercado Pago não configurado.</strong> Enquanto isso, as compras chegam como “pagamento pendente” e o pagamento é combinado pelo WhatsApp.</p>
@@ -222,8 +222,7 @@ export function AbaEntrega({ config, mercadoPago, onChange }: { config: ConfigLo
             )}
           </div>
         </div>
-        <Inteiro className="max-w-xs" rotulo="Parcelas máximas no cartão" min={1} max={12} valor={config.pagamento.parcelasMax} onChange={(v) => onChange({ pagamento: { parcelasMax: v } })} />
-        <p className="mt-1 text-[11px] text-slate-500">Os juros das parcelas seguem o que estiver configurado na sua conta do Mercado Pago.</p>
+        <p className="text-xs text-slate-500">A loja aceita somente Pix. Cartão e boleto não aparecem no pagamento.</p>
       </Cartao>
     </div>
   );

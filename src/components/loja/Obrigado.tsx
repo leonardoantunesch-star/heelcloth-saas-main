@@ -58,16 +58,16 @@ export function Obrigado({ protocolo, pagamentoId, manual }: { protocolo: string
           ? "Obrigado pela compra! Já estamos separando seus produtos e avisaremos pelo WhatsApp quando forem enviados."
           : manual
             ? "Recebemos seu pedido. Vamos falar com você pelo WhatsApp para combinar o pagamento e a entrega."
-            : "Estamos aguardando a confirmação do pagamento pelo Mercado Pago. Pix e cartão costumam confirmar em instantes; boleto pode levar até 3 dias úteis."}
+            : "Estamos aguardando a confirmação do pagamento pelo Mercado Pago. O Pix costuma confirmar em instantes."}
       </p>
       {erro && <p className="mt-4 text-xs text-black/50">Não conseguimos consultar a situação agora, mas seu pedido foi registrado.</p>}
       <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
         {linkWhats && (
-          <a href={linkWhats} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center border border-black px-6 text-xs font-bold uppercase tracking-[0.16em]">
+          <a href={linkWhats} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center rounded-full border border-black px-6 text-xs font-bold uppercase tracking-[0.16em]">
             Falar no WhatsApp
           </a>
         )}
-        <Link href="/" className="inline-flex h-12 items-center justify-center bg-[var(--lj-pri)] px-6 text-xs font-bold uppercase tracking-[0.16em] text-white">
+        <Link href="/" className="inline-flex h-12 items-center justify-center rounded-full bg-[var(--lj-pri)] px-6 text-xs font-bold uppercase tracking-[0.16em] text-white">
           Continuar comprando
         </Link>
       </div>

@@ -89,7 +89,7 @@ export default function CotacaoPage() {
   const [descontoValor, setDescontoValor] = useState("");
   const [descontoTipo, setDescontoTipo] = useState<"valor" | "percentual">("valor");
   const [pagamento, setPagamento] = useState(
-    "50% na aprovação do layout e 50% na entrega. Pix, cartão, boleto ou transferência."
+    "50% na aprovação do layout e 50% na entrega. Pix ou transferência."
   );
   const [prazoProducao, setPrazoProducao] = useState(
     "15 dias úteis após a aprovação do layout e a confirmação do pagamento."

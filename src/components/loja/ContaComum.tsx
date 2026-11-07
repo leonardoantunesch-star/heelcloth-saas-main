@@ -8,10 +8,6 @@ import React, { useEffect, useState } from "react";
 export const campo = "h-12 w-full rounded-2xl border border-[var(--lj-borda,rgba(0,0,0,0.2))] bg-[var(--lj-bg,#fff)] px-4 text-base outline-none focus:border-[var(--lj-pri,#000)]";
 export const botao = "h-14 w-full rounded-full bg-[var(--lj-pri,#000)] text-base font-semibold text-[var(--lj-pri-txt,#fff)] hover:opacity-95 disabled:opacity-50";
 
-// Versão reta (cantos quadrados) usada na aba lateral, combinando com o resto da loja.
-export const campoReto = campo.replace("rounded-2xl", "rounded-none");
-export const botaoReto = botao.replace("rounded-full", "rounded-none");
-
 // Nunca mostra o e-mail inteiro na tela: "maria@gmail.com" vira "m***@g***.com".
 export function mascararEmail(e: string): string {
   const [u = "", d = ""] = e.split("@");
@@ -38,9 +34,9 @@ export const Erro = ({ texto }: { texto: string }) => (texto ? <p role="alert" c
 
 // 2ª etapa do login e do cadastro: o código de 6 dígitos que foi para o e-mail.
 // "aoConcluir" roda quando o código confere (a sessão já foi criada); "aoReiniciar" volta para a 1ª etapa.
-export function PassoCodigo({ email, desafio, aoConcluir, aoReiniciar, reto = false }: { email: string; desafio: string; aoConcluir: () => void; aoReiniciar: (msg: string) => void; reto?: boolean }) {
-  const cCampo = reto ? campoReto : campo;
-  const cBotao = reto ? botaoReto : botao;
+export function PassoCodigo({ email, desafio, aoConcluir, aoReiniciar }: { email: string; desafio: string; aoConcluir: () => void; aoReiniciar: (msg: string) => void }) {
+  const cCampo = campo;
+  const cBotao = botao;
   const [codigo, setCodigo] = useState("");
   const [erro, setErro] = useState("");
   const [aviso, setAviso] = useState("");

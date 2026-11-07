@@ -121,7 +121,6 @@ export async function criarPreferencia(args: {
   email?: string;
   nome: string;
   origem: string;
-  parcelasMax: number;
 }): Promise<string> {
   const itens = args.itens.map((i) => ({
     title: i.titulo.slice(0, 250),
@@ -145,7 +144,18 @@ export async function criarPreferencia(args: {
       payer: { name: args.nome, ...(args.email ? { email: args.email } : {}) },
       back_urls: { success: voltar, pending: voltar, failure: voltar },
       ...(https ? { auto_return: "approved", notification_url: `${args.origem}/api/loja/webhook` } : {}),
-      payment_methods: { installments: args.parcelasMax },
+      // A loja aceita só Pix: tudo o mais (cartão, boleto, lotérica, saldo do Mercado Pago) fica de fora do checkout.
+      payment_methods: {
+        installments: 1,
+        excluded_payment_types: [
+          { id: "credit_card" },
+          { id: "debit_card" },
+          { id: "prepaid_card" },
+          { id: "ticket" },
+          { id: "atm" },
+          { id: "account_money" },
+        ],
+      },
       statement_descriptor: "HEELCLOTH",
     }),
   });

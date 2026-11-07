@@ -38,8 +38,6 @@ interface LinhaUniforme {
 
 const FORMAS_PAGAMENTO = [
   { valor: "PIX", rotulo: "Pix" },
-  { valor: "CARTAO", rotulo: "Cartão" },
-  { valor: "BOLETO", rotulo: "Boleto" },
   { valor: "TRANSFERENCIA", rotulo: "Transferência" },
   { valor: "DINHEIRO", rotulo: "Dinheiro" },
 ] as const;

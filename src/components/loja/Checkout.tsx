@@ -111,7 +111,7 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
         <h1 className="text-2xl font-extrabold uppercase tracking-tight">Seu carrinho está vazio</h1>
         {avisos.map((a) => <p key={a} className="mt-3 text-sm text-black/60">{a}</p>)}
-        <Link href="/" className="mt-8 inline-flex h-12 items-center bg-[var(--lj-pri)] px-8 text-xs font-bold uppercase tracking-[0.18em] text-white">
+        <Link href="/" className="mt-8 inline-flex h-12 items-center rounded-full bg-[var(--lj-pri)] px-8 text-xs font-bold uppercase tracking-[0.18em] text-white">
           Ver produtos
         </Link>
       </div>
@@ -163,7 +163,7 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
                 { v: false, t: "Receber em casa", d: frete > 0 && !retirada ? brl(frete) : calcularFrete(config, subtotal, false) === 0 ? "Grátis" : brl(config.frete.valor) },
                 { v: true, t: "Retirar no local", d: "Grátis" },
               ].map((o) => (
-                <label key={String(o.v)} className={`flex cursor-pointer items-center justify-between border p-4 text-sm ${retirada === o.v ? "border-black" : "border-black/20"}`}>
+                <label key={String(o.v)} className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 text-sm ${retirada === o.v ? "border-black" : "border-black/20"}`}>
                   <span className="flex items-center gap-3">
                     <input type="radio" name="entrega" checked={retirada === o.v} onChange={() => setRetirada(o.v)} className="accent-black" />
                     <span className="font-semibold">{o.t}</span>
@@ -223,10 +223,10 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
                 <p className="truncate text-sm font-semibold">{i.nome}</p>
                 <p className="text-xs text-black/55">Tam. {i.tamanho}</p>
                 <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center border border-black/20">
-                    <button type="button" aria-label={`Diminuir ${i.nome}`} className="p-1 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}><Minus className="h-3 w-3" /></button>
+                  <div className="flex items-center rounded-full border border-black/20 px-1">
+                    <button type="button" aria-label={`Diminuir ${i.nome}`} className="rounded-full p-1 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}><Minus className="h-3 w-3" /></button>
                     <span className="w-6 text-center text-xs tabular-nums">{i.quantidade}</span>
-                    <button type="button" aria-label={`Aumentar ${i.nome}`} className="p-1" onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade + 1)}><Plus className="h-3 w-3" /></button>
+                    <button type="button" aria-label={`Aumentar ${i.nome}`} className="rounded-full p-1" onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade + 1)}><Plus className="h-3 w-3" /></button>
                   </div>
                   <span className="text-sm tabular-nums">{brl(i.preco * i.quantidade)}</span>
                 </div>
@@ -241,10 +241,10 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
           <div className="flex justify-between border-t border-black/10 pt-3 text-base font-extrabold"><dt>Total</dt><dd className="tabular-nums">{brl(total)}</dd></div>
         </dl>
         {erro && <p role="alert" className="mt-4 text-sm font-semibold text-[var(--lj-dest)]">{erro}</p>}
-        <button type="submit" disabled={enviando} className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white hover:opacity-90 disabled:opacity-50">
+        <button type="submit" disabled={enviando} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white hover:opacity-90 disabled:opacity-50">
           <Lock className="h-4 w-4" /> {enviando ? "Processando..." : "Ir para o pagamento"}
         </button>
-        <p className="mt-3 text-center text-[11px] text-black/50">Você será levado ao Mercado Pago para pagar com Pix, cartão (até {config.pagamento.parcelasMax}x) ou boleto.</p>
+        <p className="mt-3 text-center text-[11px] text-black/50">Você será levado ao Mercado Pago para pagar com Pix.</p>
       </aside>
     </form>
   );

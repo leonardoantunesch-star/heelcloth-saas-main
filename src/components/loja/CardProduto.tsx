@@ -3,11 +3,10 @@ import Link from "next/link";
 import { ImagemLoja } from "./ImagemLoja";
 import { brl, emPromocao, estoqueTotal, precoFinal, type ProdutoLoja } from "@/data/loja";
 
-export function CardProduto({ produto: p, parcelasMax }: { produto: ProdutoLoja; parcelasMax: number }) {
+export function CardProduto({ produto: p }: { produto: ProdutoLoja; parcelasMax?: number }) {
   const final = precoFinal(p);
   const promo = emPromocao(p);
   const esgotado = estoqueTotal(p) === 0;
-  const parcelas = Math.min(parcelasMax, Math.max(1, Math.floor(final / 20)));
   return (
     <Link href={`/loja/produto/${p.id}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
@@ -17,7 +16,7 @@ export function CardProduto({ produto: p, parcelasMax }: { produto: ProdutoLoja;
         )}
         <div className="absolute left-2 top-2 flex flex-col gap-1">
           {esgotado ? (
-            <span className="bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Esgotado</span>
+            <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Esgotado</span>
           ) : (
             <>
               {promo && (
@@ -37,18 +36,17 @@ export function CardProduto({ produto: p, parcelasMax }: { produto: ProdutoLoja;
           <span className={`text-sm font-bold tabular-nums ${promo ? "text-[var(--lj-dest)]" : ""}`}>{brl(final)}</span>
           {promo && <span className="text-xs text-black/40 line-through tabular-nums">{brl(p.preco)}</span>}
         </p>
-        {parcelas > 1 && <p className="text-[11px] text-black/55">ou {parcelas}x de {brl(final / parcelas)}</p>}
       </div>
     </Link>
   );
 }
 
-export function GradeProdutos({ produtos, parcelasMax }: { produtos: ProdutoLoja[]; parcelasMax: number }) {
+export function GradeProdutos({ produtos }: { produtos: ProdutoLoja[]; parcelasMax?: number }) {
   return (
     <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4">
       {produtos.map((p) => (
         <li key={p.id}>
-          <CardProduto produto={p} parcelasMax={parcelasMax} />
+          <CardProduto produto={p} />
         </li>
       ))}
     </ul>

@@ -16,13 +16,12 @@ export const metadata: Metadata = {
 export default async function Duvidas() {
   const { config } = await lojaDaRequisicao();
   const f = config.frete;
-  const pm = config.pagamento.parcelasMax;
 
   const grupos: { titulo: string; itens: { p: string; r: React.ReactNode }[] }[] = [
     {
       titulo: "Compra e pagamento",
       itens: [
-        { p: "Quais são as formas de pagamento?", r: `Pix, cartão de crédito (em até ${pm}x) e boleto. O pagamento é processado pelo Mercado Pago, então os dados do seu cartão não passam pela nossa loja.` },
+        { p: "Quais são as formas de pagamento?", r: "Pix. O pagamento é processado pelo Mercado Pago e o pedido é confirmado assim que o Pix cai." },
         { p: "Preciso ter conta para comprar?", r: "Não. Você pode comprar sem conta. Com conta, você acompanha seus pedidos, não digita seus dados toda vez e o login é protegido por um código enviado ao seu e-mail." },
         { p: "Como acompanho meu pedido?", r: <>Entre na sua conta e abra <Link href="/loja/conta" className="underline">Minha conta</Link> para ver o andamento dos pedidos. Se tiver dúvida, chame a gente no WhatsApp {EMPRESA.whatsapp}.</> },
       ],

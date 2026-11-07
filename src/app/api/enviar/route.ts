@@ -2,27 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { CORES_MEIAO, PRECOS_PADRAO, calcularOrcamento, gerarProtocolo } from "@/lib/orcamento";
 import { prisma } from "@/lib/db";
-import { ipDe, limitar, textoEspera } from "@/lib/limite";
 
 const MIN_CAMISAS = 10;
-const FORMAS_PAGAMENTO = ["PIX", "CARTAO", "BOLETO", "TRANSFERENCIA", "DINHEIRO"] as const;
+const FORMAS_PAGAMENTO = ["PIX", "TRANSFERENCIA", "DINHEIRO"] as const;
 
 const coresMeiao = CORES_MEIAO.map((c) => c.valor) as [string, ...string[]];
 
 const itemSchema = z.object({
-  nome: z.string().max(60).optional().default(""),
-  numero: z.string().max(4).optional().default(""),
-  tamCamisa: z.string().max(12).optional().default(""),
-  tamShort: z.string().max(12).optional().default(""),
+  nome: z.string().optional().default(""),
+  numero: z.string().optional().default(""),
+  tamCamisa: z.string().optional().default(""),
+  tamShort: z.string().optional().default(""),
   goleiro: z.boolean().optional().default(false),
   meiao: z.enum(["", ...coresMeiao]).optional().default(""),
-  opcoes: z.array(z.string().max(60)).max(10).optional().default([]),
-  obs: z.string().max(300).optional().default(""),
+  opcoes: z.array(z.string()).optional().default([]),
+  obs: z.string().optional().default(""),
 });
 
 const enviarSchema = z.object({
   representante: z.string().min(1, "Informe o nome do representante.").max(100),
-  contato: z.string().min(10, "Informe o WhatsApp com DDD.").max(30),
+  contato: z.string().min(10, "Informe o WhatsApp com DDD."),
   pagamento: z.enum(FORMAS_PAGAMENTO, { message: "Escolha a forma de pagamento." }),
   modelo: z.string().max(2000).optional().default(""),
   itens: z.array(itemSchema).min(1, "Lista inválida.").max(500),
@@ -30,12 +29,7 @@ const enviarSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // Limite de pedidos por IP (guardado no banco): sem isso, qualquer um poderia criar pedidos falsos sem parar.
-    const lim = await limitar(`enviar:${ipDe(req)}`, 10, 3600);
-    if (!lim.ok) {
-      return NextResponse.json({ erro: textoEspera(lim.esperaSeg) }, { status: 429 });
-    }
-    const body = await req.json().catch(() => null);
+    const body = await req.json();
     const parsed = enviarSchema.safeParse(body);
 
     if (!parsed.success) {
