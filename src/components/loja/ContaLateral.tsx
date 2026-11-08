@@ -209,8 +209,8 @@ export function ContaLateral() {
   const titulo = modo === "codigo" ? "Digite o código" : modo === "criar" ? "Criar conta" : "Fazer login ou criar conta";
   const subtitulo =
     modo === "criar"
-      ? "Leva um minuto. Você acompanha seus pedidos e não digita seus dados toda vez."
-      : "Acompanhe seus pedidos e compre mais rápido, com seus dados já preenchidos.";
+      ? "Leva um minuto. Com a conta você acompanha todos os seus pedidos em um só lugar."
+      : "Entre para acompanhar seus pedidos.";
   const botaoSocial = "flex h-14 items-center justify-center rounded-full border border-[var(--lj-txt,#111)]/30 bg-[var(--lj-bg,#fff)] px-2 text-[var(--lj-txt,#111)] transition-colors hover:border-[var(--lj-txt,#111)] hover:bg-black/5 focus-visible:border-[var(--lj-txt,#111)] focus-visible:bg-black/5";
 
   return (

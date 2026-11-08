@@ -162,7 +162,7 @@ export function TelaCadastrar() {
   }
 
   return (
-    <Moldura titulo="Criar conta" texto="Leva um minuto. Você acompanha seus pedidos e não digita seus dados toda vez.">
+    <Moldura titulo="Criar conta" texto="Leva um minuto. Com a conta você acompanha todos os seus pedidos em um só lugar.">
       <form onSubmit={enviar} className="space-y-3">
         <Campo rotulo="Nome completo" autoComplete="name" value={f.nome} onChange={mudar("nome")} required minLength={3} />
         <Campo rotulo="E-mail" {...semPreencher} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required />

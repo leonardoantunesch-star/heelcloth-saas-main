@@ -22,7 +22,7 @@ export default async function Duvidas() {
       titulo: "Compra e pagamento",
       itens: [
         { p: "Quais são as formas de pagamento?", r: "Pix. O pagamento é processado pelo Mercado Pago e o pedido é confirmado assim que o Pix cai." },
-        { p: "Preciso ter conta para comprar?", r: "Não. Você pode comprar sem conta. Com conta, você acompanha seus pedidos, não digita seus dados toda vez e o login é protegido por um código enviado ao seu e-mail." },
+        { p: "Preciso ter conta para comprar?", r: "Não. Você pode comprar sem conta. Com conta, você acompanha todos os seus pedidos em um só lugar e o login é protegido por um código enviado ao seu e-mail." },
         { p: "Como acompanho meu pedido?", r: <>Entre na sua conta e abra <Link href="/loja/conta" className="underline">Minha conta</Link> para ver o andamento dos pedidos. Se tiver dúvida, chame a gente no WhatsApp {EMPRESA.whatsapp}.</> },
       ],
     },
