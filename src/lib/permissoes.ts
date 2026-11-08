@@ -41,6 +41,7 @@ export const AREAS: Area[] = [
   { titulo: "Analytics", href: "/admin/analytics", perfis: ["ADMIN", "FINANCEIRO"], grupo: "equipe" },
   { titulo: "Relatórios", href: "/admin/relatorios", perfis: ["ADMIN", "FINANCEIRO"], grupo: "equipe" },
   { titulo: "Auditoria", href: "/admin/auditoria", perfis: ["ADMIN"], grupo: "equipe" },
+  { titulo: "Diagnóstico", href: "/admin/diagnostico", perfis: ["ADMIN"], grupo: "equipe" },
 ];
 
 export const podeAcessar = (perfil: string | undefined, area: Area): boolean =>

@@ -22,6 +22,7 @@ import {
   Images,
   Store,
   Shield,
+  Stethoscope,
   LineChart,
   X,
   ChevronLeft,
@@ -51,6 +52,7 @@ const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
   "/admin/analytics": LineChart,
   "/admin/relatorios": BarChart3,
   "/admin/auditoria": Shield,
+  "/admin/diagnostico": Stethoscope,
 };
 
 export function Sidebar() {

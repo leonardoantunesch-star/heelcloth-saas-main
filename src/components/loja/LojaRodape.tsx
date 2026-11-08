@@ -1,5 +1,6 @@
 "use client";
 
+import { LinkPreferenciasCookies } from "@/components/LinkPreferenciasCookies";
 import React from "react";
 import Link from "next/link";
 import { Camera, Clock, CreditCard, ExternalLink, Lock, Mail, MapPin, Phone, QrCode, RefreshCcw, ShieldCheck, Store, Truck, Wallet } from "lucide-react";
@@ -76,6 +77,8 @@ export function LojaRodape() {
             <li><Link href="/tamanhos" className={link}>Tabela de tamanhos</Link></li>
             <li><Link href="/sublimacao" className={link}>Uniformes personalizados</Link></li>
             <li><Link href="/loja/conta" className={link}>Minha conta e pedidos</Link></li>
+            <li><Link href="/privacidade" className={link}>Privacidade e cookies</Link></li>
+            <li><LinkPreferenciasCookies className={`${link} text-left`} /></li>
           </ul>
         </nav>
 

@@ -14,7 +14,7 @@ export async function mandarCodigoLogin(conta: ContaBase): Promise<{ ok: true; d
   const enviado = await emailCodigoLogin(conta.email, conta.nome, codigo, MINUTOS_CODIGO_LOGIN);
   if (!enviado) {
     await anularCodigosLogin(conta.id);
-    return { ok: false, status: 503, erro: "Não conseguimos enviar o código para o seu e-mail agora. Tente de novo em instantes." };
+    return { ok: false, status: 503, erro: "Não conseguimos enviar o código para o seu e-mail agora. Tente mais tarde ou fale com a loja pelo WhatsApp." };
   }
   return { ok: true, desafio: criarDesafioLogin(conta) };
 }

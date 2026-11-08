@@ -12,12 +12,12 @@ const coresMeiao = CORES_MEIAO.map((c) => c.valor) as [string, ...string[]];
 // Tamanho máximo de cada texto: ninguém grava um parágrafo gigante no banco.
 const itemSchema = z.object({
   nome: z.string().max(60).optional().default(""),
-  numero: z.string().max(6).optional().default(""),
-  tamCamisa: z.string().max(10).optional().default(""),
-  tamShort: z.string().max(10).optional().default(""),
+  numero: z.string().max(4).optional().default(""),
+  tamCamisa: z.string().max(12).optional().default(""),
+  tamShort: z.string().max(12).optional().default(""),
   goleiro: z.boolean().optional().default(false),
   meiao: z.enum(["", ...coresMeiao]).optional().default(""),
-  opcoes: z.array(z.string().max(40)).max(10).optional().default([]),
+  opcoes: z.array(z.string().max(60)).max(10).optional().default([]),
   obs: z.string().max(300).optional().default(""),
 });
 

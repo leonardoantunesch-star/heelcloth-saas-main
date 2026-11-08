@@ -2,7 +2,7 @@
 export const EMPRESA = {
   nome: "Heel Cloth",
   // Frase que aparece embaixo da logo no rodapé.
-  frase: "Confecção de Itaúna (MG): uniformes personalizados por sublimação e camisas com identidade própria, enviados para todo o Brasil.",
+  frase: "Heel Cloth (Heel Clothing, Heel Camisas): confecção de Itaúna (MG) de camisas esportivas e uniformes personalizados por sublimação, enviados para todo o Brasil.",
   whatsapp: "37 99825-3735",
   whatsappLink: "https://wa.me/5537998253735",
   email: "heel.clths.sublimacao@gmail.com",

@@ -35,6 +35,29 @@ async function enviar(para: string, assunto: string, html: string, texto: string
   }
 }
 
+// Teste do envio de e-mail (tela Diagnóstico). Devolve o motivo real da recusa do Resend, sem mostrar chave nenhuma.
+export async function testarEmail(para: string): Promise<{ ok: boolean; status: number; detalhe: string }> {
+  const chave = process.env.RESEND_API_KEY?.trim();
+  if (!chave) return { ok: false, status: 0, detalhe: "A variável RESEND_API_KEY não está configurada na Vercel." };
+  try {
+    const r = await fetch(process.env.RESEND_API_URL?.trim() || "https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${chave}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: process.env.EMAIL_REMETENTE?.trim() || "Loja <onboarding@resend.dev>",
+        to: [para],
+        subject: "Teste de e-mail do painel",
+        text: "Se você recebeu esta mensagem, o envio de e-mails (incluindo o código de login) está funcionando.",
+      }),
+    });
+    if (r.ok) return { ok: true, status: r.status, detalhe: "Enviado. Confira a caixa de entrada e o spam." };
+    const j = (await r.json().catch(() => ({}))) as { message?: string };
+    return { ok: false, status: r.status, detalhe: String(j.message || "O Resend recusou o envio.").slice(0, 400) };
+  } catch {
+    return { ok: false, status: 0, detalhe: "Não foi possível falar com o Resend (rede)." };
+  }
+}
+
 function modelo(loja: string, titulo: string, corpo: string, botao: string, link: string) {
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif;color:#18181b">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">

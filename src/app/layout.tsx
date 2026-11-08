@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TelaCarregamento } from "@/components/TelaCarregamento";
 import { EfeitoToque } from "@/components/EfeitoToque";
+import { AvisoCookies } from "@/components/AvisoCookies";
 import { SITE_NOMES_ALTERNATIVOS, SITE_DESCRICAO, SITE_ENDERECO, SITE_NOME, SITE_TITULO, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
     "uniforme de futebol",
     "sublimação esportiva",
     "roupas esportivas",
+    "camisas esportivas",
+    "camisas esportivas personalizadas",
     "camisas Itaúna MG",
   ],
   alternates: { canonical: "/" },
@@ -53,6 +56,15 @@ const DADOS_EMPRESA = {
   },
 };
 
+// Nome do site no Google (aparece acima do link). "alternateName" lista os outros nomes da marca.
+const DADOS_SITE = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NOME,
+  alternateName: SITE_NOMES_ALTERNATIVOS.filter((n) => n !== SITE_NOME),
+  url: `${SITE_URL}/`,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -61,16 +73,18 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
-        {/* Aplica o tema salvo antes de desenhar a página, para não piscar. */}
+        {/* Aplica o tema salvo antes de desenhar a página, para não piscar. Só lê o tema se a pessoa aceitou os cookies de preferências. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(localStorage.getItem('heelcloth-tema')==='escuro')document.documentElement.classList.add('tema-escuro')}catch(e){}",
+              "try{var c=JSON.parse(localStorage.getItem('heelcloth-cookies')||'null');if(c&&c.preferencias===true&&localStorage.getItem('heelcloth-tema')==='escuro')document.documentElement.classList.add('tema-escuro')}catch(e){}",
           }}
         />
       </head>
       <body className="antialiased">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DADOS_EMPRESA) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DADOS_SITE) }} />
+        <AvisoCookies />
         <TelaCarregamento />
         <EfeitoToque />
         {children}

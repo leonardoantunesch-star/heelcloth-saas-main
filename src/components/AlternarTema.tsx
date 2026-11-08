@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { CHAVE_TEMA, preferenciasPermitidas } from "@/lib/cookies-consentimento";
 
-const CHAVE = "heelcloth-tema";
-
-// Botão que alterna o site entre claro (branco) e escuro (preto). A escolha fica salva no navegador.
+// Botão que alterna o site entre claro (branco) e escuro (preto).
+// A escolha só fica salva no navegador se a pessoa aceitou os cookies de preferências; senão vale só nesta visita.
 export function AlternarTema({ className = "" }: { className?: string }) {
   const [escuro, setEscuro] = useState(false);
 
@@ -18,7 +18,7 @@ export function AlternarTema({ className = "" }: { className?: string }) {
     setEscuro(novo);
     document.documentElement.classList.toggle("tema-escuro", novo);
     try {
-      localStorage.setItem(CHAVE, novo ? "escuro" : "claro");
+      if (preferenciasPermitidas()) localStorage.setItem(CHAVE_TEMA, novo ? "escuro" : "claro");
     } catch {
       /* navegador sem armazenamento: a escolha vale só nesta visita */
     }

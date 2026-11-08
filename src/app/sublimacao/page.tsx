@@ -49,9 +49,9 @@ export default function SublimacaoPage() {
           </div>
 
           <div className="relative mx-auto flex min-h-[560px] max-w-[1440px] flex-col justify-end px-5 pb-14 pt-24 sm:px-8 sm:pb-20 md:min-h-[640px] lg:min-h-[700px] lg:px-12">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/70">Sublimação esportiva</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/70">Heel Cloth · Sublimação esportiva</span>
             <h1 className="mt-4 max-w-3xl text-4xl font-extrabold uppercase leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-              Uniformes personalizados para o seu time
+              Camisas esportivas personalizadas para o seu time
             </h1>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">
               Monte seu pedido, informe os jogadores e receba seu orçamento.
@@ -128,6 +128,18 @@ export default function SublimacaoPage() {
             <EditorialSlideshow />
           </section>
         )}
+
+        {/* Quem somos: texto curto que também ajuda o Google a ligar os nomes da marca a esta página */}
+        <section aria-labelledby="titulo-sobre" className="mx-auto mt-16 max-w-[1440px] px-5 sm:mt-20 sm:px-8 lg:px-12">
+          <h2 id="titulo-sobre" className="max-w-3xl text-2xl font-extrabold uppercase tracking-tight sm:text-3xl">
+            Heel Cloth: camisas esportivas personalizadas
+          </h2>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[#121212]/75 sm:text-base">
+            A Heel Cloth, também conhecida como Heel Clothing e Heel Camisas, é uma confecção de Itaúna (MG) que faz camisas esportivas,
+            shorts e uniformes de time personalizados por sublimação, com nome, número e escudo de cada jogador. O pedido mínimo é de
+            10 camisas e enviamos para todo o Brasil.
+          </p>
+        </section>
 
         {/* Chamada final */}
         <section aria-label="Comece seu pedido" className="mt-16 border-t border-black/10 sm:mt-20">

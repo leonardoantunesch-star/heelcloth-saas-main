@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import React from "react";
-import { TITULO_SUBLIMACAO } from "@/lib/site";
+import { DESCRICAO_SUBLIMACAO, SITE_NOMES_ALTERNATIVOS, TITULO_SUBLIMACAO } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: { absolute: TITULO_SUBLIMACAO },
-  description: "Camisas, shorts e meiões personalizados para o seu time, com nome, número e escudo. Pedido mínimo de 10 camisas. Heel Cloth, Itaúna - MG.",
+  description: DESCRICAO_SUBLIMACAO,
+  keywords: [...SITE_NOMES_ALTERNATIVOS, "camisas esportivas", "camisas esportivas personalizadas", "camisa de time personalizada", "uniforme de futebol personalizado", "sublimação"],
+  openGraph: { title: TITULO_SUBLIMACAO, description: DESCRICAO_SUBLIMACAO, url: "/sublimacao" },
   alternates: { canonical: "/sublimacao" },
 };
 

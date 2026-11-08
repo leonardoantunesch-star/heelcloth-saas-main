@@ -27,6 +27,9 @@ const AVISOS: Record<string, string> = {
 const NOMES = { google: "Google" } as const;
 const ICONES = { google: IconeGoogle } as const;
 
+// O que a pessoa digita fica só na página em que ela está: trocar de página limpa tudo (recarregar também).
+const VAZIO = { nome: "", email: "", telefone: "", senha: "", repetir: "" };
+
 function Rotulo({ texto, children }: { texto: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm font-medium">
@@ -44,7 +47,7 @@ export function ContaLateral() {
   const [aviso, setAviso] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [disponiveis, setDisponiveis] = useState<Disponiveis>({});
-  const [f, setF] = useState({ nome: "", email: "", telefone: "", senha: "", repetir: "" });
+  const [f, setF] = useState(VAZIO);
   const [aceite, setAceite] = useState(false);
   const [desafio, setDesafio] = useState("");
   const painel = useRef<HTMLDivElement>(null);
@@ -60,6 +63,28 @@ export function ContaLateral() {
     setDesafio("");
     setAberto(true);
   }, []);
+
+  // Troca entre "Entrar" e "Criar conta": a senha digitada num formulário nunca aparece preenchida no outro.
+  const trocarModo = (m: Modo) => {
+    setModo(m);
+    setErro("");
+    setAviso("");
+    setF((v) => ({ ...v, senha: "", repetir: "" }));
+  };
+
+  // Mudou de página: fecha a aba e apaga o que foi digitado.
+  const paginaAnterior = useRef(pathname);
+  useEffect(() => {
+    if (paginaAnterior.current === pathname) return;
+    paginaAnterior.current = pathname;
+    setAberto(false);
+    setModo("entrar");
+    setErro("");
+    setAviso("");
+    setDesafio("");
+    setAceite(false);
+    setF(VAZIO);
+  }, [pathname]);
 
   const encerrar = useCallback(() => {
     setAberto(false);
@@ -210,6 +235,8 @@ export function ContaLateral() {
             </div>
           ) : (
             <>
+              {disponiveis.google === true && (
+              <>
               <div className="mt-6">
                 <p className="mb-2 text-sm font-medium">Continuar com</p>
                 <div className="grid grid-cols-1 gap-2">
@@ -229,11 +256,13 @@ export function ContaLateral() {
                 ou com e-mail
                 <span className="h-px flex-1 bg-black/15" />
               </div>
+              </>
+              )}
 
               {modo === "entrar" ? (
-                <form onSubmit={entrar} className="space-y-3">
+                <form key="entrar" onSubmit={entrar} className={`space-y-3 ${disponiveis.google === true ? "" : "mt-6"}`}>
                   <Rotulo texto="E-mail"><input className={`${campo} mt-1`} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
-                  <Rotulo texto="Senha"><input className={`${campo} mt-1`} type="password" autoComplete="current-password" value={f.senha} onChange={mudar("senha")} required /></Rotulo>
+                  <Rotulo texto="Senha"><input className={`${campo} mt-1`} type="password" name="senha" autoComplete="current-password" value={f.senha} onChange={mudar("senha")} required /></Rotulo>
                   <Erro texto={erro} />
                   <button type="submit" disabled={enviando} className={botao}>{enviando ? "Entrando..." : "Entrar"}</button>
                   <p className="pt-1 text-center text-sm">
@@ -241,16 +270,16 @@ export function ContaLateral() {
                   </p>
                   <p className="pt-2 text-center text-sm text-[var(--lj-mudo,#555)]">
                     Ainda não tem conta?{" "}
-                    <button type="button" onClick={() => { setModo("criar"); setErro(""); setAviso(""); }} className="font-semibold text-[var(--lj-txt,#111)] underline">Criar conta</button>
+                    <button type="button" onClick={() => trocarModo("criar")} className="font-semibold text-[var(--lj-txt,#111)] underline">Criar conta</button>
                   </p>
                 </form>
               ) : (
-                <form onSubmit={criar} className="space-y-3">
+                <form key="criar" onSubmit={criar} className={`space-y-3 ${disponiveis.google === true ? "" : "mt-6"}`}>
                   <Rotulo texto="Nome completo"><input className={`${campo} mt-1`} autoComplete="name" value={f.nome} onChange={mudar("nome")} required minLength={3} /></Rotulo>
                   <Rotulo texto="E-mail"><input className={`${campo} mt-1`} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
                   <Rotulo texto="WhatsApp (opcional)"><input className={`${campo} mt-1`} type="tel" autoComplete="tel" value={f.telefone} onChange={mudar("telefone")} /></Rotulo>
-                  <Rotulo texto="Senha (mínimo 8 caracteres)"><input className={`${campo} mt-1`} type="password" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} /></Rotulo>
-                  <Rotulo texto="Repita a senha"><input className={`${campo} mt-1`} type="password" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} /></Rotulo>
+                  <Rotulo texto="Senha (mínimo 8 caracteres)"><input className={`${campo} mt-1`} type="password" name="nova-senha" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} /></Rotulo>
+                  <Rotulo texto="Repita a senha"><input className={`${campo} mt-1`} type="password" name="repetir-senha" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} /></Rotulo>
                   <label className="flex items-start gap-3 pt-1 text-sm text-[var(--lj-mudo,#555)]">
                     <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-black" />
                     <span>Concordo que a loja guarde meu nome, e-mail e telefone para criar minha conta e acompanhar meus pedidos. Posso apagar a conta quando quiser.</span>
@@ -259,7 +288,7 @@ export function ContaLateral() {
                   <button type="submit" disabled={enviando} className={botao}>{enviando ? "Criando..." : "Criar conta"}</button>
                   <p className="pt-2 text-center text-sm text-[var(--lj-mudo,#555)]">
                     Já tem conta?{" "}
-                    <button type="button" onClick={() => { setModo("entrar"); setErro(""); setAviso(""); }} className="font-semibold text-[var(--lj-txt,#111)] underline">Entrar</button>
+                    <button type="button" onClick={() => trocarModo("entrar")} className="font-semibold text-[var(--lj-txt,#111)] underline">Entrar</button>
                   </p>
                 </form>
               )}

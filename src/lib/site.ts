@@ -7,7 +7,10 @@ export const SITE_TITULO = "Heel Cloth | Camisas e Uniformes Personalizados - It
 // Título da página inicial (a loja).
 export const TITULO_LOJA = "Heel Cloth | Loja de Camisas e Roupas Esportivas - Itaúna MG";
 // Título da página de uniformes por sublimação (/sublimacao).
-export const TITULO_SUBLIMACAO = "Heel Clothing | Uniformes Personalizados e Camisas de Time - Itaúna MG";
+export const TITULO_SUBLIMACAO = "Camisas Esportivas e Uniformes Personalizados | Heel Cloth";
+// Descrição da página de sublimação (aparece embaixo do título no Google).
+export const DESCRICAO_SUBLIMACAO =
+  "Heel Cloth (Heel Camisas, Heel Clothing): camisas esportivas personalizadas por sublimação para o seu time, com nome, número e escudo. Pedido mínimo de 10 camisas. Itaúna - MG, envio para todo o Brasil.";
 // Outros nomes pelos quais a marca é procurada.
 export const SITE_NOMES_ALTERNATIVOS = ["Heel", "Heel Cloth", "Heel Clothing", "Heel Camisas", "Heel Itaúna", "Heel Eder Modas"];
 export const SITE_DESCRICAO =

@@ -50,9 +50,11 @@ export function LojaHeader() {
   const [busca, setBusca] = useState(false);
   const [termo, setTermo] = useState("");
 
+  // Trocar de página fecha o menu e a busca e apaga o texto digitado nela.
   useEffect(() => {
     setMenu(false);
     setBusca(false);
+    setTermo("");
   }, [pathname]);
 
   const links = [

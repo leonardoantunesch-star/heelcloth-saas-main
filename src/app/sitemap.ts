@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/contato", 0.6],
     ["/ajuda", 0.5],
     ["/rastreio", 0.4],
+    ["/privacidade", 0.3],
   ];
   const lista: MetadataRoute.Sitemap = fixas.map(([caminho, prioridade]) => ({
     url: `${SITE_URL}${caminho}`,

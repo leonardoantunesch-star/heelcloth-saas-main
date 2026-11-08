@@ -24,7 +24,7 @@ export async function GET(
     const { codigo } = await params;
     let codigoFormatado = "";
     try {
-      codigoFormatado = decodeURIComponent(codigo).trim();
+      codigoFormatado = decodeURIComponent(codigo).trim().toUpperCase();
     } catch {
       return NextResponse.json({ erro: "Código do pedido inválido." }, { status: 400 });
     }
@@ -33,6 +33,14 @@ export async function GET(
       return NextResponse.json(
         { erro: "Código do pedido não fornecido" },
         { status: 400 }
+      );
+    }
+
+    // Só aceita o formato do protocolo (ex.: HC-2610-0002). O id interno do banco não serve para consultar.
+    if (!/^[A-Z0-9][A-Z0-9-]{4,28}$/.test(codigoFormatado)) {
+      return NextResponse.json(
+        { erro: "Pedido não encontrado. Verifique o número informado e tente novamente." },
+        { status: 404 }
       );
     }
 
@@ -52,12 +60,7 @@ export async function GET(
     }
 
     const pedido = await prisma.order.findFirst({
-      where: {
-        OR: [
-          { orderNumber: { equals: codigoFormatado } },
-          { id: { equals: codigoFormatado } },
-        ],
-      },
+      where: { orderNumber: codigoFormatado },
       include: {
         customer: {
           select: {
@@ -163,7 +166,6 @@ export async function GET(
     return NextResponse.json({
       sucesso: true,
       pedido: {
-        id: pedido.id,
         orderNumber: pedido.orderNumber,
         status: pedido.status,
         etapaNumero,

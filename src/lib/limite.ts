@@ -12,7 +12,11 @@ export function ipDe(req: Request): string {
 // Guarda só uma impressão do e-mail, nunca o e-mail inteiro.
 export const marcaDe = (valor: string) => crypto.createHash("sha256").update(valor.toLowerCase().trim()).digest("hex").slice(0, 24);
 
-export async function limitar(chave: string, max: number, janelaSeg: number): Promise<{ ok: boolean; esperaSeg: number }> {
+// O banco guarda só a impressão da chave (que pode conter IP ou e-mail), nunca o valor legível.
+const guardar = (chave: string) => "h:" + crypto.createHash("sha256").update(chave).digest("hex").slice(0, 32);
+
+export async function limitar(chaveLegivel: string, max: number, janelaSeg: number): Promise<{ ok: boolean; esperaSeg: number }> {
+  const chave = guardar(chaveLegivel);
   try {
     const agora = new Date();
     const fim = new Date(agora.getTime() + janelaSeg * 1000);
@@ -32,7 +36,7 @@ export async function limitar(chave: string, max: number, janelaSeg: number): Pr
 }
 
 export async function zerarLimite(chave: string) {
-  await prisma.limiteTaxa.deleteMany({ where: { chave } }).catch(() => {});
+  await prisma.limiteTaxa.deleteMany({ where: { chave: guardar(chave) } }).catch(() => {});
 }
 
 export function textoEspera(seg: number) {

@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Camera, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Marca } from "@/components/Marca";
+import { LinkPreferenciasCookies } from "@/components/LinkPreferenciasCookies";
 import { EMPRESA } from "@/lib/empresa";
 import "./tema-faixas.css";
 
@@ -37,6 +38,8 @@ export function SiteFooter() {
             <li><Link href="/" className={link}>Heel Loja</Link></li>
             <li><Link href="/ajuda" className={link}>Perguntas frequentes</Link></li>
             <li><Link href="/contato" className={link}>Contato</Link></li>
+            <li><Link href="/privacidade" className={link}>Privacidade e cookies</Link></li>
+            <li><LinkPreferenciasCookies className={`${link} text-left`} /></li>
           </ul>
         </nav>
 
@@ -69,7 +72,7 @@ export function SiteFooter() {
 
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-[1440px] px-5 py-5 text-[11px] text-white/50 sm:px-8 lg:px-12">
-          © {new Date().getFullYear()} {EMPRESA.nome} (Heel Clothing) · Camisas e uniformes esportivos sob medida · Itaúna - MG
+          © {new Date().getFullYear()} {EMPRESA.nome} (Heel Clothing) · Camisas e uniformes esportivos sob medida · Itaúna - MG · Conexão protegida (HTTPS)
         </p>
       </div>
     </footer>
