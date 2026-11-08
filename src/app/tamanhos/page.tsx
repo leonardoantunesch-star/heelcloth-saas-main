@@ -60,9 +60,9 @@ export default function TamanhosPage() {
     <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-14 sm:py-20">
+      <main id="conteudo" className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-14 sm:py-20">
         <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
-          <span className="uppercase tracking-widest font-mono text-[11px] text-[#121212]/50 font-medium">
+          <span className="uppercase tracking-widest font-mono text-[11px] text-[#121212]/70 font-medium">
             Guia de Medidas
           </span>
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#121212] mt-1.5">

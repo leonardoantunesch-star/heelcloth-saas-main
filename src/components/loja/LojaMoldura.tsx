@@ -25,13 +25,13 @@ export async function LojaMoldura({ children }: { children: React.ReactNode }) {
   return (
     <div style={estilo} className="font-editorial min-h-screen bg-[var(--lj-bg)] text-[var(--lj-txt)]">
       <LojaProvider config={config} categorias={categorias}>
+        <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-3">Pular para o conteúdo</a>
         {previa && (
-          <div className="bg-amber-400 px-4 py-2 text-center text-xs font-semibold text-black">
+          <aside aria-label="Prévia da loja" className="bg-amber-400 px-4 py-2 text-center text-xs font-semibold text-black">
             Prévia: a loja está fechada e só quem está logado no painel vê esta página.{" "}
             <Link href="/admin/loja" className="underline">Abrir a loja no painel</Link>
-          </div>
+          </aside>
         )}
-        <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-3">Pular para o conteúdo</a>
         <LojaHeader />
         <main id="conteudo">{children}</main>
         <LojaRodape />

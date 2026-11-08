@@ -33,7 +33,7 @@ export default function SublimacaoPage() {
     <div className="font-editorial flex min-h-screen flex-col bg-white text-[#121212] selection:bg-[#121212] selection:text-white">
       <SiteHeader />
 
-      <main className="flex-1">
+      <main id="conteudo" className="flex-1">
         {/* Destaque, no formato do banner da loja */}
         <section aria-label="Uniformes personalizados" className="bloco-preto relative overflow-hidden bg-[#0b0b0b] text-white">
           <div className="absolute inset-y-0 right-0 w-full md:w-[58%]">
@@ -76,7 +76,7 @@ export default function SublimacaoPage() {
                 <Icone className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.06em]">{titulo}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-black/55">{texto}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-black/65">{texto}</p>
                 </div>
               </li>
             ))}
@@ -101,7 +101,7 @@ export default function SublimacaoPage() {
                   className="group flex min-h-[200px] flex-col justify-between rounded-2xl bg-[#f3f3f1] p-5 sm:min-h-[260px] transition-colors duration-300 hover:bg-[#121212] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] focus-visible:ring-offset-2"
                 >
                   <div className="flex items-start justify-between">
-                    <span className="font-mono text-[11px] text-current opacity-50">{a.numero}</span>
+                    <span className="font-mono text-[11px] text-current opacity-75">{a.numero}</span>
                     <ArrowUpRight className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" strokeWidth={1.8} aria-hidden="true" />
                   </div>
                   <div>

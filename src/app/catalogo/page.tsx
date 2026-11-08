@@ -18,9 +18,9 @@ export default async function CatalogoPage() {
     <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-14 sm:py-20">
+      <main id="conteudo" className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-14 sm:py-20">
         <div className="max-w-2xl">
-          <span className="uppercase tracking-[0.25em] font-mono text-[11px] text-[#121212]/50 font-medium">
+          <span className="uppercase tracking-[0.25em] font-mono text-[11px] text-[#121212]/70 font-medium">
             Catálogo
           </span>
           <h1 className="mt-2 text-3xl sm:text-5xl font-bold tracking-tight leading-[1.05]">

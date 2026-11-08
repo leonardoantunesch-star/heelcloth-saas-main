@@ -13,9 +13,9 @@ export default function ContatoPage() {
     <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-16 sm:py-24">
+      <main id="conteudo" className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-16 sm:py-24">
         <div className="max-w-3xl mx-auto text-center space-y-3">
-          <span className="uppercase tracking-widest font-mono text-[11px] text-[#121212]/50 font-medium">
+          <span className="uppercase tracking-widest font-mono text-[11px] text-[#121212]/70 font-medium">
             Atendimento & Suporte
           </span>
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#121212]">Fale com nossa equipe</h1>

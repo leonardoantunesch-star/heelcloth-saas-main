@@ -22,7 +22,7 @@ export function Marca({ pequena = false, claro = false }: { pequena?: boolean; c
         >
           HEEL CLOTH
         </span>
-        <span className={`mt-1.5 text-[9px] font-light uppercase tracking-[0.28em] ${claro ? "text-white/60" : "text-[#121212]/55"}`}>
+        <span className={`mt-1.5 text-[9px] font-light uppercase tracking-[0.28em] ${claro ? "text-white/60" : "text-[#121212]/70"}`}>
           Sublimação esportiva
         </span>
       </span>

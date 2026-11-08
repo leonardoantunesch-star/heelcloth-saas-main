@@ -53,7 +53,7 @@ export function ComprarProduto({ produto: p }: { produto: ProdutoLoja }) {
     <div>
       <div className="flex flex-wrap items-baseline gap-x-3">
         <span className={`text-2xl font-extrabold tabular-nums ${promo ? "text-[var(--lj-dest)]" : ""}`}>{brl(final)}</span>
-        {promo && <span className="text-sm text-black/40 line-through tabular-nums">{brl(p.preco)}</span>}
+        {promo && <span className="text-sm text-black/65 line-through tabular-nums">{brl(p.preco)}</span>}
       </div>
       <p className="mt-1 text-sm text-black/60">Pagamento por Pix.</p>
 

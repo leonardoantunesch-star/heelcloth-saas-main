@@ -98,7 +98,7 @@ export default function AjudaPage() {
       <SiteHeader />
 
       {/* Conteúdo Principal */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10 flex-1 w-full">
+      <main id="conteudo" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10 flex-1 w-full">
         {/* Título e Apresentação */}
         <div className="space-y-3">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
@@ -114,7 +114,7 @@ export default function AjudaPage() {
 
         {/* Campo de Busca Rápida */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
           <input
             type="text"
             value={busca}
@@ -167,7 +167,7 @@ export default function AjudaPage() {
                     <span className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-blue-600 transition-colors">
                       {faq.pergunta}
                     </span>
-                    <span className="p-1 rounded text-slate-400 group-hover:text-slate-700 shrink-0">
+                    <span className="p-1 rounded text-slate-500 group-hover:text-slate-700 shrink-0">
                       {aberto ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                     </span>
                   </button>
@@ -185,7 +185,7 @@ export default function AjudaPage() {
         {/* Bloco de Contato Direto */}
         <div className="border border-slate-200 rounded-lg p-6 bg-slate-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h3 className="font-bold text-sm text-slate-900">Ainda precisa de ajuda?</h3>
+            <h2 className="font-bold text-sm text-slate-900">Ainda precisa de ajuda?</h2>
             <p className="text-xs text-slate-600">
               Inicie seu pedido e nossa equipe de produção entrará em contato para alinhar os detalhes do seu uniforme.
             </p>
@@ -201,7 +201,7 @@ export default function AjudaPage() {
 
       {/* Footer Discreto */}
       <footer className="bg-white border-t border-slate-200 py-8 mt-auto">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} Heel Cloth Sportswear. Todos os direitos reservados.</p>
         </div>
       </footer>

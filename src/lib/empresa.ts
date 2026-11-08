@@ -11,7 +11,14 @@ export const EMPRESA = {
   horario: "Segunda a sexta: 09h às 18h e sábado: 09h às 13h",
   instagram: "heelclothingoficial",
   instagramLink: "https://www.instagram.com/heelclothingoficial/",
+  // Identificação legal (Decreto 7.962/2013). Preencha com os dados reais do CNPJ; enquanto estiverem vazios,
+  // nada aparece no site (nunca coloque um número de exemplo).
+  razaoSocial: "" as string,
+  cnpj: "" as string,
 } as const;
+
+// "Razão social · CNPJ 00.000.000/0000-00" quando os dados existem; senão, vazio.
+export const identificacaoLegal = () => [EMPRESA.razaoSocial, EMPRESA.cnpj && `CNPJ ${EMPRESA.cnpj}`].filter(Boolean).join(" · ");
 
 // Fotos da faixa do Instagram (página inicial). Ficam em public/instagram/. Para trocar, substitua o arquivo
 // mantendo o nome, ou mude a lista abaixo.

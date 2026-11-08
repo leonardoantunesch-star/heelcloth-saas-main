@@ -149,7 +149,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "",
               ref={grupo.id === "adulto" ? adultoRef : undefined}
               className="pb-3 last:pb-0"
             >
-              <p className="px-1 pb-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#121212]/50">
+              <p className="px-1 pb-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#121212]/70">
                 {grupo.titulo}
               </p>
               <div role="listbox" aria-label={grupo.titulo} className="flex flex-wrap gap-2">
@@ -209,7 +209,7 @@ export function SeletorTamanho({ value, onChange, id, ariaLabel, className = "",
       >
         <span className="truncate">{value ? rotuloCurto(value) : textoGatilhoVazio}</span>
         <ChevronDown
-          className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${visivel ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform ${visivel ? "rotate-180" : ""}`}
         />
       </button>
       {painel && typeof document !== "undefined" ? createPortal(painel, document.body) : null}

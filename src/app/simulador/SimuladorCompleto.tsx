@@ -33,7 +33,7 @@ function Cor({ rotulo, valor, onChange }: { rotulo: string; valor: string; onCha
 function Bloco({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-black/10 pt-4">
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#121212]/55">{titulo}</h2>
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#121212]/70">{titulo}</h2>
       {children}
     </section>
   );
@@ -124,9 +124,9 @@ export default function SimuladorCompleto() {
   return (
     <div className="font-editorial min-h-screen bg-white text-[#121212]">
       <SiteHeader />
-      <main className="mx-auto max-w-[1440px] px-5 pb-16 pt-8 sm:px-8 lg:px-12">
+      <main id="conteudo" className="mx-auto max-w-[1440px] px-5 pb-16 pt-8 sm:px-8 lg:px-12">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#121212]/50">Simulador 3D</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#121212]/70">Simulador 3D</p>
           <h1 className="mt-1 text-3xl font-light tracking-tight sm:text-4xl">Monte o seu uniforme</h1>
           <p className="mt-2 max-w-xl text-sm text-[#121212]/60">
             Gire, mude as cores, o padrão, o nome e o número. Quando gostar, envie o modelo direto para o pedido.
@@ -167,7 +167,7 @@ export default function SimuladorCompleto() {
                     {girar ? "Parar" : "Girar"}
                   </button>
                 </div>
-                <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] text-[#121212]/55">Arraste para girar · role para aproximar</span>
+                <span className="rounded-full bg-white/80 px-3 py-1 text-[11px] text-[#121212]/70">Arraste para girar · role para aproximar</span>
               </div>
             </div>
           </div>
@@ -266,7 +266,7 @@ export default function SimuladorCompleto() {
                   <RotateCcw className="h-3.5 w-3.5" /> Recomeçar
                 </button>
               </div>
-              <p className="text-[11px] leading-relaxed text-[#121212]/45">
+              <p className="text-[11px] leading-relaxed text-[#121212]/70">
                 A visualização é uma simulação. Cores na tela podem variar um pouco do tecido final; a arte definitiva é combinada com a Heelcloth.{" "}
                 <Link href="/contato" className="underline">Falar com a gente</Link>
               </p>

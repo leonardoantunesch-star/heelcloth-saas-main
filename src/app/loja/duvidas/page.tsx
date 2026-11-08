@@ -59,7 +59,7 @@ export default async function Duvidas() {
       <div className="mt-10 space-y-10">
         {grupos.map((g, n) => (
           <section key={g.titulo} aria-labelledby={`grupo-${n}`}>
-            <h2 id={`grupo-${n}`} className="text-xs font-bold uppercase tracking-[0.16em] text-black/55">{g.titulo}</h2>
+            <h2 id={`grupo-${n}`} className="text-xs font-bold uppercase tracking-[0.16em] text-black/65">{g.titulo}</h2>
             <div className="mt-3 divide-y divide-black/10 border-y border-black/10">
               {g.itens.map((i) => (
                 <details key={i.p} className="group py-4">

@@ -20,8 +20,8 @@ export function ImagemLoja({
     return <img src={urlImagemLoja(id)} alt={alt} loading="lazy" className={`${className} ${ajuste === "cover" ? "object-cover" : "object-contain"}`} />;
   }
   return (
-    <div role="img" aria-label={alt} className={`${className} flex items-center justify-center bg-[#f1f1ef] text-center`}>
-      <span className="px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-black/30">{rotulo ?? "HEEL CLOTH."}</span>
+    <div {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })} className={`${className} flex items-center justify-center bg-[#f1f1ef] text-center`}>
+      <span className="px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-black/60">{rotulo ?? "HEEL CLOTH."}</span>
     </div>
   );
 }

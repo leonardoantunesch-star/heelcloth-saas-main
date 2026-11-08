@@ -24,7 +24,7 @@ export default async function Produto({ params }: { params: Promise<{ id: string
 
   return (
     <div className="mx-auto max-w-[1440px] px-4 pt-6 sm:px-8">
-      <nav aria-label="Caminho" className="mb-6 text-xs text-black/55">
+      <nav aria-label="Caminho" className="mb-6 text-xs text-black/65">
         <Link href="/" className="hover:underline">Início</Link>
         {cat && <> / <Link href={`/loja/categoria/${cat.id}`} className="hover:underline">{cat.nome}</Link></>}
         {" / "}<span className="text-black">{p.nome}</span>
@@ -32,7 +32,7 @@ export default async function Produto({ params }: { params: Promise<{ id: string
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
         <GaleriaProduto produto={p} />
         <div className="lg:sticky lg:top-32 lg:self-start">
-          {p.cor && <p className="text-xs uppercase tracking-[0.14em] text-black/55">{p.cor}</p>}
+          {p.cor && <p className="text-xs uppercase tracking-[0.14em] text-black/65">{p.cor}</p>}
           <h1 className="mt-1 text-2xl font-extrabold uppercase leading-tight tracking-tight sm:text-3xl">{p.nome}</h1>
           <div className="mt-5">
             <ComprarProduto produto={p} />

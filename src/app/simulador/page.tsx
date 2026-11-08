@@ -9,8 +9,8 @@ export default function SimuladorPage() {
   return (
     <div className="font-editorial flex min-h-screen flex-col bg-white text-[#121212]">
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-12">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#121212]/50">Simulador 3D</p>
+      <main id="conteudo" className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col items-center justify-center px-5 py-24 text-center sm:px-8 lg:px-12">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#121212]/70">Simulador 3D</p>
         <h1 className="mt-4 text-5xl font-light tracking-tight sm:text-7xl">Em breve</h1>
         <p className="mt-5 max-w-md text-sm leading-relaxed text-[#121212]/60">
           Estamos preparando um simulador para você montar o seu uniforme em 3D: cores, padrão, nome, número e escudo.

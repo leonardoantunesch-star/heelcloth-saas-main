@@ -3,6 +3,7 @@ import "./globals.css";
 import { TelaCarregamento } from "@/components/TelaCarregamento";
 import { EfeitoToque } from "@/components/EfeitoToque";
 import { AvisoCookies } from "@/components/AvisoCookies";
+import { Estatisticas } from "@/components/Estatisticas";
 import { SITE_NOMES_ALTERNATIVOS, SITE_DESCRICAO, SITE_ENDERECO, SITE_NOME, SITE_TITULO, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -85,6 +86,7 @@ export default function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DADOS_EMPRESA) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DADOS_SITE) }} />
         <AvisoCookies />
+        <Estatisticas />
         <TelaCarregamento />
         <EfeitoToque />
         {children}

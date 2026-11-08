@@ -25,6 +25,7 @@ export async function GET() {
       { nome: "MERCADOPAGO_ACCESS_TOKEN", ok: tem("MERCADOPAGO_ACCESS_TOKEN"), obrigatorio: false, para: "Cobrar por Pix na loja." },
       { nome: "MERCADOPAGO_WEBHOOK_SECRET", ok: tem("MERCADOPAGO_WEBHOOK_SECRET"), obrigatorio: false, para: "Confirmar pagamentos automaticamente com segurança." },
       { nome: "JWT_SECRET", ok: tem("JWT_SECRET"), obrigatorio: true, para: "Assinar o login (cliente e equipe)." },
+      { nome: "NEXT_PUBLIC_GA_ID", ok: tem("NEXT_PUBLIC_GA_ID"), obrigatorio: false, para: "Google Analytics (formato G-XXXXXXX). Só carrega para quem aceitar “Estatísticas” no aviso de cookies." },
       { nome: "NEXT_PUBLIC_SITE_URL", ok: tem("NEXT_PUBLIC_SITE_URL"), obrigatorio: false, para: "Endereço usado nos links e no retorno do Google." },
     ];
     return NextResponse.json({

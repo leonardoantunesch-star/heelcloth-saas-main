@@ -45,7 +45,7 @@ export function Obrigado({ protocolo, pagamentoId, manual }: { protocolo: string
 
   return (
     <div className="mx-auto max-w-xl px-4 py-20 text-center">
-      {pago ? <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-600" /> : <Clock className="mx-auto h-14 w-14 text-black/40" />}
+      {pago ? <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-600" /> : <Clock className="mx-auto h-14 w-14 text-black/65" />}
       <h1 className="mt-6 text-3xl font-extrabold uppercase tracking-tight">{pago ? "Pagamento confirmado!" : "Pedido recebido"}</h1>
       {protocolo && (
         <p className="mt-3 text-sm text-black/65">
@@ -60,7 +60,7 @@ export function Obrigado({ protocolo, pagamentoId, manual }: { protocolo: string
             ? "Recebemos seu pedido. Vamos falar com você pelo WhatsApp para combinar o pagamento e a entrega."
             : "Estamos aguardando a confirmação do pagamento pelo Mercado Pago. O Pix costuma confirmar em instantes."}
       </p>
-      {erro && <p className="mt-4 text-xs text-black/50">Não conseguimos consultar a situação agora, mas seu pedido foi registrado.</p>}
+      {erro && <p className="mt-4 text-xs text-black/65">Não conseguimos consultar a situação agora, mas seu pedido foi registrado.</p>}
       <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
         {linkWhats && (
           <a href={linkWhats} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center rounded-full border border-black px-6 text-xs font-bold uppercase tracking-[0.16em]">

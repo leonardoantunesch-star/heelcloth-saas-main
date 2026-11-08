@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SeletorTamanho } from "@/components/SeletorTamanho";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AvisoDados } from "@/components/politicas/AvisoDados";
 import { PRECOS_PADRAO, calcularOrcamento } from "@/lib/orcamento";
 import { SeletorMeiao } from "@/components/SeletorMeiao";
 import { CHAVE_SIMULADOR } from "@/lib/simulador/projeto";
@@ -75,7 +76,7 @@ function OpcaoCheck({
       />
       <span>
         {rotulo}
-        {detalhe && <span className="ml-1 text-[10px] text-slate-400 font-medium">{detalhe}</span>}
+        {detalhe && <span className="ml-1 text-[10px] text-slate-500 font-medium">{detalhe}</span>}
       </span>
     </label>
   );
@@ -329,7 +330,7 @@ export default function FazerPedidoPage() {
       {/* ==================================================================== */}
       {/* CONTEÚDO PRINCIPAL DA TELA DE PEDIDO */}
       {/* ==================================================================== */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      <main id="conteudo" className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
         
         {/* TELA DE SUCESSO PÓS-ENVIO */}
         {protocoloGerado ? (
@@ -540,15 +541,15 @@ export default function FazerPedidoPage() {
                         <th className="px-3 py-3 w-32 text-center">Meião</th>
                         <th className="px-3 py-3 w-20 text-center">Goleiro</th>
                         <th className="px-3 py-3">Opções de acabamento</th>
-                        <th className="px-3 py-3 min-w-[180px]">Observações <span className="normal-case font-medium text-slate-400">(opcional)</span></th>
-                        <th className="px-2 py-3 w-12 text-center"></th>
+                        <th className="px-3 py-3 min-w-[180px]">Observações <span className="normal-case font-medium text-slate-500">(opcional)</span></th>
+                        <th className="px-2 py-3 w-12 text-center"><span className="sr-only">Remover jogador</span></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 bg-white">
                       {linhas.map((linha, idx) => (
                         <tr key={linha.id} className="hover:bg-slate-50/70 transition-colors">
                           {/* Ordem */}
-                          <td className="px-3 py-2.5 text-center text-slate-400 font-mono text-[11px]">
+                          <td className="px-3 py-2.5 text-center text-slate-500 font-mono text-[11px]">
                             {(idx + 1).toString().padStart(2, "0")}
                           </td>
 
@@ -678,7 +679,7 @@ export default function FazerPedidoPage() {
                               onClick={() => removerLinha(linha.id)}
                               disabled={linhas.length <= 1}
                               aria-label={`Remover jogador ${idx + 1}`}
-                              className="ripple-so-clique w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-20 transition"
+                              className="ripple-so-clique w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-20 transition"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -713,7 +714,7 @@ export default function FazerPedidoPage() {
                         onClick={() => removerLinha(linha.id)}
                         disabled={linhas.length <= 1}
                         aria-label={`Remover jogador ${idx + 1}`}
-                        className="ripple-so-clique p-2 rounded-lg text-slate-400 hover:text-red-600 disabled:opacity-20 transition min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="ripple-so-clique p-2 rounded-lg text-slate-500 hover:text-red-600 disabled:opacity-20 transition min-w-[36px] min-h-[36px] flex items-center justify-center"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -801,7 +802,7 @@ export default function FazerPedidoPage() {
                         htmlFor={`mobile-meiao-${linha.id}`}
                         className="block text-[11px] font-semibold text-slate-600 mb-1"
                       >
-                        Meião <span className="font-normal text-slate-400">(opcional)</span>
+                        Meião <span className="font-normal text-slate-500">(opcional)</span>
                       </label>
                       <SeletorMeiao
                         id={`mobile-meiao-${linha.id}`}
@@ -856,7 +857,7 @@ export default function FazerPedidoPage() {
                         htmlFor={`mobile-obs-${linha.id}`}
                         className="block text-[11px] font-semibold text-slate-600 mb-1"
                       >
-                        Observações <span className="font-normal text-slate-400">(opcional)</span>
+                        Observações <span className="font-normal text-slate-500">(opcional)</span>
                       </label>
                       <textarea
                         id={`mobile-obs-${linha.id}`}
@@ -875,7 +876,7 @@ export default function FazerPedidoPage() {
               {/* Rodapé da Seção com Dica e Atalho de Adicionar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs text-slate-500">
                 <div className="flex items-start gap-1.5">
-                  <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
                   <span>
                     Dica: ao marcar <strong>Textura</strong>, o <strong>Punho</strong> já vem incluso. <strong>Dry-fit</strong>: camisa R$ 41,90 e calção R$ 21,90 (não combina com Textura). Camisas nos tamanhos <strong>G3, G4 e G5</strong> têm <strong>+ R$ 10,00</strong> cada. Use <strong>Observações</strong> para qualquer detalhe de cada camisa (é opcional). Para pedir <strong>só o short</strong>, deixe a camisa sem tamanho: o mínimo de 10 camisas continua valendo para o pedido todo.
                   </span>
@@ -942,7 +943,6 @@ export default function FazerPedidoPage() {
                       type="button"
                       role="radio"
                       aria-checked={ativa}
-                      aria-pressed={ativa}
                       onClick={() => setPagamento(f.valor)}
                       className={`ripple-host inline-flex h-11 items-center justify-center rounded-full border px-5 text-xs sm:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212] ${
                         ativa
@@ -983,10 +983,12 @@ export default function FazerPedidoPage() {
                     ))}
                   </ul>
                 )}
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   * Os valores finais serão formalizados após envio e aprovação do layout digital.
                 </p>
               </div>
+
+              <AvisoDados finalidade="Usamos o nome, o contato e os dados dos jogadores só para orçar, produzir, cobrar e entregar este pedido." />
 
               {/* CTA Final em Azul Aqua */}
               <button

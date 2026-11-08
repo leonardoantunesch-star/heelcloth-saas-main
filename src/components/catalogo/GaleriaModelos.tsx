@@ -105,7 +105,7 @@ export function GaleriaModelos({ modelos, produtoNome, forma }: Props) {
             </div>
             <div className="flex w-full flex-col justify-between gap-6 p-6 sm:w-64">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#121212]/50">{produtoNome}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#121212]/70">{produtoNome}</p>
                 <h3 className="mt-1 text-xl font-bold tracking-tight">{atual.nome}</h3>
                 {atual.descricao && <p className="mt-2 text-sm leading-relaxed text-[#606060]">{atual.descricao}</p>}
               </div>

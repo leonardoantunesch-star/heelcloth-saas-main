@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Marca } from "@/components/Marca";
 import { AlternarTema } from "@/components/AlternarTema";
+import { PularConteudo } from "@/components/PularConteudo";
 import "./tema-faixas.css";
 
 // Menu do topo, igual em todas as páginas públicas. Cada item abre uma página própria.
@@ -63,6 +64,7 @@ export function SiteHeader({ extra }: SiteHeaderProps) {
 
   return (
     <header className="font-editorial sticky top-0 z-30">
+      <PularConteudo />
       <FaixaAvisos />
       <div className="border-b border-black/10 bg-white/95 backdrop-blur-xs">
         <div className="mx-auto flex max-w-[1440px] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-8 lg:px-12 xl:py-4">

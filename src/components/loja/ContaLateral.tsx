@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { semPreencher } from "@/lib/sem-preencher";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
@@ -261,8 +262,8 @@ export function ContaLateral() {
 
               {modo === "entrar" ? (
                 <form key="entrar" onSubmit={entrar} className={`space-y-3 ${disponiveis.google === true ? "" : "mt-6"}`}>
-                  <Rotulo texto="E-mail"><input className={`${campo} mt-1`} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
-                  <Rotulo texto="Senha"><input className={`${campo} mt-1`} type="password" name="senha" autoComplete="current-password" value={f.senha} onChange={mudar("senha")} required /></Rotulo>
+                  <Rotulo texto="E-mail"><input className={`${campo} mt-1`} {...semPreencher} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
+                  <Rotulo texto="Senha"><input className={`${campo} mt-1`} {...semPreencher} type="password" name="senha" autoComplete="current-password" value={f.senha} onChange={mudar("senha")} required /></Rotulo>
                   <Erro texto={erro} />
                   <button type="submit" disabled={enviando} className={botao}>{enviando ? "Entrando..." : "Entrar"}</button>
                   <p className="pt-1 text-center text-sm">
@@ -276,13 +277,13 @@ export function ContaLateral() {
               ) : (
                 <form key="criar" onSubmit={criar} className={`space-y-3 ${disponiveis.google === true ? "" : "mt-6"}`}>
                   <Rotulo texto="Nome completo"><input className={`${campo} mt-1`} autoComplete="name" value={f.nome} onChange={mudar("nome")} required minLength={3} /></Rotulo>
-                  <Rotulo texto="E-mail"><input className={`${campo} mt-1`} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
+                  <Rotulo texto="E-mail"><input className={`${campo} mt-1`} {...semPreencher} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required /></Rotulo>
                   <Rotulo texto="WhatsApp (opcional)"><input className={`${campo} mt-1`} type="tel" autoComplete="tel" value={f.telefone} onChange={mudar("telefone")} /></Rotulo>
-                  <Rotulo texto="Senha (mínimo 8 caracteres)"><input className={`${campo} mt-1`} type="password" name="nova-senha" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} /></Rotulo>
-                  <Rotulo texto="Repita a senha"><input className={`${campo} mt-1`} type="password" name="repetir-senha" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} /></Rotulo>
+                  <Rotulo texto="Senha (mínimo 8 caracteres)"><input className={`${campo} mt-1`} {...semPreencher} type="password" name="nova-senha" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} /></Rotulo>
+                  <Rotulo texto="Repita a senha"><input className={`${campo} mt-1`} {...semPreencher} type="password" name="repetir-senha" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} /></Rotulo>
                   <label className="flex items-start gap-3 pt-1 text-sm text-[var(--lj-mudo,#555)]">
                     <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-black" />
-                    <span>Concordo que a loja guarde meu nome, e-mail e telefone para criar minha conta e acompanhar meus pedidos. Posso apagar a conta quando quiser.</span>
+                    <span>Concordo que a loja guarde meu nome, e-mail e telefone para criar minha conta e acompanhar meus pedidos. Posso apagar a conta quando quiser. <Link href="/privacidade" className="font-semibold underline underline-offset-2">Política de privacidade</Link>.</span>
                   </label>
                   <Erro texto={erro} />
                   <button type="submit" disabled={enviando} className={botao}>{enviando ? "Criando..." : "Criar conta"}</button>

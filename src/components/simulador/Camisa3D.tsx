@@ -578,7 +578,7 @@ export const Camisa3D = forwardRef<Camisa3DRef, { config: ConfigCamisa; girarSoz
     return (
       <div ref={caixa} className={`relative h-full w-full ${className}`}>
         {carregando && (
-          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.2em] text-black/50">
+          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.2em] text-black/65">
             Montando a camisa...
           </div>
         )}

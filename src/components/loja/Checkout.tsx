@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Lock, Minus, Plus } from "lucide-react";
 import { useLoja } from "./LojaContexto";
 import { ImagemLoja } from "./ImagemLoja";
+import { AvisoDados } from "@/components/politicas/AvisoDados";
 import { brl, calcularFrete, precoFinal, type ProdutoLoja } from "@/data/loja";
 
 const campo = "h-11 w-full border border-black/20 bg-white px-3 text-sm outline-none focus:border-black";
@@ -209,7 +210,7 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
               </div>
             </div>
           )}
-          {config.frete.prazo && <p className="text-xs text-black/55">{config.frete.prazo}</p>}
+          {config.frete.prazo && <p className="text-xs text-black/65">{config.frete.prazo}</p>}
         </fieldset>
       </div>
 
@@ -221,7 +222,7 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
               <ImagemLoja id={i.imagem} alt={i.nome} className="h-20 w-16 shrink-0" rotulo="" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{i.nome}</p>
-                <p className="text-xs text-black/55">Tam. {i.tamanho}</p>
+                <p className="text-xs text-black/65">Tam. {i.tamanho}</p>
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center rounded-full border border-black/20 px-1">
                     <button type="button" aria-label={`Diminuir ${i.nome}`} className="rounded-full p-1 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}><Minus className="h-3 w-3" /></button>
@@ -230,7 +231,7 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
                   </div>
                   <span className="text-sm tabular-nums">{brl(i.preco * i.quantidade)}</span>
                 </div>
-                <button type="button" onClick={() => remover(i.produtoId, i.tamanho)} className="mt-1 text-[11px] text-black/50 underline">Remover</button>
+                <button type="button" onClick={() => remover(i.produtoId, i.tamanho)} className="mt-1 text-[11px] text-black/65 underline">Remover</button>
               </div>
             </li>
           ))}
@@ -244,7 +245,8 @@ export function Checkout({ produtos }: { produtos: ProdutoLoja[] }) {
         <button type="submit" disabled={enviando} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--lj-pri)] text-xs font-bold uppercase tracking-[0.18em] text-white hover:opacity-90 disabled:opacity-50">
           <Lock className="h-4 w-4" /> {enviando ? "Processando..." : "Ir para o pagamento"}
         </button>
-        <p className="mt-3 text-center text-[11px] text-black/50">Você será levado ao Mercado Pago para pagar com Pix.</p>
+        <p className="mt-3 text-center text-[11px] text-black/60">Você será levado ao Mercado Pago para pagar com Pix.</p>
+        <AvisoDados className="mt-3" comTermos finalidade="Seus dados são usados para registrar o pedido, receber o pagamento, entregar e emitir a nota fiscal (o CPF é exigido para isso)." />
       </aside>
     </form>
   );

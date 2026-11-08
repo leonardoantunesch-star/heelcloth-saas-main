@@ -27,6 +27,8 @@ export async function LojaInicio() {
   const pm = config.pagamento.parcelasMax;
   return (
     <>
+      {/* Título da página para leitor de tela e Google (o banner é visual). */}
+      <h1 className="sr-only">{config.marca.nome}: loja de camisas e roupas esportivas em Itaúna - MG</h1>
       <Banners banners={banners} />
 
       {config.blocos.length > 0 && (
@@ -50,7 +52,7 @@ export async function LojaInicio() {
       <Vitrine titulo={config.textos.promocoes} href="/loja/ofertas" produtos={produtos.filter(emPromocao)} parcelasMax={pm} />
 
       {produtos.length === 0 && (
-        <p className="mx-auto max-w-[1440px] px-4 py-20 text-center text-sm text-black/55 sm:px-8">Novos produtos chegam em breve.</p>
+        <p className="mx-auto max-w-[1440px] px-4 py-20 text-center text-sm text-black/65 sm:px-8">Novos produtos chegam em breve.</p>
       )}
 
       {(config.textos.sobreTitulo || config.textos.sobre) && (

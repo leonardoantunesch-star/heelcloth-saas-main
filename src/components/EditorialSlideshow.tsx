@@ -57,14 +57,14 @@ export function EditorialSlideshow({
                     ) : (
                       <div className="w-full h-full p-5 flex flex-col justify-between bg-gradient-to-b from-black/[0.02] to-black/[0.06] text-[#121212]">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono tracking-wider uppercase text-[#121212]/50 font-medium">
+                          <span className="text-[11px] font-mono tracking-wider uppercase text-[#121212]/70 font-medium">
                             {slide.label || `0${idx + 1}`}
                           </span>
                           <span className="w-2 h-2 rounded-full bg-[#121212]/40" />
                         </div>
 
                         <div className="flex flex-col items-center justify-center text-center px-2 py-6">
-                          <div className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#121212]/40 mb-3 bg-white/40">
+                          <div className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#121212]/70 mb-3 bg-white/40">
                             <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
                           </div>
                           <p className="text-xs font-medium text-[#121212]/60 max-w-[170px] leading-relaxed">
@@ -75,7 +75,7 @@ export function EditorialSlideshow({
                           </span>
                         </div>
 
-                        <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[10px] text-[#121212]/45 font-medium">
+                        <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[10px] text-[#121212]/70 font-medium">
                           <span>Coleção Atual</span>
                           <span>Ref. {slide.id}</span>
                         </div>

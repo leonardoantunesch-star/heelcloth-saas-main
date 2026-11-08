@@ -195,7 +195,7 @@ export function OrderTrackingView({
       {/* ==================================================================== */}
       {/* CONTEÚDO PRINCIPAL */}
       {/* ==================================================================== */}
-      <main className="flex-1 max-w-[1080px] w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      <main id="conteudo" className="flex-1 max-w-[1080px] w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
         
         {/* HERO COMPACTO & CAMPO DE BUSCA */}
         <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center max-w-2xl mx-auto shadow-2xs">

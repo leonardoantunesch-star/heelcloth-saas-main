@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { semPreencher } from "@/lib/sem-preencher";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Shirt, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
@@ -94,8 +95,9 @@ export default function LoginPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 block">E-mail</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                   <input
+                    {...semPreencher}
                     type="email"
                     required
                     value={email}
@@ -109,8 +111,9 @@ export default function LoginPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 block">Senha</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                   <input
+                    {...semPreencher}
                     type="password"
                     required
                     value={password}
@@ -140,7 +143,7 @@ export default function LoginPage() {
                   className="text-left p-2 rounded-md border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 text-xs transition-colors cursor-pointer"
                 >
                   <div className="font-semibold text-slate-800">Administrador</div>
-                  <div className="text-[11px] text-slate-400">Acesso Total</div>
+                  <div className="text-[11px] text-slate-500">Acesso Total</div>
                 </button>
                 <button
                   type="button"
@@ -148,7 +151,7 @@ export default function LoginPage() {
                   className="text-left p-2 rounded-md border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 text-xs transition-colors cursor-pointer"
                 >
                   <div className="font-semibold text-slate-800">Produção</div>
-                  <div className="text-[11px] text-slate-400">Fábrica & Corel</div>
+                  <div className="text-[11px] text-slate-500">Fábrica & Corel</div>
                 </button>
                 <button
                   type="button"
@@ -156,7 +159,7 @@ export default function LoginPage() {
                   className="text-left p-2 rounded-md border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 text-xs transition-colors cursor-pointer"
                 >
                   <div className="font-semibold text-slate-800">Financeiro</div>
-                  <div className="text-[11px] text-slate-400">Contas & Relatórios</div>
+                  <div className="text-[11px] text-slate-500">Contas & Relatórios</div>
                 </button>
                 <button
                   type="button"
@@ -164,7 +167,7 @@ export default function LoginPage() {
                   className="text-left p-2 rounded-md border border-slate-200 hover:border-purple-300 hover:bg-purple-50/50 text-xs transition-colors cursor-pointer"
                 >
                   <div className="font-semibold text-slate-800">Vendedor</div>
-                  <div className="text-[11px] text-slate-400">Orçamentos & Clientes</div>
+                  <div className="text-[11px] text-slate-500">Orçamentos & Clientes</div>
                 </button>
               </div>
             </div>
@@ -172,7 +175,7 @@ export default function LoginPage() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-slate-500">
           © {new Date().getFullYear()} Heel Cloth Gestão de Confecção. Todos os direitos reservados.
         </p>
       </div>

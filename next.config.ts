@@ -1,15 +1,18 @@
 import type { NextConfig } from "next";
 
 const dev = process.env.NODE_ENV !== "production";
+// Google Analytics só entra na lista de endereços permitidos quando o id está configurado (e mesmo assim o
+// script só carrega depois do consentimento, em src/components/Estatisticas.tsx).
+const ga = /^G-[A-Z0-9]{4,16}$/.test((process.env.NEXT_PUBLIC_GA_ID || "").trim());
 
 // Cabeçalhos de segurança em todas as páginas.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}${ga ? " https://www.googletagmanager.com" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob:${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://viacep.com.br",
+  `connect-src 'self' https://viacep.com.br${ga ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" : ""}`,
   "worker-src 'self' blob:",
   "frame-src 'self' blob:",
   "object-src 'none'",

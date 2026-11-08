@@ -42,7 +42,7 @@ export function ListaProdutos({
       <h1 className="text-3xl font-extrabold uppercase tracking-tight sm:text-4xl">{titulo}</h1>
       {descricao && <p className="mt-2 text-sm text-black/60">{descricao}</p>}
       <div className="mt-6 flex flex-wrap items-center gap-3 border-y border-black/10 py-3">
-        <span className="mr-auto text-xs text-black/55" aria-live="polite">{lista.length} {lista.length === 1 ? "produto" : "produtos"}</span>
+        <span className="mr-auto text-xs text-black/65" aria-live="polite">{lista.length} {lista.length === 1 ? "produto" : "produtos"}</span>
         {tamanhos.length > 1 && (
           <select aria-label="Filtrar por tamanho" className={sel} value={tamanho} onChange={(e) => setTamanho(e.target.value)}>
             <option value="">Todos os tamanhos</option>
@@ -61,7 +61,7 @@ export function ListaProdutos({
         </select>
       </div>
       <div className="mt-8">
-        {lista.length === 0 ? <p className="py-16 text-center text-sm text-black/55">{vazio}</p> : <GradeProdutos produtos={lista} parcelasMax={parcelasMax} />}
+        {lista.length === 0 ? <p className="py-16 text-center text-sm text-black/65">{vazio}</p> : <><h2 className="sr-only">Produtos</h2><GradeProdutos produtos={lista} parcelasMax={parcelasMax} /></>}
       </div>
     </div>
   );

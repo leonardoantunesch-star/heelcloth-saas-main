@@ -59,7 +59,7 @@ export function CarrinhoLateral() {
                   </Link>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <p className="truncate text-sm font-semibold">{i.nome}</p>
-                    <p className="text-xs text-black/55">Tamanho {i.tamanho}{i.cor && ` · ${i.cor}`}</p>
+                    <p className="text-xs text-black/65">Tamanho {i.tamanho}{i.cor && ` · ${i.cor}`}</p>
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex items-center rounded-full border border-black/20 px-1">
                         <button type="button" aria-label="Diminuir" className="rounded-full p-1.5 disabled:opacity-30" disabled={i.quantidade <= 1} onClick={() => alterarQuantidade(i.produtoId, i.tamanho, i.quantidade - 1)}>
@@ -72,7 +72,7 @@ export function CarrinhoLateral() {
                       </div>
                       <span className="text-sm font-bold tabular-nums">{brl(i.preco * i.quantidade)}</span>
                     </div>
-                    <button type="button" onClick={() => remover(i.produtoId, i.tamanho)} className="mt-1 self-start text-[11px] text-black/50 underline">
+                    <button type="button" onClick={() => remover(i.produtoId, i.tamanho)} className="mt-1 self-start text-[11px] text-black/65 underline">
                       Remover
                     </button>
                   </div>

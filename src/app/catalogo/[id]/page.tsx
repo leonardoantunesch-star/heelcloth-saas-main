@@ -33,7 +33,7 @@ export default async function ProdutoPage({ params }: PageProps) {
     <div className="min-h-screen bg-white text-[#121212] font-editorial selection:bg-[#121212] selection:text-white flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+      <main id="conteudo" className="flex-1 w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
         <Link
           href="/catalogo"
           className="ripple-host inline-flex items-center gap-1.5 rounded-full text-xs font-semibold text-[#121212]/70 hover:text-[#121212] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#121212]"
@@ -52,7 +52,7 @@ export default async function ProdutoPage({ params }: PageProps) {
           </div>
 
           <div className="flex flex-col justify-center">
-            <span className="uppercase tracking-[0.25em] font-mono text-[11px] text-[#121212]/50 font-medium">Catálogo</span>
+            <span className="uppercase tracking-[0.25em] font-mono text-[11px] text-[#121212]/70 font-medium">Catálogo</span>
             <h1 className="mt-2 text-3xl sm:text-5xl font-bold tracking-tight leading-[1.05]">{produto.nome}</h1>
             <p className="mt-4 text-xl font-bold">
               {produto.precoPrefixo && <span className="mr-2 text-[11px] font-medium uppercase tracking-wider text-[#606060]">{produto.precoPrefixo}</span>}

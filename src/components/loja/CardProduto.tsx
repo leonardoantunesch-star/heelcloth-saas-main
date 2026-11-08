@@ -30,11 +30,11 @@ export function CardProduto({ produto: p }: { produto: ProdutoLoja; parcelasMax?
         </div>
       </div>
       <div className="mt-3 space-y-1">
-        {p.cor && <p className="text-[11px] uppercase tracking-wider text-black/50">{p.cor}</p>}
+        {p.cor && <p className="text-[11px] uppercase tracking-wider text-black/65">{p.cor}</p>}
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug group-hover:underline">{p.nome}</h3>
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span className={`text-sm font-bold tabular-nums ${promo ? "text-[var(--lj-dest)]" : ""}`}>{brl(final)}</span>
-          {promo && <span className="text-xs text-black/40 line-through tabular-nums">{brl(p.preco)}</span>}
+          {promo && <span className="text-xs text-black/65 line-through tabular-nums">{brl(p.preco)}</span>}
         </p>
       </div>
     </Link>

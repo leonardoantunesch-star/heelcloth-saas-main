@@ -39,7 +39,7 @@ export default function Institucional() {
       </div>
 
       <section className="mt-12" aria-labelledby="onde">
-        <h2 id="onde" className="text-xs font-bold uppercase tracking-[0.16em] text-black/55">Onde estamos</h2>
+        <h2 id="onde" className="text-xs font-bold uppercase tracking-[0.16em] text-black/65">Onde estamos</h2>
         <address className="mt-3 not-italic text-sm leading-relaxed sm:text-base">
           <a href={EMPRESA.enderecoMapa} target="_blank" rel="noopener noreferrer" className="underline">{EMPRESA.endereco}</a>
           <br />

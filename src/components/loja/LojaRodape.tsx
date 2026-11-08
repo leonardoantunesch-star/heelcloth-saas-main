@@ -22,7 +22,7 @@ export function SelosLoja() {
     },
     { icone: QrCode, titulo: "Pague com Pix", texto: "Confirmação rápida e segura." },
     { icone: ShieldCheck, titulo: "Compra segura", texto: "Pagamento processado pelo Mercado Pago." },
-    { icone: RefreshCcw, titulo: "Troca fácil", texto: "Fale com a gente pelo WhatsApp." },
+    { icone: RefreshCcw, titulo: "Trocas e devoluções", texto: "Até 7 dias para desistir da compra online." },
   ];
   return (
     <section aria-label="Vantagens" className="border-y border-black/10">
@@ -32,7 +32,7 @@ export function SelosLoja() {
             <Icone className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.06em]">{titulo}</p>
-              <p className="mt-1 text-xs text-black/55">{texto}</p>
+              <p className="mt-1 text-xs text-black/65">{texto}</p>
             </div>
           </li>
         ))}
@@ -78,6 +78,8 @@ export function LojaRodape() {
             <li><Link href="/sublimacao" className={link}>Uniformes personalizados</Link></li>
             <li><Link href="/loja/conta" className={link}>Minha conta e pedidos</Link></li>
             <li><Link href="/privacidade" className={link}>Privacidade e cookies</Link></li>
+            <li><Link href="/termos" className={link}>Termos de uso</Link></li>
+            <li><Link href="/trocas" className={link}>Trocas e devoluções</Link></li>
             <li><LinkPreferenciasCookies className={`${link} text-left`} /></li>
           </ul>
         </nav>
@@ -155,7 +157,8 @@ export function LojaRodape() {
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-[1440px] px-4 py-5 text-[11px] text-white/50 sm:px-8">
           © {new Date().getFullYear()} {config.marca.nome}
-          {config.contato.cnpj && ` · CNPJ ${config.contato.cnpj}`}
+          {EMPRESA.razaoSocial && ` · ${EMPRESA.razaoSocial}`}
+          {(config.contato.cnpj || EMPRESA.cnpj) && ` · CNPJ ${config.contato.cnpj || EMPRESA.cnpj}`}
           {` · ${EMPRESA.endereco}`}
         </p>
       </div>

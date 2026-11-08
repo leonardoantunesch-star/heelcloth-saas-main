@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { semPreencher } from "@/lib/sem-preencher";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, MailWarning, UserRound } from "lucide-react";
@@ -90,8 +91,8 @@ export function TelaEntrar() {
   return (
     <Moldura titulo="Entrar" texto="Acompanhe seus pedidos e compre mais rápido.">
       <form onSubmit={enviar} className="space-y-3">
-        <Campo rotulo="E-mail" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <Campo rotulo="Senha" type="password" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+        <Campo rotulo="E-mail" {...semPreencher} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Campo rotulo="Senha" {...semPreencher} type="password" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
         <Erro texto={erro} />
         <button type="submit" disabled={enviando} className={botao}>{enviando ? "Entrando..." : "Entrar"}</button>
       </form>
@@ -164,13 +165,13 @@ export function TelaCadastrar() {
     <Moldura titulo="Criar conta" texto="Leva um minuto. Você acompanha seus pedidos e não digita seus dados toda vez.">
       <form onSubmit={enviar} className="space-y-3">
         <Campo rotulo="Nome completo" autoComplete="name" value={f.nome} onChange={mudar("nome")} required minLength={3} />
-        <Campo rotulo="E-mail" type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required />
+        <Campo rotulo="E-mail" {...semPreencher} type="email" autoComplete="email" value={f.email} onChange={mudar("email")} required />
         <Campo rotulo="WhatsApp (opcional)" type="tel" autoComplete="tel" value={f.telefone} onChange={mudar("telefone")} />
-        <Campo rotulo="Senha (mínimo 8 caracteres)" type="password" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} />
-        <Campo rotulo="Repita a senha" type="password" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} />
+        <Campo rotulo="Senha (mínimo 8 caracteres)" {...semPreencher} type="password" autoComplete="new-password" value={f.senha} onChange={mudar("senha")} required minLength={8} />
+        <Campo rotulo="Repita a senha" {...semPreencher} type="password" autoComplete="new-password" value={f.repetir} onChange={mudar("repetir")} required minLength={8} />
         <label className="flex items-start gap-3 pt-1 text-sm text-[var(--lj-mudo)]">
           <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} className="mt-1 h-4 w-4 shrink-0" />
-          <span>Concordo que a loja guarde meu nome, e-mail e telefone para criar minha conta e acompanhar meus pedidos. Posso apagar a conta quando quiser.</span>
+          <span>Concordo que a loja guarde meu nome, e-mail e telefone para criar minha conta e acompanhar meus pedidos. Posso apagar a conta quando quiser. <Link href="/privacidade" className="font-semibold underline underline-offset-2">Política de privacidade</Link>.</span>
         </label>
         <Erro texto={erro} />
         <button type="submit" disabled={enviando} className={botao}>{enviando ? "Criando..." : "Criar conta"}</button>
@@ -208,7 +209,7 @@ export function TelaEsqueci() {
         </div>
       ) : (
         <form onSubmit={enviar} className="space-y-3">
-          <Campo rotulo="E-mail" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Campo rotulo="E-mail" {...semPreencher} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <Erro texto={erro} />
           <button type="submit" disabled={enviando} className={botao}>{enviando ? "Enviando..." : "Enviar link"}</button>
         </form>
@@ -255,8 +256,8 @@ export function TelaRedefinir() {
   return (
     <Moldura titulo="Nova senha" texto="Escolha uma senha com pelo menos 8 caracteres.">
       <form onSubmit={enviar} className="space-y-3">
-        <Campo rotulo="Nova senha" type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} required minLength={8} />
-        <Campo rotulo="Repita a nova senha" type="password" autoComplete="new-password" value={repetir} onChange={(e) => setRepetir(e.target.value)} required minLength={8} />
+        <Campo rotulo="Nova senha" {...semPreencher} type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} required minLength={8} />
+        <Campo rotulo="Repita a nova senha" {...semPreencher} type="password" autoComplete="new-password" value={repetir} onChange={(e) => setRepetir(e.target.value)} required minLength={8} />
         <Erro texto={erro} />
         <button type="submit" disabled={enviando} className={botao}>{enviando ? "Salvando..." : "Salvar nova senha"}</button>
       </form>
@@ -411,8 +412,8 @@ export function TelaMinhaConta() {
         </form>
         <form onSubmit={trocarSenha} className={`${bloco} space-y-3`}>
           <h2 className="text-lg font-bold">Trocar senha</h2>
-          <Campo rotulo="Senha atual" type="password" autoComplete="current-password" value={senhas.atual} onChange={(e) => setSenhas((s) => ({ ...s, atual: e.target.value }))} required />
-          <Campo rotulo="Nova senha (mínimo 8)" type="password" autoComplete="new-password" value={senhas.nova} onChange={(e) => setSenhas((s) => ({ ...s, nova: e.target.value }))} required minLength={8} />
+          <Campo rotulo="Senha atual" {...semPreencher} type="password" autoComplete="current-password" value={senhas.atual} onChange={(e) => setSenhas((s) => ({ ...s, atual: e.target.value }))} required />
+          <Campo rotulo="Nova senha (mínimo 8)" {...semPreencher} type="password" autoComplete="new-password" value={senhas.nova} onChange={(e) => setSenhas((s) => ({ ...s, nova: e.target.value }))} required minLength={8} />
           <button type="submit" className={botaoVazado}>Trocar senha</button>
         </form>
       </section>
@@ -423,7 +424,7 @@ export function TelaMinhaConta() {
         ) : (
           <form onSubmit={excluir} className="max-w-sm space-y-3">
             <p>Isso apaga seu acesso e seus dados de conta. Os pedidos já feitos continuam registrados na loja. Digite sua senha para confirmar.</p>
-            <input type="password" value={senhaExcluir} onChange={(e) => setSenhaExcluir(e.target.value)} className={campo} autoComplete="current-password" required aria-label="Senha para confirmar" />
+            <input {...semPreencher} type="password" value={senhaExcluir} onChange={(e) => setSenhaExcluir(e.target.value)} className={campo} autoComplete="current-password" required aria-label="Senha para confirmar" />
             <div className="flex gap-3">
               <button type="submit" className="h-11 rounded-full bg-[#b42318] px-5 text-sm font-semibold text-white">Excluir conta</button>
               <button type="button" onClick={() => setExcluindo(false)} className={botaoVazado}>Cancelar</button>
