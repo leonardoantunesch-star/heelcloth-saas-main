@@ -4,16 +4,18 @@ import { contaAtual } from "@/lib/conta";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/conta/pedidos - pedidos feitos com o e-mail da conta. Só depois de o e-mail ser confirmado
-// (senão qualquer um poderia criar uma conta com o e-mail de outra pessoa e ver as compras dela).
+// GET /api/conta/pedidos - compras da loja online (protocolo "LJ-") feitas com o e-mail da conta, inclusive as feitas
+// antes de criar a conta. Pedidos de uniforme (sublimação) não entram aqui: são acompanhados pelo código em /rastreio.
+// Só depois de o e-mail ser confirmado (senão qualquer um poderia criar uma conta com o e-mail de outra pessoa e ver
+// as compras dela).
 export async function GET(req: NextRequest) {
   const conta = await contaAtual(req);
   if (!conta) return NextResponse.json({ erro: "Entre na sua conta." }, { status: 401 });
   if (!conta.verificado) return NextResponse.json({ pedidos: [], precisaConfirmar: true }, { headers: { "Cache-Control": "no-store" } });
   const pedidos = await prisma.order.findMany({
-    where: { customer: { email: { equals: conta.email, mode: "insensitive" } } },
+    where: { orderNumber: { startsWith: "LJ-" }, customer: { email: { equals: conta.email, mode: "insensitive" } } },
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take: 100,
     select: {
       orderNumber: true,
       status: true,

@@ -5,20 +5,13 @@ import { semPreencher } from "@/lib/sem-preencher";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, MailWarning, UserRound } from "lucide-react";
-import { brl } from "@/data/loja";
 import { Erro, PassoCodigo, botao, campo, caminhoSeguro, chamar, mascararEmail } from "./ContaComum";
+import { PainelPedidos, type PedidoPainel } from "./PainelPedidos";
 
-const SITUACOES: Record<string, string> = {
-  ORCAMENTO: "Em análise", AGUARDANDO_APROVACAO: "Aguardando aprovação", APROVADO: "Aprovado", PAGAMENTO_PENDENTE: "Aguardando pagamento",
-  PAGAMENTO_CONFIRMADO: "Pagamento confirmado", EM_PRODUCAO: "Em preparação", CONTROLE_QUALIDADE: "Em preparação", PRONTO: "Pronto",
-  ENTREGUE: "Entregue", CONCLUIDO: "Concluído", CANCELADO: "Cancelado", EM_ATRASO: "Em preparação", AGUARDANDO_ALTERACAO: "Aguardando alteração",
-};
-const rotuloSituacao = (s: string, _x?: boolean) => SITUACOES[s] ?? "Em andamento";
 
 // Telas da conta do cliente: entrar, criar conta, esqueci a senha, nova senha, confirmar e-mail e "Minha conta".
 
 const botaoVazado = "inline-flex h-11 items-center justify-center rounded-full border border-[var(--lj-borda)] px-5 text-sm font-semibold hover:border-[var(--lj-pri)] disabled:opacity-50";
-const dia = (v: string) => new Date(v).toLocaleDateString("pt-BR");
 
 function Moldura({ titulo, texto, children }: { titulo: string; texto?: string; children: React.ReactNode }) {
   return (
@@ -293,12 +286,12 @@ export function TelaVerificar() {
 }
 
 interface ContaDados { id: string; nome: string; email: string; telefone: string | null; verificado: boolean }
-interface PedidoConta { orderNumber: string; status: string; totalAmount: number; trackingCode: string | null; createdAt: string; items: { product: string; size: string | null; color: string | null; quantity: number }[] }
 
 export function TelaMinhaConta() {
   const router = useRouter();
   const [conta, setConta] = useState<ContaDados | null | undefined>(undefined);
-  const [pedidos, setPedidos] = useState<PedidoConta[] | null>(null);
+  const [pedidos, setPedidos] = useState<PedidoPainel[] | null>(null);
+  const [precisaConfirmar, setPrecisaConfirmar] = useState(false);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [aviso, setAviso] = useState("");
@@ -317,7 +310,13 @@ export function TelaMinhaConta() {
     setConta(r.conta);
     setNome(r.conta.nome);
     setTelefone(r.conta.telefone ?? "");
-    fetch("/api/conta/pedidos", { cache: "no-store" }).then((x) => x.json()).then((j) => setPedidos(j.pedidos ?? [])).catch(() => setPedidos([]));
+    fetch("/api/conta/pedidos", { cache: "no-store" })
+      .then((x) => x.json())
+      .then((j) => {
+        setPedidos(j.pedidos ?? []);
+        setPrecisaConfirmar(Boolean(j.precisaConfirmar));
+      })
+      .catch(() => setPedidos([]));
   }, [router]);
 
   useEffect(() => {
@@ -360,58 +359,42 @@ export function TelaMinhaConta() {
 
   if (!conta) return <div className="mx-auto max-w-md px-4 py-24 text-center text-[var(--lj-mudo)]">Carregando...</div>;
 
-  const bloco = "rounded-[var(--lj-r-gg)] bg-[var(--lj-suave)] p-6";
+  const bloco = "rounded-2xl bg-[var(--lj-suave)] p-6";
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm text-[var(--lj-mudo)]">Minha conta</p>
-          <h1 className="text-4xl lj-titulo">Olá, {conta.nome.split(" ")[0]}</h1>
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8 sm:py-14">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--lj-borda)] pb-5">
+        <p className="text-sm text-[var(--lj-mudo)]">
+          Olá, <strong className="text-[var(--lj-txt)]">{conta.nome.split(" ")[0]}</strong> · {mascararEmail(conta.email)}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <a href="#minha-conta" className={botaoVazado}>Meus dados</a>
+          <button type="button" onClick={sair} className={botaoVazado}>Sair</button>
         </div>
-        <button type="button" onClick={sair} className={botaoVazado}>Sair</button>
       </div>
 
       {!conta.verificado && (
-        <div role="status" className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+        <div role="status" className="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
           <MailWarning className="h-5 w-5 shrink-0" aria-hidden="true" />
           <p className="min-w-0 flex-1">Confirme seu e-mail ({mascararEmail(conta.email)}) para ver aqui os pedidos que você já fez antes de criar a conta.</p>
           <button type="button" onClick={reenviar} className="rounded-full border border-amber-400 px-4 py-2 font-semibold">Reenviar e-mail</button>
         </div>
       )}
-      {aviso && <p role="status" className="mt-4 text-sm font-semibold text-[var(--lj-pri)]">{aviso}</p>}
-      {erro && <p role="alert" className="mt-4 text-sm font-semibold text-[#b42318]">{erro}</p>}
+      {aviso && <p role="status" className="mb-6 text-sm font-semibold text-[var(--lj-pri)]">{aviso}</p>}
+      {erro && <p role="alert" className="mb-6 text-sm font-semibold text-[#b42318]">{erro}</p>}
 
-      <section className="mt-10" aria-labelledby="meus-pedidos">
-        <h2 id="meus-pedidos" className="text-2xl font-extrabold tracking-tight">Meus pedidos</h2>
-        {pedidos === null && <p className="mt-3 text-[var(--lj-mudo)]">Carregando...</p>}
-        {pedidos?.length === 0 && <p className="mt-3 text-[var(--lj-mudo)]">Você ainda não fez nenhum pedido com esta conta. <Link href="/loja/todos" className="font-semibold text-[var(--lj-pri)] underline">Ver produtos</Link></p>}
-        <ul className="mt-4 space-y-3">
-          {pedidos?.map((p) => (
-            <li key={p.orderNumber} className={bloco}>
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="font-bold">{p.orderNumber}</p>
-                <p className="text-sm text-[var(--lj-mudo)]">{dia(p.createdAt)}</p>
-              </div>
-              <p className="mt-1 text-sm">{p.status === "CANCELADO" ? "Cancelado" : rotuloSituacao(p.status, false)} · <strong>{brl(p.totalAmount)}</strong></p>
-              <ul className="mt-2 text-sm text-[var(--lj-mudo)]">
-                {p.items.map((i, k) => <li key={k}>{i.quantity}× {i.product}{i.color || i.size ? ` (${[i.color, i.size].filter(Boolean).join(", ")})` : ""}</li>)}
-              </ul>
-              {p.trackingCode && <p className="mt-2 text-sm">Rastreio: <span className="font-mono font-bold">{p.trackingCode}</span></p>}
-            </li>
-          ))}
-        </ul>
-      </section>
+      <PainelPedidos pedidos={pedidos} precisaConfirmar={precisaConfirmar} />
 
-      <section className="mt-12 grid gap-6 sm:grid-cols-2">
+      <h2 id="minha-conta" className="mt-16 scroll-mt-24 border-t border-[var(--lj-borda)] pt-12 text-2xl lj-titulo">Minha conta</h2>
+      <section className="mt-6 grid gap-6 sm:grid-cols-2">
         <form onSubmit={salvarPerfil} className={`${bloco} space-y-3`}>
-          <h2 className="text-lg font-bold">Meus dados</h2>
+          <h3 className="text-lg font-bold">Meus dados</h3>
           <Campo rotulo="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required minLength={3} />
           <Campo rotulo="WhatsApp" type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
           <p className="text-sm text-[var(--lj-mudo)]">E-mail: {mascararEmail(conta.email)} {conta.verificado ? "(confirmado)" : "(não confirmado)"}</p>
           <button type="submit" className={botaoVazado}>Salvar dados</button>
         </form>
         <form onSubmit={trocarSenha} className={`${bloco} space-y-3`}>
-          <h2 className="text-lg font-bold">Trocar senha</h2>
+          <h3 className="text-lg font-bold">Trocar senha</h3>
           <Campo rotulo="Senha atual" {...semPreencher} type="password" autoComplete="current-password" value={senhas.atual} onChange={(e) => setSenhas((s) => ({ ...s, atual: e.target.value }))} required />
           <Campo rotulo="Nova senha (mínimo 8)" {...semPreencher} type="password" autoComplete="new-password" value={senhas.nova} onChange={(e) => setSenhas((s) => ({ ...s, nova: e.target.value }))} required minLength={8} />
           <button type="submit" className={botaoVazado}>Trocar senha</button>
